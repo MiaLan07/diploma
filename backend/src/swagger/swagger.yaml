@@ -1,0 +1,611 @@
+openapi: 3.0.3
+info:
+  title: Real Estate API
+  description: |
+    API сервиса недвижимости (продажа, аренда, покупка, коммерческая недвижимость).  
+    Поддерживает авторизацию через JWT, фильтры по объектам, избранное, заявки и загрузку фотографий.
+  version: 1.0.0
+  contact:
+    name: Mary (Developer)
+    email: your-email@example.com
+
+servers:
+  - url: http://localhost:5000/api
+    description: Локальная разработка (dev)
+  - url: https://api.yourdomain.com/api
+    description: Production (если будет)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              message: { type: string }
+
+    User:
+      type: object
+      properties:
+        id:        { type: integer, example: 1 }
+        firstName: { type: string, example: "Мария" }
+        lastName:  { type: string, example: "Иванова" }
+        email:     { type: string, example: "mary@example.com" }
+        phone:     { type: string, nullable: true, example: "+79781234567" }
+        isAdmin:   { type: boolean, example: false }
+        createdAt: { type: string, format: date-time }
+
+    Operation:
+      type: object
+      properties:
+        id:   { type: integer, example: 1 }
+        name: { type: string, example: "Продажа" }
+
+    PropertyType:
+      type: object
+      properties:
+        id:   { type: integer, example: 1 }
+        name: { type: string, example: "Жилая" }
+
+    HousingType:
+      type: object
+      properties:
+        id:   { type: integer, example: 1 }
+        name: { type: string, example: "Квартира" }
+
+    PropertyImage:
+      type: object
+      properties:
+        id:     { type: integer }
+        url:    { type: string, example: "/uploads/properties/abc123.jpg" }
+        isMain: { type: boolean, example: true }
+
+    Property:
+      type: object
+      properties:
+        id:                { type: integer }
+        operation:         { $ref: '#/components/schemas/Operation' }
+        propertyType:      { $ref: '#/components/schemas/PropertyType' }
+        housingType:       { $ref: '#/components/schemas/HousingType', nullable: true }
+        price:             { type: number, format: decimal, example: 4500000.00 }
+        area:              { type: number, format: decimal, nullable: true, example: 68.50 }
+        condition:         { type: string, nullable: true }
+        parking:           { type: string, nullable: true }
+        rooms:             { type: integer, nullable: true }
+        floor:             { type: integer, nullable: true }
+        hasElevator:       { type: boolean, nullable: true }
+        yearBuilt:         { type: integer, nullable: true }
+        shortDescription:  { type: string, nullable: true }
+        fullDescription:   { type: string, nullable: true }
+        address:           { type: string, nullable: true }
+        latitude:          { type: number, nullable: true }
+        longitude:         { type: number, nullable: true }
+        images:            { type: array, items: { $ref: '#/components/schemas/PropertyImage' } }
+        createdAt:         { type: string, format: date-time }
+        updatedAt:         { type: string, format: date-time }
+
+    PaginatedProperties:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data:    { type: array, items: { $ref: '#/components/schemas/Property' } }
+        pagination:
+          type: object
+          properties:
+            page:      { type: integer, example: 1 }
+            limit:     { type: integer, example: 10 }
+            total:     { type: integer, example: 127 }
+            totalPages:{ type: integer, example: 13 }
+
+  responses:
+    Unauthorized:
+      description: Не авторизован / недействительный токен
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Нет прав доступа
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    BadRequest:
+      description: Некорректный запрос / ошибка валидации
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ServerError:
+      description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+paths:
+  /health:
+    get:
+      summary: Проверка работоспособности API
+      tags: [System]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: "ok" }
+
+  /auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [firstName, lastName, email, password]
+              properties:
+                firstName: { type: string, example: "Мария" }
+                lastName:  { type: string, example: "Иванова" }
+                email:     { type: string, example: "mary@example.com" }
+                password:  { type: string, example: "StrongPass123!" }
+                phone:     { type: string, example: "+79781234567" }
+      responses:
+        '201':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  user:  { $ref: '#/components/schemas/User' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { description: Пользователь с таким email уже существует }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /auth/login:
+    post:
+      summary: Авторизация пользователя
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  user:  { $ref: '#/components/schemas/User' }
+        '401': { description: Неверные учетные данные }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /auth/me:
+    get:
+      summary: Получить данные текущего пользователя
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /properties:
+    get:
+      summary: Получить список объектов недвижимости с фильтрами и пагинацией
+      tags: [Properties]
+      parameters:
+        - in: query
+          name: operationId
+          schema: { type: integer }
+          description: ID типа операции (продажа/аренда)
+        - in: query
+          name: propertyTypeId
+          schema: { type: integer }
+          description: ID типа недвижимости (жилая/коммерческая/участок и т.д.)
+        - in: query
+          name: housingTypeId
+          schema: { type: integer }
+          description: ID подтипа жилья (квартира/дом/таунхаус и т.д.)
+        - in: query
+          name: minPrice
+          schema: { type: number }
+          description: Минимальная цена
+        - in: query
+          name: maxPrice
+          schema: { type: number }
+          description: Максимальная цена
+        - in: query
+          name: minArea
+          schema: { type: number }
+          description: Минимальная площадь
+        - in: query
+          name: maxArea
+          schema: { type: number }
+          description: Максимальная площадь
+        - in: query
+          name: rooms
+          schema: { type: string }
+          description: Количество комнат (число, "studio", "5+")
+        - in: query
+          name: floor
+          schema: { type: integer }
+        - in: query
+          name: hasElevator
+          schema: { type: boolean }
+        - in: query
+          name: yearMin
+          schema: { type: integer }
+        - in: query
+          name: yearMax
+          schema: { type: integer }
+        - in: query
+          name: search
+          schema: { type: string }
+          description: Поиск по адресу / описанию
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10, maximum: 50 }
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [price, area, yearBuilt, createdAt]
+            default: createdAt
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedProperties' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+    post:
+      summary: Создать новое объявление о недвижимости
+      description: Создаёт новый объект недвижимости. Требуется авторизация.
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [operationId, propertyTypeId, price]
+              properties:
+                operationId:       { type: integer, example: 1 }
+                propertyTypeId:    { type: integer, example: 1 }
+                housingTypeId:     { type: integer, nullable: true, example: 2 }
+                price:             { type: number, example: 4500000.00 }
+                area:              { type: number, nullable: true, example: 68.5 }
+                condition:         { type: string, nullable: true, example: "Евроремонт" }
+                parking:           { type: string, nullable: true, example: "Подземная" }
+                rooms:             { type: integer, nullable: true, example: 3 }
+                floor:             { type: integer, nullable: true, example: 7 }
+                hasElevator:       { type: boolean, nullable: true, example: true }
+                yearBuilt:         { type: integer, nullable: true, example: 2018 }
+                shortDescription:  { type: string, nullable: true, maxLength: 500 }
+                fullDescription:   { type: string, nullable: true, maxLength: 5000 }
+                address:           { type: string, nullable: true, example: "ул. Киевская, 12" }
+                latitude:          { type: number, nullable: true, example: 44.952116 }
+                longitude:         { type: number, nullable: true, example: 34.102417 }
+      responses:
+        '201':
+          description: Объект успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:    { $ref: '#/components/schemas/Property' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /properties/{id}:
+    get:
+      summary: Получить подробную информацию об одном объекте недвижимости
+      tags: [Properties]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID объекта недвижимости
+      responses:
+        '200':
+          description: Объект найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:    { $ref: '#/components/schemas/Property' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+    put:
+      summary: Обновить объект недвижимости
+      description: Обновляет данные объекта. Доступно только администраторам.
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Property' }  # можно сделать partial
+      responses:
+        '200':
+          description: Объект обновлён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  message: { type: string }
+                  data:    { $ref: '#/components/schemas/Property' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    delete:
+      summary: Удалить объект недвижимости
+      description: Полное удаление объекта и связанных данных (каскадно). Только для администраторов.
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Объект удалён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  message: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+  
+  /properties/{id}/images:
+    post:
+      summary: Загрузить несколько фотографий к объекту недвижимости
+      tags: [Properties, Images]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Фотографии загружены
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /properties/{id}/images/{imageId}/main:
+    put:
+      summary: Сделать фотографию главной
+      tags: [Properties, Images]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: path
+          name: imageId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Главное фото обновлено
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  
+  /properties/{propertyId}/images/{imageId}:
+    delete:
+      summary: Удалить фотографию объекта недвижимости
+      description: Удаляет одну фотографию и файл с диска. Доступно только администраторам.
+      tags: [Properties, Images]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: propertyId
+          required: true
+          schema:
+            type: integer
+          description: ID объекта недвижимости
+        - in: path
+          name: imageId
+          required: true
+          schema:
+            type: integer
+          description: ID фотографии
+      responses:
+        '200':
+          description: Фотография удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: "Фотография успешно удалена" }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+  
+    /favorites:
+    get:
+      summary: Получить список избранных объектов текущего пользователя
+      tags: [Favorites]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список избранного
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: array, items: { $ref: '#/components/schemas/Property' } }
+                  count: { type: integer }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /favorites/{propertyId}:
+    post:
+      summary: Добавить объект в избранное
+      tags: [Favorites]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: propertyId
+          required: true
+          schema: { type: integer }
+      responses:
+        '201':
+          description: Добавлено в избранное
+        '409':
+          description: Уже в избранном
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    delete:
+      summary: Удалить объект из избранного
+      tags: [Favorites]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: propertyId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Удалено из избранного
+        '404':
+          description: Не найдено в избранном
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /favorites/check/{propertyId}:
+    get:
+      summary: Проверить, добавлен ли объект в избранное
+      tags: [Favorites]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: propertyId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Статус проверки
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  isFavorite: { type: boolean }
+  # Далее можно добавить:
+  # /properties/{id}
+  # /properties (post)
+  # /properties/{id}/images (post - загрузка фото)
+  # /favorites
+  # /requests
+  # и т.д.
