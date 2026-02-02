@@ -11,6 +11,7 @@ const errorHandler = require('./middleware/error.middleware');
 const authRoutes = require('./routes/auth.routes');
 const propertyRoutes = require('./routes/properties.routes');
 const favoritesRoutes = require('./routes/favorites.routes');
+const requestsRoutes = require('./routes/requests.routes');
 // ...
 
 const app = express();
@@ -34,6 +35,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/favorites', favoritesRoutes);
+app.use('/api/requests', requestsRoutes);
+app.use('/api/user', require('./routes/users.routes'));
 // ...
 
 // Тестовый маршрут

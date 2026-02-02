@@ -83,8 +83,8 @@ components:
         operation:         { $ref: '#/components/schemas/Operation' }
         propertyType:      { $ref: '#/components/schemas/PropertyType' }
         housingType:       { $ref: '#/components/schemas/HousingType', nullable: true }
-        price:             { type: number, format: decimal, example: 4500000.00 }
-        area:              { type: number, format: decimal, nullable: true, example: 68.50 }
+        price:             { type: number, format: float, example: 4500000.00 }
+        area:              { type: number, format: float, nullable: true, example: 68.50 }
         condition:         { type: string, nullable: true }
         parking:           { type: string, nullable: true }
         rooms:             { type: integer, nullable: true }
@@ -394,7 +394,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/Property' }  # можно сделать partial
+            schema: { $ref: '#/components/schemas/Property' }  # можно сделать partial (отдельную схему UpdateProperty)
       responses:
         '200':
           description: Объект обновлён
@@ -436,7 +436,7 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '500': { $ref: '#/components/responses/ServerError' }
-  
+
   /properties/{id}/images:
     post:
       summary: Загрузить несколько фотографий к объекту недвижимости
@@ -489,7 +489,7 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
-  
+
   /properties/{propertyId}/images/{imageId}:
     delete:
       summary: Удалить фотографию объекта недвижимости
@@ -525,8 +525,8 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '500': { $ref: '#/components/responses/ServerError' }
-  
-    /favorites:
+
+  /favorites:
     get:
       summary: Получить список избранных объектов текущего пользователя
       tags: [Favorites]
@@ -602,10 +602,172 @@ paths:
                 properties:
                   success: { type: boolean }
                   isFavorite: { type: boolean }
-  # Далее можно добавить:
-  # /properties/{id}
-  # /properties (post)
-  # /properties/{id}/images (post - загрузка фото)
-  # /favorites
-  # /requests
-  # и т.д.
+
+  /requests:
+    post:
+      summary: Создать заявку на объект
+      tags: [Requests]
+      security: 
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [propertyId]
+              properties:
+                propertyId: { type: integer }
+                message:    { type: string, maxLength: 2000 }
+      responses:
+        '201': { description: Заявка создана }
+        '409': { description: Уже есть активная заявка }
+
+    get:
+      summary: Все заявки (только админ)
+      tags: [Requests]
+      security: 
+        - bearerAuth: []
+      responses:
+        '200': { description: Список всех заявок }
+
+  /requests/my:
+    get:
+      summary: Мои заявки
+      tags: [Requests]
+      security: 
+        - bearerAuth: []
+      responses:
+        '200': { description: Мои заявки }
+
+  /requests/{id}/status:
+    patch:
+      summary: Изменить статус заявки (админ)
+      tags: [Requests]
+      security: 
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [new, viewed, in_progress, closed, rejected] }
+      responses:
+        '200': { description: Статус обновлён }
+
+  /user/email/change:
+    post:
+      summary: Запрос на смену email
+      tags: [User]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [newEmail]
+              properties:
+                newEmail: { type: string, format: email }
+      responses:
+        '200':
+          description: Код отправлен на новый email
+        '409':
+          description: Email уже используется
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /user/email/verify:
+    post:
+      summary: Подтверждение нового email кодом
+      tags: [User]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string, example: "123456" }
+      responses:
+        '200':
+          description: Email успешно изменён
+        '400':
+          description: Неверный код
+        '410':
+          description: Код устарел
+        '429':
+          description: Превышено количество попыток
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /user/phone:
+    patch:
+      summary: Изменить номер телефона
+      tags: [User]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone: { type: string, example: "+79781234567" }
+      responses:
+        '200':
+          description: Номер обновлён
+        '400':
+          description: Некорректный формат телефона
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /user/forgot-password:
+    post:
+      summary: Запрос восстановления пароля
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '200':
+          description: Инструкция отправлена (если email существует)
+        '400':
+          description: Некорректный email
+
+  /user/reset-password:
+    post:
+      summary: Установить новый пароль по токену
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token: { type: string }
+                newPassword: { type: string, minLength: 8 }
+      responses:
+        '200':
+          description: Пароль изменён
+        '400':
+          description: Недействительный или просроченный токен

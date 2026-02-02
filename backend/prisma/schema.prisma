@@ -61,21 +61,33 @@ model Property {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  firstName     String
-  lastName      String
-  email         String    @unique
-  passwordHash  String
-  phone         String?
-  isAdmin       Boolean   @default(false)
+  id                        Int       @id @default(autoincrement())
+  firstName                 String
+  lastName                  String
+  email                     String    @unique
+  passwordHash              String
+  phone                     String?   @unique   // ← добавили уникальность
 
-  favorites     Favorite[]
-  preferences   Preference?
-  settings      Setting?
-  requests      Request[]
+  // смена email
+  newEmail                  String?
+  emailVerificationCode     String?
+  emailVerificationExpires  DateTime?
+  emailVerificationAttempts Int       @default(0)   // ← новый счётчик
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  // восстановление пароля
+  resetPasswordToken        String?
+  resetPasswordExpires      DateTime?
+  resetPasswordAttempts     Int       @default(0)   // ← новый счётчик
+
+  isAdmin                   Boolean   @default(false)
+
+  favorites                 Favorite[]
+  preferences               Preference?
+  settings                  Setting?
+  requests                  Request[]
+
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 }
 
 model Favorite {
@@ -129,6 +141,9 @@ model Request {
   message     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([propertyId])
 }
 
 model PropertyImage {
