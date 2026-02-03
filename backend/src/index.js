@@ -16,6 +16,32 @@ const requestsRoutes = require('./routes/requests.routes');
 
 const app = express();
 
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
+// Security headers
+app.use(helmet());
+
+// Rate limiting (особенно важно для auth-роутов)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 минут
+  max: 5,                  // лимит 5 запросов
+  message: { success: false, message: 'Слишком много попыток. Попробуйте позже.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,                 // более мягкий лимит для остальных роутов
+});
+
+// Применяем
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/forgot-password', authLimiter);
+app.use(generalLimiter); // глобально, но слабее
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));

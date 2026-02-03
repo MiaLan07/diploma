@@ -1,5 +1,13 @@
+const logger = require('../utils/logger');
+
 const errorHandler = (err, req, res, next) => {
-  console.error('Server error:', err);
+  logger.error(`${err.name}: ${err.message}`, {
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method,
+    body: req.body,
+    user: req.user ? req.user.id : 'anonymous'
+  });
 
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Внутренняя ошибка сервера';
@@ -7,7 +15,7 @@ const errorHandler = (err, req, res, next) => {
   res.status(statusCode).json({
     success: false,
     error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 };
 

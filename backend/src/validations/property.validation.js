@@ -17,6 +17,7 @@ const createPropertySchema = Joi.object({
   address:          Joi.string().max(255).allow(null, ''),
   latitude:         Joi.number().precision(6).min(-90).max(90).allow(null),
   longitude:        Joi.number().precision(6).min(-180).max(180).allow(null),
+  status:           Joi.string().valid('draft', 'active', 'archived').optional().default('active'),
 });
 
 const getByIdSchema = Joi.object({
@@ -56,6 +57,7 @@ const updatePropertySchema = Joi.object({
   address:          Joi.string().max(255).allow(null, ''),
   latitude:         Joi.number().precision(6).min(-90).max(90).allow(null),
   longitude:        Joi.number().precision(6).min(-180).max(180).allow(null),
+  status:           Joi.string().valid('draft', 'active', 'archived').optional().default('active'),
 }).min(1); // хотя бы одно поле должно быть
 
 const queryFilterSchema = Joi.object({

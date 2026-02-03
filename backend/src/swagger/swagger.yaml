@@ -99,19 +99,23 @@ components:
         images:            { type: array, items: { $ref: '#/components/schemas/PropertyImage' } }
         createdAt:         { type: string, format: date-time }
         updatedAt:         { type: string, format: date-time }
+        status:            { type: string, enum: [draft, active, archived], example: active }
+        archivedAt:        { type: string, format: date-time, nullable: true }
 
     PaginatedProperties:
       type: object
       properties:
-        success: { type: boolean, example: true }
-        data:    { type: array, items: { $ref: '#/components/schemas/Property' } }
+        success: { type: boolean }
+        data: { type: array, items: { $ref: '#/components/schemas/Property' } }
         pagination:
           type: object
           properties:
-            page:      { type: integer, example: 1 }
-            limit:     { type: integer, example: 10 }
-            total:     { type: integer, example: 127 }
-            totalPages:{ type: integer, example: 13 }
+            page:      { type: integer }
+            limit:     { type: integer }
+            total:     { type: integer }
+            totalPages:{ type: integer }
+            hasNext:   { type: boolean }
+            hasPrev:   { type: boolean }
 
   responses:
     Unauthorized:
@@ -301,6 +305,16 @@ paths:
             type: string
             enum: [asc, desc]
             default: desc
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [draft, active, archived]
+          description: Фильтр по статусу (только для админа)
+        - in: query
+          name: includeArchived
+          schema: { type: boolean }
+          description: Показать архивные (только админ)
       responses:
         '200':
           description: Успешно
@@ -436,6 +450,40 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '500': { $ref: '#/components/responses/ServerError' }
+
+  /properties/{id}/archive:
+    patch:
+      summary: Перенести объект в архив
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Объект архивирован
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /properties/{id}/restore:
+    patch:
+      summary: Восстановить объект из архива
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Объект восстановлен
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
 
   /properties/{id}/images:
     post:

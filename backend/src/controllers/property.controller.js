@@ -15,9 +15,15 @@ const getAllProperties = async (req, res) => {
       sortBy = 'createdAt', order = 'desc',
     } = req.query;
 
-    const skip = (page - 1) * limit;
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
 
-    const where = {};
+    const where = { status: 'active' };
+    if (req.query.status && req.user?.isAdmin) {
+      where.status = req.query.status;
+    } else if (req.query.includeArchived && req.user?.isAdmin) {
+      delete where.status;
+    }
 
     if (operationId)     where.operationId     = Number(operationId);
     if (propertyTypeId)  where.propertyTypeId  = Number(propertyTypeId);
@@ -67,19 +73,17 @@ const getAllProperties = async (req, res) => {
       prisma.property.findMany({
         where,
         skip,
-        take: Number(limit),
-        orderBy: { [sortBy]: order },
+        take,
+        orderBy: { createdAt: 'desc' },
         include: {
-          operation: { select: { name: true } },
-          propertyType: { select: { name: true } },
-          housingType: { select: { name: true } },
-          images: { select: { url: true, isMain: true }, orderBy: { isMain: 'desc' } },
-        },
+          images: { take: 1, where: { isMain: true } },
+          operation: true,
+          propertyType: true,
+          housingType: true,
+        }
       }),
-      prisma.property.count({ where }),
+      prisma.property.count({ where })
     ]);
-
-    const totalPages = Math.ceil(total / limit);
 
     res.json({
       success: true,
@@ -88,12 +92,13 @@ const getAllProperties = async (req, res) => {
         page: Number(page),
         limit: Number(limit),
         total,
-        totalPages,
-      },
+        totalPages: Math.ceil(total / limit),
+        hasNext: skip + take < total,
+        hasPrev: Number(page) > 1
+      }
     });
-  } catch (error) {
-    console.error('Get properties error:', error);
-    res.status(500).json({ success: false, message: 'Ошибка при получении объектов' });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -147,6 +152,7 @@ const createProperty = async (req, res) => {
         area:  data.area  ? new Prisma.Decimal(data.area)  : undefined,
         latitude:  data.latitude  ? new Prisma.Decimal(data.latitude)  : undefined,
         longitude: data.longitude ? new Prisma.Decimal(data.longitude) : undefined,
+        status: req.body.status || 'draft',
         // ownerId: userId,   // ← раскомментировать после добавления поля в schema.prisma
       },
     });
@@ -217,47 +223,35 @@ const updateProperty = async (req, res) => {
   }
 };
 
-const deleteProperty = async (req, res) => {
+const archiveProperty = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const propertyId = Number(id);
-
-    // Находим все изображения заранее (чтобы удалить файлы)
-    const images = await prisma.propertyImage.findMany({
-      where: { propertyId },
-      select: { url: true },
-    });
-
-    // Удаляем файлы с диска
-    images.forEach((img) => {
-      if (img.url.startsWith('/uploads/')) {
-        const filePath = path.join(__dirname, '..', '..', img.url.substring(1));
-        if (fs.existsSync(filePath)) {
-          try {
-            fs.unlinkSync(filePath);
-            console.log(`Удалён файл: ${filePath}`);
-          } catch (err) {
-            console.warn(`Не удалось удалить файл ${filePath}:`, err.message);
-          }
-        }
+    const property = await prisma.property.update({
+      where: { id: Number(id) },
+      data: {
+        ...req.body,
+        status: req.body.status || 'draft',
       }
     });
+    res.json({ success: true, message: 'Объект перенесён в архив', data: property });
+  } catch (err) {
+    next(err);
+  }
+};
 
-    // Удаляем объект → каскадно удалит все PropertyImage записи
-    await prisma.property.delete({
-      where: { id: propertyId },
+const restoreProperty = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const property = await prisma.property.update({
+      where: { id: Number(id) },
+      data: {
+        isArchived: false,
+        archivedAt: null
+      }
     });
-
-    res.json({
-      success: true,
-      message: 'Объект недвижимости и все его фотографии удалены',
-    });
-  } catch (error) {
-    console.error('Delete property error:', error);
-    if (error.code === 'P2025') {
-      return res.status(404).json({ success: false, message: 'Объект не найден' });
-    }
-    res.status(500).json({ success: false, message: 'Ошибка удаления объекта' });
+    res.json({ success: true, message: 'Объект восстановлен из архива', data: property });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -418,7 +412,8 @@ module.exports = {
   getPropertyById,
   createProperty,
   updateProperty,
-  deleteProperty,
+  archiveProperty,
+  restoreProperty,
   uploadImages,
   setMainImage,
   deleteImage,

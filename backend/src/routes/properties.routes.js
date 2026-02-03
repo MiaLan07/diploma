@@ -5,7 +5,8 @@ const {
   getPropertyById,
   createProperty,
   updateProperty,
-  deleteProperty,
+  archiveProperty,
+  restoreProperty,
   uploadImages,
   setMainImage,
   deleteImage,
@@ -46,15 +47,10 @@ router.put('/:id',
   updateProperty
 );
 
-router.delete('/:id',
-  authMiddleware,
-  adminMiddleware,
-  validateParams(getByIdSchema),
-  deleteProperty
-);
+router.patch('/:id/archive', authMiddleware, adminMiddleware, archiveProperty);
+router.patch('/:id/restore', authMiddleware, adminMiddleware, restoreProperty);
 
-router.post(
-  '/:id/images',
+router.post('/:id/images',
   authMiddleware,
   adminMiddleware,
   validateParams(getByIdSchema),        // проверка :id
@@ -62,8 +58,7 @@ router.post(
   uploadImages
 );
 
-router.put(
-  '/:id/images/:imageId/main',
+router.put('/:id/images/:imageId/main',
   authMiddleware,
   adminMiddleware,
   validateParams(Joi.object({
@@ -73,8 +68,7 @@ router.put(
   setMainImage
 );
 
-router.delete(
-  '/:propertyId/images/:imageId',
+router.delete('/:propertyId/images/:imageId',
   authMiddleware,
   adminMiddleware,                        // только админ (можно потом расширить до владельца)
   validateParams(
