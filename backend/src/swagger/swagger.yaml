@@ -574,6 +574,43 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '500': { $ref: '#/components/responses/ServerError' }
 
+  /properties/map:
+    get:
+      summary: Упрощённые данные объектов недвижимости для карты
+      description: |
+        Возвращает минимальный набор полей для отображения маркеров и попапов на карте:
+        id, адрес, цена, комнаты, краткое описание, координаты, главное фото.
+        Оптимизировано — без полных описаний и всех изображений.
+      tags: [Properties, Map]
+      responses:
+        '200':
+          description: Данные для карты успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  count: { type: integer, example: 28 }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer, example: 42 }
+                        address: { type: string, example: "ул. Киевская, 12" }
+                        price: { type: number, example: 8500000 }
+                        rooms: { type: integer, example: 3, nullable: true }
+                        shortDescription: { type: string, example: "Евроремонт, рядом парк", nullable: true }
+                        lat: { type: number, example: 44.9521 }
+                        lng: { type: number, example: 34.1024 }
+                        mainImage: { type: string, example: "/uploads/properties/main-42.jpg", nullable: true }
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
   /favorites:
     get:
       summary: Получить список избранных объектов текущего пользователя

@@ -1,21 +1,20 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Header from './components/header/Header';
-import HomePage from './pages/home/HomePage';
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import MapPage from './pages/MapPage/MapPage';
+import AdminAddProperty from './pages/admin/AdminAddProperty';
+// другие страницы...
 
 function App() {
   return (
-    <BrowserRouter>
-      <Header />
-
-      <main>
-        <Routes>
-          <Route path="/" element={<HomePage />} />           {/* Hero будет здесь */}
-          {/* <Route path="/catalog" element={<CatalogPage />} /> */}
-          {/* <Route path="/about" element={<AboutPage />} /> */}
-          {/* ... остальные маршруты */}
-        </Routes>
-      </main>
-    </BrowserRouter>
+    <Router>
+      <Routes>
+        <Route path="/" element={<div>Главная страница (добавьте потом)</div>} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/admin/add-property" element={<AdminAddProperty />} />
+        {/* <Route path="/catalog" element={<CatalogPage />} /> */}
+        {/* и т.д. */}
+      </Routes>
+    </Router>
   );
 }
 

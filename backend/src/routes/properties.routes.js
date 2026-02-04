@@ -1,5 +1,8 @@
 const express = require('express');
 const Joi = require('joi');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 const { 
   getAllProperties,
   getPropertyById,
@@ -27,6 +30,52 @@ const { authMiddleware, adminMiddleware } = require('../middleware/auth.middlewa
 
 const router = express.Router();
 
+router.get('/map', async (req, res) => {
+  try {
+    const properties = await prisma.property.findMany({
+      where: {
+        status: "active",               // строка, а не enum
+        latitude: { not: null },
+        longitude: { not: null },
+      },
+      select: {
+        id: true,
+        address: true,
+        price: true,
+        rooms: true,
+        shortDescription: true,
+        latitude: true,
+        longitude: true,
+        images: {
+          where: { isMain: true },
+          take: 1,
+          select: { url: true },
+        },
+      },
+    });
+
+    const mapData = properties.map(p => ({
+      id: p.id,
+      title: `Объект №${p.id}`, // или поле name, если добавите
+      address: p.address || 'Адрес не указан',
+      price: p.price,
+      rooms: p.rooms,
+      shortDescription: p.shortDescription || '',
+      lat: p.latitude,
+      lng: p.longitude,
+      mainImage: p.images[0]?.url || '/images/placeholder.jpg',
+    }));
+
+    res.json({
+      success: true,
+      count: mapData.length,
+      data: mapData,
+    });
+  } catch (err) {
+    console.error('Map error:', err);
+    res.status(500).json({ success: false, message: 'Ошибка сервера' });
+  }
+});
 // Доступны всем (или можно ограничить авторизацией, если нужно)
 router.get('/', validate(queryFilterSchema), getAllProperties);
 router.get('/:id', validateParams(getByIdSchema), getPropertyById);
@@ -79,5 +128,6 @@ router.delete('/:propertyId/images/:imageId',
   ),
   deleteImage
 );
+
 
 module.exports = router;

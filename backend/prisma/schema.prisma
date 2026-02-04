@@ -30,12 +30,6 @@ model HousingType {
   preferences     Preference[]   // ← добавлено для обратной связи
 }
 
-enum PropertyStatus {
-  draft
-  active
-  archived
-}
-
 model Property {
   id                Int            @id @default(autoincrement())
   operation         Operation      @relation(fields: [operationId], references: [id])
@@ -65,7 +59,7 @@ model Property {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
-  status        PropertyStatus   @default(active)
+  status            String         @default("active")   // "draft", "active", "archived"
   archivedAt    DateTime?
 }
 

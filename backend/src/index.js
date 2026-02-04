@@ -63,6 +63,7 @@ app.use('/api/properties', propertyRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/requests', requestsRoutes);
 app.use('/api/user', require('./routes/users.routes'));
+app.use('/api/references', require('./routes/references.routes'));
 // ...
 
 // Тестовый маршрут

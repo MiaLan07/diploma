@@ -34,7 +34,7 @@ Thumbs.db
 backend/generated/
 backend/prisma/generated/
 backend/src/generated/
-#Логи
+# Логи
 backend/logs/
 
 # Редакторы и IDE

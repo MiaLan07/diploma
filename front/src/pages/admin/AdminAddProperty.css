@@ -1,0 +1,56 @@
+.admin-add-property {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+form > div {
+  margin-bottom: 1.2rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.error-message {
+  color: #c62828;
+  background: #ffebee;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+button {
+  background: #2e7d32;
+  color: white;
+  padding: 0.9rem 1.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+button:disabled {
+  background: #81c784;
+  cursor: not-allowed;
+}
+
+span {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.3rem;
+}
