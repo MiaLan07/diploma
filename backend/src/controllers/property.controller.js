@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const fs = require('fs');
 const path = require('path');
+const { geocodeAddress } = require('../utils/geocoder');
 
 const getAllProperties = async (req, res) => {
   try {
@@ -20,7 +21,10 @@ const getAllProperties = async (req, res) => {
 
     const where = { status: 'active' };
     if (req.query.status && req.user?.isAdmin) {
-      where.status = req.query.status;
+      const validStatuses = ['active', 'draft', 'archived'];
+      if (validStatuses.includes(req.query.status)) {
+        where.status = req.query.status;
+      }
     } else if (req.query.includeArchived && req.user?.isAdmin) {
       delete where.status;
     }
@@ -139,23 +143,67 @@ const getPropertyById = async (req, res) => {
 const createProperty = async (req, res) => {
   try {
     const data = req.body;
-    const userId = req.user.id; // из authMiddleware
+    const { address } = req.body;
+    if (address && (!data.latitude || !data.longitude)) {  // если координаты не заданы вручную
+      const { lat, lng } = await geocodeAddress(address);
+      if (lat && lng) {
+        propertyData.latitude = lat;
+        propertyData.longitude = lng;
+      }
+    }
 
-    // Можно добавить поле ownerId в модель Property позже,
-    // если хочешь привязывать объявления к конкретному пользователю
-    // пока просто создаём от имени авторизованного
+    const propertyData = {
+      operationId:     Number(data.operationId),     // обязательно
+      propertyTypeId:  Number(data.propertyTypeId),  // обязательно
+      housingTypeId:   data.housingTypeId ? Number(data.housingTypeId) : null,
+      price:           data.price ? Number(data.price) : undefined,          // или new Prisma.Decimal если вернёшь Decimal
+      area:            data.area  ? Number(data.area)  : undefined,
+      rooms:           data.rooms ? Number(data.rooms) : null,
+      floor:           data.floor ? Number(data.floor) : null,     // ← вот здесь была проблема
+      latitude:        data.latitude  ? Number(data.latitude)  : undefined,
+      longitude:       data.longitude ? Number(data.longitude) : undefined,
+      condition:       data.condition || null,
+      parking:         data.parking   || null,
+      hasElevator:     data.hasElevator === 'true' || data.hasElevator === true || null,
+      yearBuilt:       data.yearBuilt ? Number(data.yearBuilt) : null,
+      shortDescription: data.shortDescription || null,
+      fullDescription:  data.fullDescription  || null,
+      address:         data.address || null,
+      status:          data.status || 'active',  // или 'active' — как хочешь по умолчанию
+    };
+
+    // Проверка на NaN (если пользователь ввёл не число)
+    if (
+      isNaN(propertyData.operationId) ||
+      isNaN(propertyData.propertyTypeId) ||
+      (propertyData.housingTypeId !== null && isNaN(propertyData.housingTypeId)) ||
+      (propertyData.price !== undefined && isNaN(propertyData.price)) ||
+      (propertyData.area !== undefined && isNaN(propertyData.area)) ||
+      (propertyData.rooms !== null && isNaN(propertyData.rooms)) ||
+      (propertyData.floor !== null && isNaN(propertyData.floor)) ||
+      (propertyData.latitude !== undefined && isNaN(propertyData.latitude)) ||
+      (propertyData.longitude !== undefined && isNaN(propertyData.longitude))
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Некоторые числовые поля содержат некорректные значения'
+      });
+    }
 
     const newProperty = await prisma.property.create({
-      data: {
-        ...data,
-        price: data.price ? new Prisma.Decimal(data.price) : undefined,
-        area:  data.area  ? new Prisma.Decimal(data.area)  : undefined,
-        latitude:  data.latitude  ? new Prisma.Decimal(data.latitude)  : undefined,
-        longitude: data.longitude ? new Prisma.Decimal(data.longitude) : undefined,
-        status: req.body.status || 'draft',
-        // ownerId: userId,   // ← раскомментировать после добавления поля в schema.prisma
-      },
+      data: propertyData,
     });
+
+    if (req.files?.length > 0) {
+      const hasMain = false; // или проверь в БД
+      const imageRecords = req.files.map((file, idx) => ({
+        propertyId: newProperty.id,
+        url: `/uploads/properties/${file.filename}`,
+        isMain: !hasMain && idx === 0,
+      }));
+
+      await prisma.propertyImage.createMany({ data: imageRecords });
+    }
 
     res.status(201).json({
       success: true,
@@ -174,14 +222,51 @@ const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
+    const { address } = req.body;
+    if (address && (!data.latitude || !data.longitude)) {  // если координаты не заданы вручную
+      const { lat, lng } = await geocodeAddress(address);
+      if (lat && lng) {
+        updateData.latitude = lat;
+        updateData.longitude = lng;
+      }
+    }
 
     const updateData = {
-      ...data,
-      price:     data.price     !== undefined ? new Prisma.Decimal(data.price)     : undefined,
-      area:      data.area      !== undefined ? new Prisma.Decimal(data.area)      : undefined,
-      latitude:  data.latitude  !== undefined ? new Prisma.Decimal(data.latitude)  : undefined,
-      longitude: data.longitude !== undefined ? new Prisma.Decimal(data.longitude) : undefined,
+      operationId:     data.operationId     ? Number(data.operationId)     : undefined,
+      propertyTypeId:  data.propertyTypeId  ? Number(data.propertyTypeId)  : undefined,
+      housingTypeId:   data.housingTypeId   ? Number(data.housingTypeId)   : undefined,
+      price:           data.price           ? Number(data.price)           : undefined,
+      area:            data.area            ? Number(data.area)            : undefined,
+      rooms:           data.rooms           ? Number(data.rooms)           : undefined,
+      floor:           data.floor           ? Number(data.floor)           : undefined,
+      latitude:        data.latitude        ? Number(data.latitude)        : undefined,
+      longitude:       data.longitude       ? Number(data.longitude)       : undefined,
+      condition:       data.condition       !== undefined ? data.condition       : undefined,
+      parking:         data.parking         !== undefined ? data.parking         : undefined,
+      hasElevator:     data.hasElevator     !== undefined ? (data.hasElevator === 'true' || data.hasElevator === true) : undefined,
+      yearBuilt:       data.yearBuilt       ? Number(data.yearBuilt)       : undefined,
+      shortDescription: data.shortDescription !== undefined ? data.shortDescription : undefined,
+      fullDescription:  data.fullDescription  !== undefined ? data.fullDescription  : undefined,
+      address:         data.address         !== undefined ? data.address         : undefined,
+      status:          data.status          !== undefined ? data.status          : undefined,
     };
+
+    if (
+      isNaN(updateData.operationId) ||
+      isNaN(updateData.propertyTypeId) ||
+      (updateData.housingTypeId !== null && isNaN(updateData.housingTypeId)) ||
+      (updateData.price !== undefined && isNaN(updateData.price)) ||
+      (updateData.area !== undefined && isNaN(updateData.area)) ||
+      (updateData.rooms !== null && isNaN(updateData.rooms)) ||
+      (updateData.floor !== null && isNaN(updateData.floor)) ||
+      (updateData.latitude !== undefined && isNaN(updateData.latitude)) ||
+      (updateData.longitude !== undefined && isNaN(updateData.longitude))
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Некоторые числовые поля содержат некорректные значения'
+      });
+    }
 
     const updated = await prisma.property.update({
       where: { id: Number(id) },
@@ -239,19 +324,17 @@ const archiveProperty = async (req, res, next) => {
   }
 };
 
-const restoreProperty = async (req, res, next) => {
+const restoreProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const property = await prisma.property.update({
       where: { id: Number(id) },
-      data: {
-        isArchived: false,
-        archivedAt: null
-      }
+      data: { status: 'active' }
     });
-    res.json({ success: true, message: 'Объект восстановлен из архива', data: property });
+    res.json({ success: true, message: 'Объект восстановлен', data: property });
   } catch (err) {
-    next(err);
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Ошибка восстановления' });
   }
 };
 

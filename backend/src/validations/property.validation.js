@@ -87,8 +87,6 @@ module.exports = {
   createPropertySchema,
   updatePropertySchema,
   queryFilterSchema,
-  createPropertySchema,
-  updatePropertySchema,
   getByIdSchema,
   validateParams,
   validate: (schema) => (req, res, next) => {

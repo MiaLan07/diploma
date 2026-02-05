@@ -32,9 +32,11 @@ const router = express.Router();
 
 router.get('/map', async (req, res) => {
   try {
+    console.log('Запрос на /map начат');
+
     const properties = await prisma.property.findMany({
       where: {
-        status: "active",               // строка, а не enum
+        status: 'active',
         latitude: { not: null },
         longitude: { not: null },
       },
@@ -54,17 +56,22 @@ router.get('/map', async (req, res) => {
       },
     });
 
-    const mapData = properties.map(p => ({
-      id: p.id,
-      title: `Объект №${p.id}`, // или поле name, если добавите
-      address: p.address || 'Адрес не указан',
-      price: p.price,
-      rooms: p.rooms,
-      shortDescription: p.shortDescription || '',
-      lat: p.latitude,
-      lng: p.longitude,
-      mainImage: p.images[0]?.url || '/images/placeholder.jpg',
-    }));
+    console.log(`Найдено объектов: ${properties.length}`);
+
+    const mapData = properties.map(p => {
+      console.log(`Обработка объекта ${p.id}: lat=${p.latitude}, lng=${p.longitude}`);
+      return {
+        id: p.id,
+        title: `Объект №${p.id}`,
+        address: p.address || 'Адрес не указан',
+        price: p.price,
+        rooms: p.rooms,
+        shortDescription: p.shortDescription || '',
+        lat: Number(p.latitude),   // ← принудительно в number
+        lng: Number(p.longitude),
+        mainImage: p.images[0]?.url || '/images/placeholder.jpg',
+      };
+    });
 
     res.json({
       success: true,
@@ -72,8 +79,13 @@ router.get('/map', async (req, res) => {
       data: mapData,
     });
   } catch (err) {
-    console.error('Map error:', err);
-    res.status(500).json({ success: false, message: 'Ошибка сервера' });
+    console.error('Map route error:', err);
+    console.error('Stack:', err.stack);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Ошибка при загрузке карты',
+      error: err.message 
+    });
   }
 });
 // Доступны всем (или можно ограничить авторизацией, если нужно)
@@ -84,6 +96,7 @@ router.get('/:id', validateParams(getByIdSchema), getPropertyById);
 router.post('/',
   authMiddleware,
   adminMiddleware,
+  uploadMultiple,
   validate(createPropertySchema),
   createProperty
 );
