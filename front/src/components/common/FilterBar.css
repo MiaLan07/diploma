@@ -1,0 +1,84 @@
+/* src/components/FilterBar.css */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;                /* важно для responsivity */
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  padding: 12px 20px;
+  border-radius: 9999px;          /* более мягкий радиус */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 1180px;
+  margin: -60px auto 0;           /* поднимаем над нижней частью hero */
+  position: relative;
+  z-index: 10;                    /* чтобы форма была поверх фона */
+  pointer-events: auto;           /* явно разрешаем события */
+}
+
+.filter-item {
+  margin: 6px 8px;
+  padding: 0;                     /* убираем внутренний padding у контейнера */
+  border: 1px solid #D2D2D2;
+  border-radius: 9999px;
+  background: white;
+  overflow: hidden;               /* чтобы скругление применилось к детям */
+  pointer-events: auto;
+  transition: all 0.2s ease;
+}
+
+.filter-item select,
+.filter-item input {
+  width: 100%;
+  height: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: #333;
+  outline: none;
+  appearance: none;               /* убираем стандартную стрелку у select */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+/* Стрелка для select */
+.filter-item:has(select)::after {
+  content: '▼';
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  color: #777;
+  font-size: 11px;
+}
+
+/* Для инпутов с плейсхолдером */
+.filter-item input::placeholder {
+  color: #aaa;
+}
+
+/* hover-эффект */
+.filter-item:hover {
+  border-color: #43AB9D;
+  box-shadow: 0 0 0 3px rgba(67, 171, 157, 0.15);
+}
+
+.search-button {
+  background: #43AB9D;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  margin: 6px 8px;
+}
+
+.search-button:hover {
+  background: #38947f;
+  transform: translateY(-1px);
+}
