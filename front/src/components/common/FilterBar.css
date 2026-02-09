@@ -3,24 +3,24 @@
 .filter-bar {
   display: flex;
   flex-wrap: wrap;                /* важно для responsivity */
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   background-color: white;
-  padding: 12px 20px;
-  border-radius: 9999px;          /* более мягкий радиус */
+  padding: 24px 32px;
+  border-radius: 25px 25px 0 0;          /* более мягкий радиус */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  max-width: 1180px;
-  margin: -60px auto 0;           /* поднимаем над нижней частью hero */
+  bottom: 0;
   position: relative;
   z-index: 10;                    /* чтобы форма была поверх фона */
-  pointer-events: auto;           /* явно разрешаем события */
+  pointer-events: auto;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 24px;
 }
 
 .filter-item {
-  margin: 6px 8px;
-  padding: 0;                     /* убираем внутренний padding у контейнера */
   border: 1px solid #D2D2D2;
-  border-radius: 9999px;
+  border-radius: 18px;
   background: white;
   overflow: hidden;               /* чтобы скругление применилось к детям */
   pointer-events: auto;
@@ -41,16 +41,6 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   cursor: pointer;
-}
-
-/* Стрелка для select */
-.filter-item:has(select)::after {
-  content: '▼';
-  position: absolute;
-  right: 12px;
-  pointer-events: none;
-  color: #777;
-  font-size: 11px;
 }
 
 /* Для инпутов с плейсхолдером */

@@ -1,0 +1,163 @@
+/* src/components/Header.css */
+.site-header {
+  background: white;
+  border-bottom: 1px solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 15px 64px
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #000;
+}
+
+.logo-icon {
+  font-size: 32px;
+  margin-right: 10px;
+  line-height: 1;
+  width: 50px;
+  aspect-ratio: 1/1;
+}
+
+.logo-text {
+  font-size: 32px;
+  margin-bottom: -0.2em;
+  font-family: 'Novelist';
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav__list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 2.2rem;
+}
+
+.nav__link {
+  color: #898989;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+  padding: 4px;
+  box-sizing: border-box;
+  border: none;
+}
+
+.nav__link:hover,
+.nav__link--active {
+  color: #000;
+  border-bottom: 2px solid var(--accent-dark);
+}
+
+.header__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-under {
+  color: black;
+}
+.btn-under:hover {
+  font-weight: 800;
+  color: var(--accent-dark);
+  text-decoration: none;
+}
+
+/* Мобильное меню */
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.burger span {
+  width: 26px;
+  height: 3px;
+  background: #333;
+  transition: all 0.3s;
+}
+
+.burger--active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.burger--active span:nth-child(2) {
+  opacity: 0;
+}
+.burger--active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Медиа-запрос для мобильных */
+@media (max-width: 992px) {
+  .burger {
+    display: flex;
+  }
+
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+  }
+
+  .nav--active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .nav__list {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .header__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
