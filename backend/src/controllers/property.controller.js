@@ -143,25 +143,31 @@ const getPropertyById = async (req, res) => {
 const createProperty = async (req, res) => {
   try {
     const data = req.body;
-    const { address } = req.body;
-    if (address && (!data.latitude || !data.longitude)) {  // если координаты не заданы вручную
-      const { lat, lng } = await geocodeAddress(address);
-      if (lat && lng) {
-        propertyData.latitude = lat;
-        propertyData.longitude = lng;
+    let latitude = null;
+    let longitude = null;
+
+    // Всегда геокодируем
+    if (data.address?.trim()) {
+      const geo = await geocodeAddress(data.address.trim());
+      if (geo.latitude !== null && geo.longitude !== null) {
+        latitude = geo.latitude;
+        longitude = geo.longitude;
+        console.log(`Геокодировано: ${data.address} → ${latitude}, ${longitude} (точность: ${geo.precision})`);
+      } else {
+        console.warn(`Не удалось геокодировать: ${data.address}`);
       }
     }
 
     const propertyData = {
-      operationId:     Number(data.operationId),     // обязательно
-      propertyTypeId:  Number(data.propertyTypeId),  // обязательно
+      operationId:     Number(data.operationId),
+      propertyTypeId:  Number(data.propertyTypeId),
       housingTypeId:   data.housingTypeId ? Number(data.housingTypeId) : null,
-      price:           data.price ? Number(data.price) : undefined,          // или new Prisma.Decimal если вернёшь Decimal
-      area:            data.area  ? Number(data.area)  : undefined,
-      rooms:           data.rooms ? Number(data.rooms) : null,
-      floor:           data.floor ? Number(data.floor) : null,     // ← вот здесь была проблема
-      latitude:        data.latitude  ? Number(data.latitude)  : undefined,
-      longitude:       data.longitude ? Number(data.longitude) : undefined,
+      price:           data.price     ? Number(data.price)     : undefined,
+      area:            data.area      ? Number(data.area)      : undefined,
+      rooms:           data.rooms     ? Number(data.rooms)     : null,
+      floor:           data.floor     ? Number(data.floor)     : null,
+      latitude,        // используем вычисленное значение
+      longitude,       // используем вычисленное значение
       condition:       data.condition || null,
       parking:         data.parking   || null,
       hasElevator:     data.hasElevator === 'true' || data.hasElevator === true || null,
@@ -169,7 +175,7 @@ const createProperty = async (req, res) => {
       shortDescription: data.shortDescription || null,
       fullDescription:  data.fullDescription  || null,
       address:         data.address || null,
-      status:          data.status || 'active',  // или 'active' — как хочешь по умолчанию
+      status:          'active',
     };
 
     // Проверка на NaN (если пользователь ввёл не число)
@@ -180,9 +186,7 @@ const createProperty = async (req, res) => {
       (propertyData.price !== undefined && isNaN(propertyData.price)) ||
       (propertyData.area !== undefined && isNaN(propertyData.area)) ||
       (propertyData.rooms !== null && isNaN(propertyData.rooms)) ||
-      (propertyData.floor !== null && isNaN(propertyData.floor)) ||
-      (propertyData.latitude !== undefined && isNaN(propertyData.latitude)) ||
-      (propertyData.longitude !== undefined && isNaN(propertyData.longitude))
+      (propertyData.floor !== null && isNaN(propertyData.floor))
     ) {
       return res.status(400).json({
         success: false,
@@ -190,9 +194,7 @@ const createProperty = async (req, res) => {
       });
     }
 
-    const newProperty = await prisma.property.create({
-      data: propertyData,
-    });
+    const newProperty = await prisma.property.create({ data: propertyData });
 
     if (req.files?.length > 0) {
       const hasMain = false; // или проверь в БД
@@ -222,12 +224,16 @@ const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    const { address } = req.body;
-    if (address && (!data.latitude || !data.longitude)) {  // если координаты не заданы вручную
-      const { lat, lng } = await geocodeAddress(address);
-      if (lat && lng) {
-        updateData.latitude = lat;
-        updateData.longitude = lng;
+    let latitude = null;
+    let longitude = null;
+    if (data.address && (!data.latitude || !data.longitude || isNaN(Number(data.latitude)) || isNaN(Number(data.longitude)))) {
+      const geo = await geocodeAddress(data.address.trim());
+      if (geo.latitude !== null && geo.longitude !== null) {
+        latitude = geo.latitude;
+        longitude = geo.longitude;
+        console.log(`Геокодировано: ${data.address} → ${latitude}, ${longitude} (точность: ${geo.precision})`);
+      } else {
+        console.warn(`Не удалось геокодировать: ${data.address}`);
       }
     }
 

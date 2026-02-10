@@ -17,8 +17,6 @@ const schema = yup.object({
   address: yup.string().trim().required('Укажите адрес'),
   shortDescription: yup.string().trim().max(500),
   fullDescription: yup.string().trim().max(5000),
-  latitude: yup.number().required('Укажите широту').min(-90).max(90).nullable(),
-  longitude: yup.number().required('Укажите долготу').min(-180).max(180).nullable(),
 }).required();
 
 const AdminAddProperty = () => {
@@ -51,8 +49,6 @@ const AdminAddProperty = () => {
       address: '',
       shortDescription: '',
       fullDescription: '',
-      latitude: 44.95,
-      longitude: 34.10,
     },
   });
 
@@ -237,18 +233,6 @@ const AdminAddProperty = () => {
         <div>
           <label>Полное описание</label>
           <textarea {...register('fullDescription')} rows={6} />
-        </div>
-
-        <div>
-          <label>Широта (latitude) *</label>
-          <input type="number" step="any" {...register('latitude')} disabled/>
-          {errors.latitude && <span>{errors.latitude.message}</span>}
-        </div>
-
-        <div>
-          <label>Долгота (longitude) *</label>
-          <input type="number" step="any" {...register('longitude')} disabled/>
-          {errors.longitude && <span>{errors.longitude.message}</span>}
         </div>
 
         <div>
