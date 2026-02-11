@@ -1,6 +1,7 @@
 // src/components/FilterBar.jsx
 import React, { useState } from 'react';
 import './FilterBar.css';
+import { ReactComponent as MapIcon } from '../../assets/map1.svg'
 
 const FilterBar = () => {
   const [filters, setFilters] = useState({
@@ -51,47 +52,50 @@ const FilterBar = () => {
         </select>
       </div>
 
-      <div className="filter-item">
-        <input
-          type="number"
-          name="priceFrom"
-          placeholder="₽ от"
-          value={filters.priceFrom}
-          onChange={handleChange}
-        />
+      <div className='filter-item container'>
+        <div className="filter-item inner">
+          <input
+            type="number"
+            name="priceFrom"
+            placeholder="₽ от"
+            value={filters.priceFrom}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="filter-item inner">
+          <input
+            type="number"
+            name="priceTo"
+            placeholder="₽ до"
+            value={filters.priceTo}
+            onChange={handleChange}
+          />
+        </div>
       </div>
 
-      <div className="filter-item">
-        <input
-          type="number"
-          name="priceTo"
-          placeholder="₽ до"
-          value={filters.priceTo}
-          onChange={handleChange}
-        />
-      </div>
+      <div className='filter-item container'>
+        <div className="filter-item inner">
+          <input
+            type="number"
+            name="areaFrom"
+            placeholder="м² от"
+            value={filters.areaFrom}
+            onChange={handleChange}
+          />
+        </div>
 
-      <div className="filter-item">
-        <input
-          type="number"
-          name="areaFrom"
-          placeholder="м² от"
-          value={filters.areaFrom}
-          onChange={handleChange}
-        />
+        <div className="filter-item inner">
+          <input
+            type="number"
+            name="areaTo"
+            placeholder="м² до"
+            value={filters.areaTo}
+            onChange={handleChange}
+          />
+        </div>
       </div>
-
-      <div className="filter-item">
-        <input
-          type="number"
-          name="areaTo"
-          placeholder="м² до"
-          value={filters.areaTo}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="filter-item" style={{ flex: '1 1 240px', minWidth: '240px' }}>
+      <div className="filter-item long-input">
         <input
           type="text"
           name="query"
@@ -99,6 +103,16 @@ const FilterBar = () => {
           value={filters.query}
           onChange={handleChange}
         />
+      </div>
+
+      <div className='link-item catalog'>
+        <a href='/catalog'>Все фильтры</a>
+      </div>
+
+      <div className='link-item map'>
+        <a href='/map'>
+          <MapIcon width="25" height="25" className='map-icon' strokeWidth={15} />
+        </a>
       </div>
 
       <button className="search-button" onClick={handleSearch}>

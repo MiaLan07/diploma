@@ -7,7 +7,6 @@ const path = require('path');
 const { PORT } = require('./config');
 const errorHandler = require('./middleware/error.middleware');
 
-// Импортируем роуты (пока только заглушки — добавим позже)
 const authRoutes = require('./routes/auth.routes');
 const propertyRoutes = require('./routes/properties.routes');
 const favoritesRoutes = require('./routes/favorites.routes');
@@ -50,6 +49,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Статические файлы (фото недвижимости)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+app.use('/images', express.static(path.join(__dirname, '../images')));
+
 // Swagger
 const swaggerDocument = YAML.load(path.join(__dirname, 'swagger/swagger.yaml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
@@ -76,11 +77,11 @@ app.use((req, res) => {
   res.status(404).json({ success: false, error: 'Маршрут не найден' });
 });
 
-// Глобальный обработчик ошибок (должен быть последним!)
+// Глобальный обработчик ошибок
 app.use(errorHandler);
 
 // Запуск
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
-  console.log(`Swagger UI → http://localhost:${PORT}/api-docs`);
+  console.log(`Swagger UI - http://localhost:${PORT}/api-docs`);
 });

@@ -3,7 +3,7 @@
   /* background-image: url('path/to/background-image.jpg'); Замените на реальный путь к изображению (из assets или URL) */
   background-size: cover;
   background-position: center;
-  height: 90vh;
+  height: 85vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -48,6 +48,7 @@
   border-radius: 50px;
   cursor: pointer;
   font-size: 18px;
+  text-transform: uppercase;
 }
 
 .hero-button:hover {

@@ -1,6 +1,8 @@
 :root {
   --accent-light: #6AD2C4;
   --accent-dark: #185245;
+  --accent-filters: #43AB9D;
+  --gray-border: #D2D2D2;
 }
 * {
   font-family: 'Inter';

@@ -3,11 +3,11 @@
 .filter-bar {
   display: flex;
   flex-wrap: wrap;                /* важно для responsivity */
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   background-color: white;
   padding: 24px 32px;
-  border-radius: 25px 25px 0 0;          /* более мягкий радиус */
+  border-radius: 25px 25px 0 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   bottom: 0;
   position: relative;
@@ -19,12 +19,49 @@
 }
 
 .filter-item {
-  border: 1px solid #D2D2D2;
-  border-radius: 18px;
+  border: 1px solid var(--accent-filters);
+  border-radius: 15px;
   background: white;
-  overflow: hidden;               /* чтобы скругление применилось к детям */
-  pointer-events: auto;
+  overflow: hidden;
   transition: all 0.2s ease;
+  width: 215px;
+  box-sizing: border-box;
+}
+.filter-item.container {
+  border: none;
+  background: none;
+  display: flex;
+  gap: 24px;                  /* расстояние между "от" и "до" */
+  padding: 0;                 /* убираем любой внутренний отступ */
+  margin: 0;
+  pointer-events: none;
+  flex: 0 1 284px;
+}
+.filter-item.inner {
+  width: 130px;
+  border: 1px solid var(--accent-filters);
+  border-radius: 15px;
+  background: white;
+  overflow: hidden;
+  padding: 10px 16px;
+  pointer-events: all;
+}
+.filter-item.inner input,
+.filter-item.inner select {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: #333;
+  outline: none;
+}
+.filter-item.inner:hover {
+  border-color: #43AB9D;
+  box-shadow: 0 0 0 3px rgba(67, 171, 157, 0.15);
+}
+.filter-item.long-input {
+  width: calc(215px*2 + 24px);
 }
 
 .filter-item select,
@@ -55,20 +92,51 @@
 }
 
 .search-button {
+  width: calc((130px*2) + 24px);
+  box-sizing: border-box;
+
   background: #43AB9D;
   color: white;
   border: none;
   padding: 12px 28px;
-  border-radius: 9999px;
+  border-radius: 25px;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
-  margin: 6px 8px;
+  text-transform: uppercase;
 }
 
 .search-button:hover {
   background: #38947f;
   transform: translateY(-1px);
+}
+
+.link-item {
+  border: 2px solid var(--gray-border);
+  padding: 10px 16px;
+  border-radius: 15px;
+  margin: 0;
+  box-sizing: border-box;
+}
+.link-item a {
+  text-decoration: none;
+  color: black;
+  text-transform: uppercase;
+}
+.link-item.catalog {
+  width: calc(215px + 24px + 130px);
+}
+.link-item.map {
+  width: 130px;
+}
+.map-icon {
+  stroke: black;
+  fill: none;
+  transition: all 0.2s;
+}
+
+.map-icon:hover {
+  transform: scale(1.15);
 }
