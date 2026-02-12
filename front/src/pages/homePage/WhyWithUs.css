@@ -1,0 +1,80 @@
+/* src/components/WhyWithUs.css */
+.why-with-us {
+  padding: 32px 64px;
+}
+
+.advantages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin-bottom: 64px;
+}
+
+.advantage-card {
+  flex: 1 1 calc((100% - 32px) / 2);
+  max-width: 100%;                    /* ограничитель, чтобы не растягивалось слишком сильно */
+  min-width: 320px;
+  background: white;
+  padding: 10px 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  border-top: 3px solid var(--accent-dark);
+}
+
+.advantage-card:hover {
+  border: 0.5px solid color-mix(in srgb, var(--accent-dark) 50%, transparent);
+  border-top: 3px solid var(--accent-dark);
+}
+
+.advantage-icon {
+  font-size: 48px;
+  margin-bottom: 24px;
+  color: #43AB9D;
+  opacity: 0.9;
+}
+
+.advantage-card h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.advantage-card p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+}
+
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .advantages-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .section-title {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .why-with-us {
+    padding: 60px 16px;
+  }
+
+  .section-title {
+    font-size: 32px;
+    margin-bottom: 48px;
+  }
+
+  .advantage-card {
+    padding: 32px 24px;
+  }
+}

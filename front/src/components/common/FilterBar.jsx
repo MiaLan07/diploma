@@ -102,6 +102,7 @@ const FilterBar = () => {
           placeholder="Город, район, улица, ЖК..."
           value={filters.query}
           onChange={handleChange}
+          className="filter-item"
         />
       </div>
 
@@ -111,7 +112,7 @@ const FilterBar = () => {
 
       <div className='link-item map'>
         <a href='/map'>
-          <MapIcon width="25" height="25" className='map-icon' strokeWidth={15} />
+          <MapIcon width="30" height="30" className='map-icon' strokeWidth={15} />
         </a>
       </div>
 

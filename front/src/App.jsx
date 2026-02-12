@@ -2,8 +2,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MapPage from './pages/MapPage/MapPage';
 import AdminAddProperty from './pages/admin/AdminAddProperty';
-import HeroPage from './pages/homePage/HeroPage';
 import Header from './components/ui/Header';
+import HomePage from './pages/homePage/HomePage';
 // другие страницы...
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
     <Router>
       <Header/>
       <Routes>
-        <Route path="/" element={<HeroPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/admin/add-property" element={<AdminAddProperty />} />
         {/* <Route path="/catalog" element={<CatalogPage />} /> */}

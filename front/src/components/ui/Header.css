@@ -82,6 +82,7 @@
 
 .btn-under {
   color: black;
+  transition: all 0.5s;
 }
 .btn-under:hover {
   font-weight: 800;

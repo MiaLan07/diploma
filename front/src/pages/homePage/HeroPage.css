@@ -44,15 +44,16 @@
   background-color: #43AB9D;
   color: white;
   border: none;
-  padding: 15px 30px;
+  padding: 21px 71px;
   border-radius: 50px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   text-transform: uppercase;
 }
 
 .hero-button:hover {
-  background-color: #389080;
+  box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
 }
 span.accent {
   font-family: 'Novelist';
