@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ConsultationBlock.css';
+import { ReactComponent as MessageIcon } from '../../assets/message2.svg'
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -96,7 +97,12 @@ const ConsultationBlock = () => {
               </div>
 
               <button type="submit" className="submit-btn">
-                КОНСУЛЬТАЦИЯ <span className="icon">→</span>
+                <p>
+                  КОНСУЛЬТАЦИЯ
+                </p>
+                <div className='icon-btn'>
+                  <MessageIcon width={35} height={35} />
+                </div>
               </button>
 
               {status === 'success' && (

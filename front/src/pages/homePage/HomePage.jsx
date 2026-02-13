@@ -3,6 +3,7 @@ import HeroPage from './HeroPage'
 import ServicesSlider from '../../components/common/ServicesSlider'
 import WhyWithUs from './WhyWithUs'
 import ConsultationBlock from './ConsultationBlock'
+import AboutCompany from './AboutCompany'
 
 const HomePage = () => {
     return (<>
@@ -10,6 +11,7 @@ const HomePage = () => {
         <ServicesSlider/>
         <WhyWithUs />
         <ConsultationBlock />
+        <AboutCompany />
     </>)
 }
 

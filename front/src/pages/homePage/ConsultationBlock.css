@@ -42,16 +42,8 @@
 .consultation-form h2 {
   font-size: 36px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1;
   margin: 0;
-}
-
-.highlight {
-  color: #fff;
-  background: linear-gradient(90deg, #43AB9D, #2e8b7a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .form-group {
@@ -76,6 +68,10 @@
   outline: none;
   transition: border-color 0.3s;
 }
+h2 .accent {
+  color: white;
+  font-size: 44px;
+}
 
 .form-group input:focus {
   border-bottom-color: #fff;
@@ -85,32 +81,49 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.submit-btn p {
+  margin: 0;
+  padding: 12px;
+  color: white;
+  font-size: 36px;
+  font-weight: 400;
+  font-family: 'Novelist';
+  margin-bottom: -5px;
+  transition: all 0.5s;
+}
+
 .submit-btn {
-  width: 100%;
-  padding: 18px;
-  background: white;
-  color: #1e4d45;
+  width: min-content;
+  padding: 4px 6px;
+  background: var(--accent-filters);
   border: none;
   border-radius: 12px;
   font-size: 18px;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.submit-btn:hover {
-  background: #f0f0f0;
-  transform: translateY(-2px);
+.submit-btn:hover p {
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
-.icon {
-  font-size: 22px;
+.icon-btn {
+  height: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  aspect-ratio: 1 / 1 auto;
+  background: rgba(255, 255, 255, 0.4);
+  box-sizing: border-box;
+  transition: all 0.5s;
+}
+.submit-btn:hover .icon-btn {
+  padding: 12px 18px;
 }
 
 .status {
