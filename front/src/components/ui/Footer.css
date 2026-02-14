@@ -1,0 +1,177 @@
+.footer-contact {
+  background: #252525;
+  color: #d1d5db;
+}
+
+.footer-contact-container {
+  display: grid;
+  grid-template-columns: minmax(380px, 1fr) 1fr minmax(0px, 420px);
+  max-width: 1600px;
+  margin: 0 auto;
+  gap: 40px;
+  padding: 60px 40px 40px;
+}
+
+/* Карта слева */
+.footer-map-column {
+  position: relative;
+}
+
+.map-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.footer-map {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-overlay {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.logo-overlay span {
+  color: white;
+  font-size: 48px;
+  margin-bottom: -10px;
+  font-weight: 500;
+  font-family: 'Novelist';
+}
+
+/* Средняя колонка — контакты + копирайт */
+.footer-info-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.contact-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.contact-item {
+  display: flex;
+  gap: 20px;
+}
+
+.label {
+  min-width: 100px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.value {
+  color: white;
+  line-height: 1.45;
+}
+
+.phone {
+  color: var(--accent-light);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.email {
+  color: var(--accent-light);
+  text-decoration: none;
+}
+
+.small {
+  font-size: 0.92rem;
+  color: #94a3b8;
+  display: block;
+  margin-top: 4px;
+}
+
+.schedule {
+  line-height: 1.55;
+}
+
+/* Копирайт и ссылки */
+.footer-meta {
+  margin-top: 2rem;
+}
+
+.copyright,
+.developer {
+  font-size: 0.92rem;
+  color: #94a3b8;
+  margin: 6px 0;
+}
+
+.footer-links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 28px;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.footer-links-row a {
+  color: #a0a0a0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links-row a:hover {
+    color: var(--accent-light);
+}
+
+.footer-contact .form-group input,
+.footer-contact .form-group textarea {
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+}
+.footer-contact .form-group input::placeholder,
+.footer-contact .form-group textarea::placeholder {
+  color: white;
+}
+
+/* Адаптив */
+@media (max-width: 1200px) {
+  .footer-contact-container {
+    grid-template-columns: 320px 1fr minmax(300px, 380px);
+    gap: 32px;
+    padding: 50px 32px 32px;
+  }
+}
+
+@media (max-width: 992px) {
+  .footer-contact-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .footer-form-column {
+    order: 3;
+  }
+
+  .footer-map-column {
+    height: 420px;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-contact-container {
+    padding: 40px 20px 24px;
+  }
+
+  .footer-logo-overlay {
+    top: 20px;
+    left: 20px;
+  }
+
+  .form-title {
+    font-size: 1.7rem;
+  }
+}

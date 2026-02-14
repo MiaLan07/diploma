@@ -23,11 +23,18 @@ app.use(helmet());
 
 // Rate limiting (особенно важно для auth-роутов)
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 минут
-  max: 5,                  // лимит 5 запросов
-  message: { success: false, message: 'Слишком много попыток. Попробуйте позже.' },
+  windowMs: 10 * 60 * 1000,     // 10 минут
+  max: 20,                      // 20 попыток (достаточно для тестов и реального использования)
+  message: { success: false, message: 'Слишком много попыток. Попробуйте снова через 10 минут.' },
   standardHeaders: true,
   legacyHeaders: false,
+  // Важно для разработки — пропускаем лимит при запуске локально с флагом
+  skip: (req) => process.env.NODE_ENV === 'development' && req.ip === '::1',
+});
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,   // 1 час
+  max: 8,
+  message: { success: false, message: 'Слишком много регистраций. Попробуйте позже.' },
 });
 
 const generalLimiter = rateLimit({
@@ -37,7 +44,7 @@ const generalLimiter = rateLimit({
 
 // Применяем
 app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/register', registerLimiter);      // отдельный, более строгий лимит
 app.use('/api/auth/forgot-password', authLimiter);
 app.use(generalLimiter); // глобально, но слабее
 

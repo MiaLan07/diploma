@@ -1,0 +1,148 @@
+/* src/components/ReviewsSlider.css */
+
+.reviews-section-wrapper {
+  width: 100%;
+}
+
+.reviews-section {
+  margin: 32px 64px;
+}
+
+.reviews-embla-viewport {
+  overflow: hidden;
+}
+
+.reviews-embla-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.reviews-embla-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+/* Сетка отзывов внутри одного слайда */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+/* Карточка отзыва */
+.review-card {
+  border: 2px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  padding: 20px 16px;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.review-card:hover {
+  border-color: var(--accent-dark);
+}
+.review-card:hover .review-card-title {
+    color: var(--accent-dark);
+}
+
+.review-card-title {
+  font-size: 1.18rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+  color: #111827;
+}
+
+.review-card-text {
+  font-size: 0.975rem;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Навигация */
+.reviews-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.reviews-arrow {
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reviews-arrow:hover:not(:disabled) {
+  color: var(--accent-dark);
+  transform: scale(1.4);
+}
+
+.reviews-arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.reviews-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.reviews-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: #D9D9D9;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reviews-dot--active {
+  background: var(--accent-dark);
+}
+.reviews-dot:hover {
+    background: var(--accent-dots);
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .reviews-navigation {
+    gap: 20px;
+  }
+
+  .reviews-arrow {
+    width: 44px;
+    height: 44px;
+    font-size: 1.35rem;
+  }
+}

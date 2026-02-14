@@ -1,0 +1,186 @@
+/* src/components/ContactBlock.css */
+
+.contact-section {
+  margin: 32px 64px;
+}
+
+.contact-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.contact-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #065f46; /* тёмно-зелёный, как в твоём дизайне */
+  margin: 0 0 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-subtitle {
+  width: 70%;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 2.5rem;
+}
+
+.contact-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.method-item h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  color: #1f2937;
+}
+
+.phone-link,
+.email-link {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #065f46;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.phone-link:hover,
+.email-link:hover {
+  text-decoration: underline;
+}
+
+.method-desc,
+.address,
+.how-to-get,
+.schedule {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: #4b5563;
+  margin: 0;
+}
+
+.schedule strong.title {
+  color: #1f2937;
+}
+.schedule {
+  margin-top: 10px;
+}
+
+/* Форма */
+.contact-form-wrapper {
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.form-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 2.2rem;
+  line-height: 1.15;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 0;
+}
+
+.form-group input,
+.form-group textarea {
+  color: black;
+  width: 100%;
+  padding: 16px 18px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+  background: transparent;
+  font-size: 1.1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-bottom: 2px solid var(--accent-dark);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: black
+}
+
+/* Ошибки */
+.error {
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  color: #ffcccc;
+  font-size: 0.9rem;
+}
+
+/* Кнопка */
+.submit-btn {
+  width: max-content;
+  background: var(--accent-filters);
+  color: white;
+  border: none;
+  padding: 3px;
+  font-family: 'Novelist';
+  font-size: 24px;
+  font-weight: 400;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 1.5rem;
+  align-self: flex-start;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.submit-btn:disabled {
+  background: #4a6b63;
+  cursor: not-allowed;
+}
+
+.form-hint {
+  font-size: 0.9rem;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+/* Адаптив */
+@media (max-width: 1024px) {
+  .contact-container {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-section {
+    padding: 60px 0;
+  }
+
+  .contact-title {
+    font-size: 2rem;
+  }
+
+  .contact-container {
+    padding: 0 16px;
+  }
+
+  .contact-form-wrapper {
+    padding: 28px 20px;
+  }
+}

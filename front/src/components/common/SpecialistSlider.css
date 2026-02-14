@@ -1,0 +1,75 @@
+/* src/components/SpecialistsSlider.css */
+
+.specialists-slider {
+  margin: 32px 64px;
+  overflow: hidden;
+}
+
+.specialists-slider .embla__container {
+  display: flex;
+
+  min-height: 520px;
+  align-items: stretch;
+}
+
+.embla__slide {
+  flex: 0 0 350px;
+  padding: 0 10px; /* Отступы между карточками */
+  box-sizing: border-box;
+
+  display: flex;
+}
+
+.specialist-card {
+  border: 2px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: left;
+  transition: all 0.5s;
+
+  flex: 1;                    /* ← карточка занимает всю высоту и ширину слайда */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.specialist-card:hover {
+  border: 2px solid var(--accent-dark);
+}
+.specialist-card:hover .specialist-name {
+  color: var(--accent-dark);
+} 
+
+.specialist-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover; /* Обрезка изображения без искажения */
+  border-radius: 8px;
+}
+
+.specialist-name {
+  font-size: 17px; /* Размер шрифта имени */
+  font-weight: bold; /* Жирный шрифт */
+  margin: 0 0 5px;
+}
+
+.specialist-descr {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.specialist-description {
+  flex-grow: 1;               /* описание забирает всё оставшееся место */
+  margin: 0;
+  color: #555;
+  font-size: 15px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .embla__slide {
+    flex: 0 0 80%; /* Более широкие слайды на мобильных */
+  }
+}

@@ -1,13 +1,7 @@
 /* src/components/AboutCompany.css */
-.about-company {
-  padding: 100px 0;
-  background: #f8f9fa;
-}
 
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 32px;
+.about-company {
+  margin: 64px;
 }
 
 .section-title {
@@ -29,7 +23,7 @@
 .content-grid {
   margin: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr;
   gap: 60px;
   align-items: stretch;
 }
