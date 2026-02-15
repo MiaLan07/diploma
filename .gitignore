@@ -9,7 +9,9 @@ node_modules/
 # Билды и сгенерированные файлы
 front/build/
 front/dist/
+front/src/assets
 backend/dist/
+backend/src/create-first-admin.js
 
 # База данных (особенно SQLite)
 *.sqlite

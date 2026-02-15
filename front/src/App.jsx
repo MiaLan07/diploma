@@ -4,8 +4,10 @@ import MapPage from './pages/MapPage/MapPage';
 import AdminAddProperty from './pages/admin/AdminAddProperty';
 import Header from './components/ui/Header';
 import HomePage from './pages/homePage/HomePage';
-import LoginForm from './pages/Auth/LoginForm';
-import RegisterForm from './pages/Auth/RegisterForm';
+import AuthPage from './pages/Auth/AuthPage';
+import ProfilePage from './pages/profilePage/ProfilePage';
+import ForgotPasswordPage from './components/common/ForgotPassword';
+import ResetPasswordPage from './components/common/ResetPassword';
 // другие страницы...
 
 function App() {
@@ -15,9 +17,10 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/map" element={<MapPage />} />
-        <Route path="/admin/add-property" element={<AdminAddProperty />} />
-        <Route path='/login' element={<LoginForm />} />
-        <Route path='/register' element={<RegisterForm />} />
+        <Route path='/auth' element={<AuthPage />} />
+        <Route path='/cabinet' element={<ProfilePage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         {/* <Route path="/catalog" element={<CatalogPage />} /> */}
         {/* и т.д. */}
       </Routes>

@@ -114,7 +114,7 @@
   border-bottom: 2px solid var(--accent-dark);
 }
 
-.form-group input::placeholder,
+.contact-form-wrapper .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: black
 }

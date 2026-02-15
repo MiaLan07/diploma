@@ -19,6 +19,9 @@ const {
 
 const router = express.Router();
 
+router.post('/forgot-password', validateBody(forgotPasswordSchema), forgotPassword);
+router.post('/reset-password',  validateBody(resetPasswordSchema),  resetPassword);
+
 // Защищённые роуты (нужен токен)
 router.use(authMiddleware);
 
@@ -27,7 +30,4 @@ router.post('/email/verify',   validateBody(verifyEmailSchema),   verifyNewEmail
 router.patch('/phone',         validateBody(changePhoneSchema),   changePhone);
 
 // Открытые роуты
-router.post('/forgot-password', validateBody(forgotPasswordSchema), forgotPassword);
-router.post('/reset-password',  validateBody(resetPasswordSchema),  resetPassword);
-
 module.exports = router;

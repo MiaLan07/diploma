@@ -173,7 +173,7 @@ const Footer = ({ backForm = false }) => {
                 <div className="form-group">
                   <textarea
                     placeholder="Комментарий"
-                    rows={2}
+                    rows={1}
                     {...register('comment')}
                   />
                 </div>

@@ -1,0 +1,253 @@
+/*  Общий контейнер секции  */
+.properties-section-wrapper {
+  padding: 24px;
+  width: 100%;
+  border: 1px solid black;
+}
+
+.properties-embla-container {
+  display: flex;
+}
+.properties-embla-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+/*  Сетка карточек (3 в ряд)  */
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 0 10px;
+}
+
+/*  Одна карточка недвижимости  */
+.property-card {
+  padding: 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0,0,0,0.15);
+}
+
+.property-card:hover {
+  border-color: black;
+}
+
+/*  Изображение  */
+.property-image-wrapper {
+  position: relative;
+  height: 220px;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.property-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.property-card:hover .property-image {
+  transform: scale(1.08);
+}
+
+/*  Кнопка избранного */
+.favorite-heart-btn {
+  position: absolute;
+  background: none;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 2;
+}
+
+.favorite-heart-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  transition: all 0.25s ease;
+}
+
+.favorite-heart-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+/*  Контент карточки  */
+.property-content {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.property-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.property-price {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2E7D32;
+  margin: 0 0 8px;
+}
+
+.property-features {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.property-features span {
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+
+.property-address {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 6px;
+}
+
+.property-desc {
+  font-size: 13px;
+  color: #777;
+  line-height: 1.45;
+  margin: 0 0 16px;
+  flex-grow: 1;
+}
+
+/* Кнопки действий */
+.property-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.property-btn {
+  flex: 1;
+  min-width: 120px;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.property-btn:hover {
+  background: #1B5E20;
+}
+
+.remove-favorite-btn {
+  flex: 1;
+  min-width: 120px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.remove-favorite-btn:hover {
+  background: #b71c1c;
+}
+
+/*  Навигация (стрелки + точки)  */
+.properties-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  gap: 24px;
+}
+
+.properties-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #ddd;
+  font-size: 24px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+}
+
+.properties-arrow:hover:not(:disabled) {
+  background: #2E7D32;
+  color: white;
+  border-color: #2E7D32;
+}
+
+.properties-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.properties-dots {
+  display: flex;
+  gap: 12px;
+}
+
+.properties-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d0d0d0;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.properties-dot--active {
+  background: var(--accent-dark);
+  transform: scale(1.3);
+}
+
+/*  Адаптив  */
+@media (max-width: 1024px) {
+  .properties-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .properties-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 28px;
+  }
+}

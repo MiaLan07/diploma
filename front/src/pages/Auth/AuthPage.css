@@ -1,0 +1,203 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.auth-card input,
+.auth-card textarea {
+  width: 100%;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  border-radius: 15px;
+  padding: 10px 16px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+.auth-card input::placeholder,
+.auth-card textarea::placeholder {
+  color: rgba(0,0,0,0.15);
+}
+
+.main-tabs {
+  position: relative;
+  display: flex;
+  margin-bottom: 28px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.main-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 8px;
+  font-size: 20px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-align: center;
+}
+
+.main-tab.active {
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.active-underline {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 50%;
+  height: 2px;
+  background-color: var(--accent-dark);
+  transition: left 0.35s ease;
+}
+
+.tabs,
+.secondary-tabs {
+  display: flex;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  font-weight: 500;
+  font-size: 15px;
+  border: none;
+  background: #f5f5f5;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.tab.active {
+  background: var(--accent-dark);
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.password-group {
+  position: relative;
+}
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 48px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  color: #666;
+}
+
+.toggle-password:hover {
+  color: var(--accent-dark);
+}
+
+.toggle-password svg {
+  width: 24px;
+  height: 24px;
+}
+
+.auth-container .submit-btn {
+  width: 100%;
+  background-color: var(--accent-dark);
+  padding: 12px;
+  display: block;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
+.auth-container .submit-btn p {
+  font-size: 16px;
+  font-family: 'Inter';
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.switch-link {
+  text-align: center;
+  margin: 20px 0 0;
+  color: #555;
+  font-size: 15px;
+}
+
+.switch-link a,
+.link-button {
+  color: var(--accent-dark);
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.switch-link a:hover,
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.auth-card .forgot-password-wrapper {
+  margin: 8px 0 16px;
+  text-align: right;
+}
+
+.auth-card .forgot-password-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.auth-card .forgot-password-btn:hover,
+.auth-card .forgot-password-btn:focus {
+  color: var(--accent-dark);
+  text-decoration: underline;
+  outline: none;
+}
