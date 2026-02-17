@@ -110,20 +110,29 @@ const getPropertyById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const property = await prisma.property.findUnique({
-      where: { id: Number(id) },
-      include: {
-        operation:     { select: { name: true } },
-        propertyType:  { select: { name: true } },
-        housingType:   { select: { name: true } },
-        images: {
-          select: { id: true, url: true, isMain: true },
-          orderBy: { isMain: 'desc' },
-        },
-      },
-    });
+    const [properties, total] = await Promise.all([
+      prisma.property.findMany({
+        where,
+        skip,
+        take,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          operation:     { select: { name: true } },
+          propertyType:  { select: { name: true } },
+          housingType:   { select: { name: true } },
+          images: {
+            select: { id: true, url: true, isMain: true },
+            orderBy: [
+              { isMain: 'desc' },   // главное фото — первым в массиве
+              { createdAt: 'asc' }  // остальные по порядку загрузки
+            ],
+          },
+        }
+      }),
+      prisma.property.count({ where })
+    ]);
 
-    if (!property) {
+    if (!properties) {
       return res.status(404).json({
         success: false,
         message: 'Объект недвижимости не найден',
@@ -132,7 +141,15 @@ const getPropertyById = async (req, res) => {
 
     res.json({
       success: true,
-      data: property,
+      data: properties,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: skip + take < total,
+        hasPrev: Number(page) > 1
+      }
     });
   } catch (error) {
     console.error('Get property by id error:', error);

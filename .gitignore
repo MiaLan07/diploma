@@ -3,7 +3,7 @@ node_modules/
 */node_modules/
 
 */images
-*/upload
+*/uploads
 #чтобы изображения не тянулись
 
 # Билды и сгенерированные файлы

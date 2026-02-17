@@ -15,6 +15,13 @@ const requestsRoutes = require('./routes/requests.routes');
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 

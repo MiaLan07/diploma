@@ -76,7 +76,7 @@ export default function AuthPage() {
         password,
       });
       localStorage.setItem('token', res.data.token);
-      navigate('/');
+      navigate('/cabinet');
     } catch (err) {
       setError(err.response?.data?.message || 'Ошибка авторизации');
     }
@@ -99,7 +99,7 @@ export default function AuthPage() {
         password: regPassword,
       });
       localStorage.setItem('token', res.data.token);
-      navigate('/');
+      navigate('/cabinet');
     } catch (err) {
       setError(err.response?.data?.message || 'Ошибка регистрации');
     }

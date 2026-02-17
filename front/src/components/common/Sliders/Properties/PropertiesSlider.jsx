@@ -1,21 +1,25 @@
 // src/components/PropertiesSlider.jsx
 import React, { useState, useCallback, useEffect } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 import './PropertiesSlider.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ReactComponent as IconHartLoved } from '../../../../assets/heart-loved.svg';
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000'; // базовый URL сервера без /api
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const PropertiesSlider = ({
   properties = [],
   title = "Популярные предложения",
   isFavoritesMode = false,
-  onFavoriteChange, // колбэк, чтобы родитель мог обновить свой массив после добавления/удаления
+  onFavoriteChange,
 }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+
+  const [imageBlobs, setImageBlobs] = useState({}); // { propId: [blobUrl1, blobUrl2, ...] }
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
@@ -42,15 +46,65 @@ const PropertiesSlider = ({
     emblaApi.on('reInit', onSelect);
   }, [emblaApi, onSelect]);
 
-  // Группируем по 3 карточки на слайд
+  // Ленивая загрузка blob-изображений для видимых объектов
+  useEffect(() => {
+    if (properties.length === 0) return;
+
+    const loadVisibleImages = async () => {
+      // Вычисляем видимые слайды (текущий + соседние)
+      const visibleSlideIndices = [selectedIndex - 1, selectedIndex, selectedIndex + 1].filter(
+        i => i >= 0 && i < Math.ceil(properties.length / 3)
+      );
+
+      const visibleProperties = visibleSlideIndices.flatMap(i => properties.slice(i * 3, (i * 3) + 3));
+
+      for (const prop of visibleProperties) {
+        const propId = prop.id;
+        if (imageBlobs[propId]) continue;
+
+        if (!prop.images || prop.images.length === 0) {
+          setImageBlobs(prev => ({ ...prev, [propId]: [] }));
+          continue;
+        }
+
+        try {
+          const blobs = await Promise.all(
+            prop.images.map(async (img) => {
+              const response = await axios.get(`${SERVER_URL}${img.url}`, {
+                responseType: 'blob',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+              });
+              return URL.createObjectURL(response.data);
+            })
+          );
+
+          setImageBlobs(prev => ({ ...prev, [propId]: blobs }));
+        } catch (err) {
+          console.error(`Ошибка загрузки изображений для объекта ${propId}:`, err);
+          setImageBlobs(prev => ({ ...prev, [propId]: [] })); // fallback для этого объекта
+        }
+      }
+    };
+
+    loadVisibleImages();
+  }, [properties, selectedIndex, token]);
+
+  // Очистка blob-URL при размонтировании
+  useEffect(() => {
+    return () => {
+      Object.values(imageBlobs).flat().forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [imageBlobs]);
+
+  // Группируем по 3
   const slides = [];
   for (let i = 0; i < properties.length; i += 3) {
     slides.push(properties.slice(i, i + 3));
   }
 
-  // Переключение избранного (добавление / удаление)
+  // Переключение избранного
   const toggleFavorite = async (propertyId, isCurrentlyFavorite, e) => {
-    e.stopPropagation(); // не даём кликнуть по карточке целиком
+    e.stopPropagation();
 
     if (!token) {
       navigate('/login');
@@ -59,18 +113,15 @@ const PropertiesSlider = ({
 
     try {
       if (isCurrentlyFavorite) {
-        // Удаляем
         await axios.delete(`${API_URL}/favorites/${propertyId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        // Добавляем
         await axios.post(`${API_URL}/favorites/${propertyId}`, {}, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
 
-      // Уведомляем родителя об изменении (чтобы обновить массив)
       if (onFavoriteChange) {
         onFavoriteChange(propertyId, !isCurrentlyFavorite);
       }
@@ -93,7 +144,7 @@ const PropertiesSlider = ({
     );
   }
 
-  return (
+ return (
     <section className="properties-section-wrapper">
       <div className="properties-section">
         <h2 className="section-title">{title}</h2>
@@ -104,8 +155,8 @@ const PropertiesSlider = ({
               <div className="properties-embla-slide" key={slideIndex}>
                 <div className="properties-grid">
                   {slideProperties.map((property) => {
-                    // Определяем, находится ли объект уже в избранном
                     const isFavorite = isFavoritesMode || property.isFavorite;
+                    const propBlobs = imageBlobs[property.id] || [];
 
                     return (
                       <article
@@ -114,14 +165,17 @@ const PropertiesSlider = ({
                         onClick={() => navigate(`/property/${property.id}`)}
                       >
                         <div className="property-image-wrapper">
-                          <img
-                            src={property.images?.[0]?.url || '/images/fallback-property.jpg'}
-                            alt={property.shortDescription || 'Недвижимость'}
-                            className="property-image"
-                            loading="lazy"
-                          />
+                          {propBlobs.length > 0 ? (
+                            // Мини-слайдер для нескольких фото
+                            <InnerImageSlider blobs={propBlobs} />
+                          ) : (
+                            <img
+                              src="/images/fallback-property.jpg"
+                              alt="Загрузка фото..."
+                              className="property-image"
+                            />
+                          )}
 
-                          {/* Сердечко в правом верхнем углу */}
                           <button
                             type="button"
                             className={`favorite-heart-btn ${isFavorite ? 'favorite-heart-btn--active' : ''}`}
@@ -137,13 +191,15 @@ const PropertiesSlider = ({
                             {Number(property.price).toLocaleString('ru-RU')} ₽
                           </p>
 
-                          <h3 className="property-title">
-                            {property.shortDescription || `${property.rooms || '?'} комн., ${property.area || '?'} м²`}
-                          </h3>
-
                           <div className="property-features">
-                            {property.rooms && <span>{property.rooms} комн.</span>}
-                            {property.area && <span>{property.area} м²</span>}
+                            {property.rooms && property.area ? (
+                              <span>{property.rooms}-комнатная, {property.area} м²</span>
+                            ) : (
+                              <>
+                                {property.rooms && <span>{property.rooms}-комнатная</span>}
+                                {property.area && <span>{property.area} м²</span>}
+                              </>
+                            )}
                             {property.floor !== undefined && property.totalFloors && (
                               <span>{property.floor}/{property.totalFloors}</span>
                             )}
@@ -169,7 +225,6 @@ const PropertiesSlider = ({
             ))}
           </div>
         </div>
-
         {slides.length > 1 && (
           <div className="properties-navigation">
             <button
@@ -207,4 +262,101 @@ const PropertiesSlider = ({
   );
 };
 
+const InnerImageSlider = ({ blobs }) => {
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      dragFree: false,
+      align: 'center',
+    },
+    [Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: true })]
+  );
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollPrev = useCallback((e) => {
+    e.stopPropagation();
+    emblaApi?.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback((e) => {
+    e.stopPropagation();
+    emblaApi?.scrollNext();
+  }, [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+  }, [emblaApi, onSelect]);
+
+  if (blobs.length <= 1) {
+    return (
+      <img
+        src={blobs[0] || '/images/fallback-property.jpg'}
+        alt="Фото объекта"
+        className="property-image"
+        onError={(e) => { e.target.src = '/images/fallback-property.jpg'; }}
+      />
+    );
+  }
+
+  return (
+    <div className="inner-image-embla">
+      <div className="inner-image-viewport" ref={emblaRef}>
+        <div className="inner-image-container">
+          {blobs.map((blobUrl, idx) => (
+            <div
+              className={`inner-image-slide ${idx === selectedIndex ? 'is-active' : ''}`}
+              key={idx}
+            >
+              <img
+                src={blobUrl}
+                alt={`Фото ${idx + 1}`}
+                className="property-image"
+                onError={(e) => { e.target.src = '/images/fallback-property.jpg'; }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        className="inner-image-arrow inner-image-arrow--prev"
+        onClick={scrollPrev}
+        aria-label="Предыдущее фото"
+      >
+        ←
+      </button>
+
+      <button
+        className="inner-image-arrow inner-image-arrow--next"
+        onClick={scrollNext}
+        aria-label="Следующее фото"
+      >
+        →
+      </button>
+
+      <div className="inner-image-dots">
+        {blobs.map((_, idx) => (
+          <button
+            key={idx}
+            className={`inner-image-dot ${idx === selectedIndex ? 'inner-image-dot--active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              emblaApi?.scrollTo(idx);
+            }}
+            aria-label={`Перейти к фото ${idx + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 export default PropertiesSlider;

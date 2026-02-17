@@ -1,34 +1,106 @@
 // src/components/AdminDashboard.jsx
-import React from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import AdminAddProperty from '../admin/AdminAddProperty'; // или ваш путь
-// Другие компоненты: AdminPropertiesList, AdminRequests и т.д.
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AdminPropertiesList from '../admin/AdminPropertiesList'; // Новый компонент для списка
+import AdminAddProperty from '../admin/AdminAddProperty'; // Ваш существующий компонент
+// Другие компоненты: AdminRequestsList, AdminUsersList, AdminSettings и т.д. (добавьте по мере необходимости)
+import './AdminDashboard.css'
 
 export default function AdminDashboard({ user }) {
-  const location = useLocation();
+  const [activeSection, setActiveSection] = useState('properties-list');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/auth');
+  };
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return (
+          <div className="admin-content-placeholder">
+            <h2>Добро пожаловать в админ-панель</h2>
+            <p>Выберите раздел в левом меню</p>
+          </div>
+        );
+
+      case 'properties-list':
+        return <AdminPropertiesList />;
+
+      case 'properties-add':
+        return <AdminAddProperty />;
+
+      // case 'requests':
+      //   return <AdminRequestsList />;
+
+      case 'settings':
+        return (
+          <div>
+            <h2>Настройки системы</h2>
+            <p>(пока пусто — можно добавить позже)</p>
+          </div>
+        );
+
+      default:
+        return <div>Раздел в разработке</div>;
+    }
+  };
 
   return (
-    <div className="admin-dashboard">
-      <h2>Админ-панель — {user.firstName} {user.lastName}</h2>
+    <div className="admin-dashboard-wrapper">
+      {/* Шапка */}
+      <header className="admin-dashboard-header">
+        <div className="admin-dashboard-header-info">
+          <h1 className="admin-dashboard-header-name">
+            {user.firstName} {user.lastName}
+          </h1>
+          <div className="admin-dashboard-header-role">Администратор</div>
+          <span className="admin-dashboard-header-contact">{user.email}</span>
+          <span className="admin-dashboard-header-contact">
+            {user.phone || '—'}
+          </span>
+        </div>
+      </header>
 
-      <nav className="admin-nav">
-        <Link to="/admin" className={location.pathname === '/admin' ? 'active' : ''}>
-          Обзор
-        </Link>
-        <Link to="/admin/properties" className={location.pathname.startsWith('/admin/properties') ? 'active' : ''}>
-          Объекты
-        </Link>
-        <Link to="/admin/requests">Заявки</Link>
-        <Link to="/admin/users">Пользователи</Link>
-      </nav>
+      {/* Основная область */}
+      <div className="admin-dashboard-main-content">
+        {/* Левая колонка — меню */}
+        <aside className="admin-dashboard-sidebar">
+          <ul className="admin-dashboard-sidebar-list">
+            <li
+              className={`admin-dashboard-sidebar-item ${
+                activeSection === 'properties-list' ? 'active' : ''
+              }`}
+              onClick={() => setActiveSection('properties-list')}
+            >
+              Список объектов
+            </li>
+            <li
+              className={`admin-dashboard-sidebar-item ${
+                activeSection === 'properties-add' ? 'active' : ''
+              }`}
+              onClick={() => setActiveSection('properties-add')}
+            >
+              Добавить объект
+            </li>
 
-      <div className="admin-content">
-        <Routes>
-          <Route path="/" element={<div>Добро пожаловать в админку</div>} />
-          <Route path="/properties" element={<div>Список объектов (реализуйте таблицу)</div>} />
-          <Route path="/properties/add" element={<AdminAddProperty />} />
-          {/* Другие маршруты */}
-        </Routes>
+            {/* <li className="admin-dashboard-sidebar-item">Список заявок</li> */}
+            {/* <li className="admin-dashboard-sidebar-item">Пользователи</li> */}
+
+            <li
+              className="admin-dashboard-sidebar-item logout-item"
+              onClick={handleLogout}
+            >
+              Выйти
+            </li>
+          </ul>
+        </aside>
+
+        {/* Правая часть — контент выбранного раздела */}
+        <main className="admin-dashboard-content-area">
+          {renderContent()}
+        </main>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import './Header.css';
@@ -7,6 +7,27 @@ import logoImg from '../../assets/logo.png'
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLogin, setIsLogin] = useState(!!localStorage.getItem('token'));
+
+ const checkAuth = () => {
+    setIsLogin(!!localStorage.getItem('token'));
+  };
+
+  useEffect(() => {
+    // Проверка сразу при монтировании
+    checkAuth();
+    // Слушаем изменения в localStorage (из других вкладок или после логина/логаута)
+    window.addEventListener('storage', checkAuth);
+
+    // Также полезно слушать изменения в текущей вкладке
+    // (если логин происходит без перезагрузки страницы)
+    const handleStorageChange = () => checkAuth();
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [])
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -78,14 +99,13 @@ const Header = () => {
               КУПИТЬ НЕДВИЖИМОСТЬ
             </NavLink>
             
-            <NavLink 
-              to="/cabinet" 
-              className={({ isActive }) => 
-                isActive ? "btn--active btn-under" : "btn-under"
-              }
-            >
+            { isLogin ? 
+            (<NavLink to="/cabinet" className={({ isActive }) => isActive ? "btn--active btn-under" : "btn-under" }>
               ЛИЧНЫЙ КАБИНЕТ
-            </NavLink>
+            </NavLink>) : 
+            (<NavLink to="/auth" className={({ isActive }) => isActive ? "btn--active btn-under" : "btn-under"}>
+              ВОЙТИ
+            </NavLink>) }
           </div>
         </nav>
 

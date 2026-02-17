@@ -83,9 +83,11 @@ const getFavorites = async (req, res) => {
             propertyType:  { select: { name: true } },
             housingType:   { select: { name: true } },
             images: {
-              select: { url: true, isMain: true },
-              orderBy: { isMain: 'desc' },
-              take: 1, // можно взять только главное фото
+              select: { id: true, url: true, isMain: true },
+              orderBy: [
+                { isMain: 'desc' },   // главное фото — первым в массиве
+                { createdAt: 'asc' }  // остальные по порядку загрузки
+              ],
             },
           },
         },

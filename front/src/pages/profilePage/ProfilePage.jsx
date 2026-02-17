@@ -61,8 +61,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <button onClick={() => {localStorage.clear('token')}}>Выйти</button>
-
       <Footer backForm={true}/> {/* Футер, если требуется */}
     </>
   );

@@ -57,7 +57,9 @@ export default function UserDashboard({ user }) {
         <aside className="user-dashboard-sidebar">
           <ul className="user-dashboard-sidebar-list">
             <li className="user-dashboard-sidebar-item">
-              <span>ИЗБРАННОЕ</span>
+              <a href="#favorites" className="sidebar-link">
+                ИЗБРАННОЕ
+              </a>
             </li>
             {/* <li className="user-dashboard-sidebar-item">Мои заявки</li> */}
             {/* <li className="user-dashboard-sidebar-item">Настройки</li> */}
@@ -75,6 +77,7 @@ export default function UserDashboard({ user }) {
 
         {/* Правая часть — избранное */}
         <PropertiesSlider 
+          id='favorites'
           properties={favorites} 
           title="Избранные объекты" 
           isFavoritesMode={true}

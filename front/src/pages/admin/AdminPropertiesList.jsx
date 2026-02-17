@@ -1,0 +1,157 @@
+// src/components/AdminPropertiesList.jsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+
+const AdminPropertiesList = () => {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/auth';
+      return;
+    }
+
+    const fetchProperties = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/properties`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { page: 1, limit: 50 }
+          }
+        );
+        if (res.data.success) {
+          setProperties(res.data.data || []);
+        } else {
+          setError('Не удалось загрузить объекты');
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Ошибка сервера');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Удалить объект? Это действие нельзя отменить.')) return;
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/properties/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setProperties(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Не удалось удалить объект');
+    }
+  };
+
+  if (loading) return <div className="admin-properties-list-loading-message">Загрузка объектов...</div>;
+  if (error) return <div className="admin-properties-list-error-message">{error}</div>;
+
+  return (
+    <div className="admin-properties-list-main-wrapper">
+      <div className="admin-properties-list-fixed-header">
+        <h1 className="admin-properties-list-page-title">Список объектов недвижимости</h1>
+        <Link to="/admin/properties/add" className="admin-properties-list-add-new-button">
+          + Добавить объект
+        </Link>
+      </div>
+
+      <div className="admin-properties-list-table-scroll-wrapper">
+        <table className="admin-properties-list-data-table">
+          <thead className="admin-properties-list-table-header-sticky">
+            <tr className="admin-properties-list-header-row">
+              <th className="admin-properties-list-table-header-cell id-column">ID</th>
+              <th className="admin-properties-list-table-header-cell address-column">Адрес</th>
+              <th className="admin-properties-list-table-header-cell rooms-column">Комнат</th>
+              <th className="admin-properties-list-table-header-cell area-column">Площадь</th>
+              <th className="admin-properties-list-table-header-cell price-column">Цена</th>
+              <th className="admin-properties-list-table-header-cell status-column">Статус</th>
+              <th className="admin-properties-list-table-header-cell operation-column">Операция</th>
+              <th className="admin-properties-list-table-header-cell type-column">Тип недв.</th>
+              <th className="admin-properties-list-table-header-cell subtype-column">Подтип</th>
+              <th className="admin-properties-list-table-header-cell condition-column">Состояние</th>
+              <th className="admin-properties-list-table-header-cell parking-column">Парковка</th>
+              <th className="admin-properties-list-table-header-cell floor-column">Этаж</th>
+              <th className="admin-properties-list-table-header-cell elevator-column">Лифт</th>
+              <th className="admin-properties-list-table-header-cell year-column">Год</th>
+              <th className="admin-properties-list-table-header-cell description-column">Описание</th>
+              <th className="admin-properties-list-table-header-cell created-column">Создано</th>
+              <th className="admin-properties-list-table-header-cell actions-column">Действия</th>
+            </tr>
+          </thead>
+
+          <tbody className="admin-properties-list-table-body">
+            {properties.length === 0 ? (
+              <tr>
+                <td colSpan={17} className="admin-properties-list-empty-row">
+                  Объекты отсутствуют
+                </td>
+              </tr>
+            ) : (
+              properties.map(property => (
+                <tr 
+                  key={property.id} 
+                  className="admin-properties-list-data-row"
+                >
+                  <td className="admin-properties-list-table-cell id-column">{property.id}</td>
+                  <td className="admin-properties-list-table-cell address-column">{property.address || '—'}</td>
+                  <td className="admin-properties-list-table-cell rooms-column text-center">{property.rooms ?? '—'}</td>
+                  <td className="admin-properties-list-table-cell area-column text-right">{property.area ? `${property.area} м²` : '—'}</td>
+                  <td className="admin-properties-list-table-cell price-column text-right">
+                    {property.price ? property.price.toLocaleString('ru-RU') : '—'}
+                  </td>
+                  <td className="admin-properties-list-table-cell status-column text-center">{property.status || 'active'}</td>
+                  <td className="admin-properties-list-table-cell operation-column">{property.operation?.name || '—'}</td>
+                  <td className="admin-properties-list-table-cell type-column">{property.propertyType?.name || '—'}</td>
+                  <td className="admin-properties-list-table-cell subtype-column">{property.housingType?.name || '—'}</td>
+                  <td className="admin-properties-list-table-cell condition-column">{property.condition || '—'}</td>
+                  <td className="admin-properties-list-table-cell parking-column">{property.parking || '—'}</td>
+                  <td className="admin-properties-list-table-cell floor-column text-center">{property.floor ?? '—'}</td>
+                  <td className="admin-properties-list-table-cell elevator-column text-center">
+                    {property.hasElevator ? '✓' : '—'}
+                  </td>
+                  <td className="admin-properties-list-table-cell year-column text-center">{property.yearBuilt || '—'}</td>
+                  <td className="admin-properties-list-table-cell description-column">
+                    {property.shortDescription?.slice(0, 60) || '—'}
+                    {property.shortDescription?.length > 60 && '...'}
+                  </td>
+                  <td className="admin-properties-list-table-cell created-column">
+                    {new Date(property.createdAt).toLocaleDateString('ru-RU')}
+                  </td>
+                  <td className="admin-properties-list-table-cell actions-column">
+                    <div className="admin-properties-list-actions-group">
+                      <Link
+                        to={`/admin/properties/edit/${property.id}`}
+                        className="admin-properties-list-action-button edit-button"
+                      >
+                        Изменить
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(property.id)}
+                        className="admin-properties-list-action-button delete-button"
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default AdminPropertiesList;
