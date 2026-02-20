@@ -5,7 +5,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import './PropertiesSlider.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ReactComponent as IconHartLoved } from '../../../../assets/heart-loved.svg';
+// import { ReactComponent as IconHartLoved } from '../../../../assets/heart-loved.svg';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000'; // базовый URL сервера без /api
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -182,7 +182,6 @@ const PropertiesSlider = ({
                             onClick={(e) => toggleFavorite(property.id, isFavorite, e)}
                             title={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
                           >
-                            <IconHartLoved />
                           </button>
                         </div>
 

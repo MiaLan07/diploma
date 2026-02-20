@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const AdminPropertiesList = () => {
+const AdminPropertiesList = ({ setActiveSection }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -61,9 +61,9 @@ const AdminPropertiesList = () => {
     <div className="admin-properties-list-main-wrapper">
       <div className="admin-properties-list-fixed-header">
         <h1 className="admin-properties-list-page-title">Список объектов недвижимости</h1>
-        <Link to="/admin/properties/add" className="admin-properties-list-add-new-button">
+        <button onClick={() => setActiveSection('properties-add')} className="admin-properties-list-add-new-button">
           + Добавить объект
-        </Link>
+        </button>
       </div>
 
       <div className="admin-properties-list-table-scroll-wrapper">

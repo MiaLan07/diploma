@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './AuthPage.css';
-import { ReactComponent as IconEyeOpen } from '../../assets/eye-opened1.svg';
-import { ReactComponent as IconEyeClose } from '../../assets/eye-closed1.svg';
+// import { ReactComponent as IconEyeOpen } from '../../assets/eye-opened1.svg';
+// import { ReactComponent as IconEyeClose } from '../../assets/eye-closed1.svg';
 import Footer from '../../components/ui/Footer'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -181,7 +181,6 @@ export default function AuthPage() {
                       className="toggle-password"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? <IconEyeOpen /> : <IconEyeClose />}
                     </button>
                   </div>
                 </div>
@@ -264,7 +263,6 @@ export default function AuthPage() {
                   className="toggle-password"
                   onClick={() => setShowRegPassword(!showRegPassword)}
                 >
-                  {showRegPassword ? <IconEyeOpen /> : <IconEyeClose />}
                 </button>
               </div>
             </div>
@@ -284,7 +282,6 @@ export default function AuthPage() {
                   className="toggle-password"
                   onClick={() => setShowConfirm(!showConfirm)}
                 >
-                  {showConfirm ? <IconEyeOpen /> : <IconEyeClose />}
                 </button>
               </div>
             </div>

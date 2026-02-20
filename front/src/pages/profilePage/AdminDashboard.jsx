@@ -26,7 +26,7 @@ export default function AdminDashboard({ user }) {
         );
 
       case 'properties-list':
-        return <AdminPropertiesList />;
+        return <AdminPropertiesList setActiveSection={setActiveSection} />;
 
       case 'properties-add':
         return <AdminAddProperty />;

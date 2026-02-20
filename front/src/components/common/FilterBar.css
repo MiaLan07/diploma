@@ -1,8 +1,16 @@
-/* src/components/FilterBar.css */
+:root {
+  --width-filter-stand-notebook: 215px;
+  --width-filter-stand-large: 300px;
+
+  --width-filter-container-notebook: 284px;
+  --width-filter-container-large: 324px;
+  --width-filter-container-inner-notebook: 130px;
+  --width-filter-container-inner-large: 150px;
+}
 
 .filter-bar {
   display: flex;
-  flex-wrap: wrap;                /* важно для responsivity */
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
   background-color: white;
@@ -24,7 +32,7 @@
   background: white;
   overflow: hidden;
   transition: all 0.2s ease;
-  width: 215px;
+  width: var(--width-filter-stand-notebook);
   box-sizing: border-box;
   height: 55px;
 }
@@ -36,10 +44,10 @@
   padding: 0;                 /* убираем любой внутренний отступ */
   margin: 0;
   pointer-events: none;
-  flex: 0 1 284px;
+  width: var(--width-filter-container-notebook);
 }
 .filter-item.inner {
-  width: 130px;
+  width: var(--width-filter-container-inner-notebook);
   border: 1px solid var(--accent-filters);
   border-radius: 15px;
   background: white;
@@ -62,7 +70,7 @@
   box-shadow: 0 0 0 3px rgba(67, 171, 157, 0.15);
 }
 .filter-item.long-input {
-  width: calc(215px*2 + 24px);
+  width: calc(var(--width-filter-container-large)*2 + 24px);
 }
 
 .filter-item select,
@@ -95,7 +103,7 @@
 }
 
 .search-button {
-  width: calc((130px*2) + 24px);
+  width: calc((var(--width-filter-container-inner-notebook)*2) + 24px);
   box-sizing: border-box;
 
   background: #43AB9D;
@@ -151,10 +159,10 @@
   color: var(--accent-filters);
 }
 .link-item.catalog {
-  width: calc(215px + 24px + 130px);
+  width: calc(var(--width-filter-container-inner-notebook) + 24px + var(--width-filter-container-notebook));
 }
 .link-item.map {
-  width: 130px;
+  width: var(--width-filter-container-inner-notebook);
 }
 .map-icon {
   stroke: black;
@@ -165,4 +173,60 @@
 .link-item.map:hover .map-icon {
   transform: scale(1.15);
   color: var(--accent-filters) !important;
+}
+
+/* Большие экраны (настольные ПК, широкоформатные мониторы) */
+@media (min-width: 1440px) {
+  .filter-bar {
+    justify-content: space-between; /* Равномерное распределение с отступами между элементами */
+  }
+
+  .filter-item {
+    width: var(--width-filter-stand-large);
+  }
+
+  .filter-item.container {
+    flex: 0 1 var(--width-filter-container-large);
+  }
+
+  .filter-item.inner {
+    width: var(--width-filter-container-inner-large);
+  }
+
+  .filter-item.long-input {
+    width: calc(var(--width-filter-stand-large) * 2 + 24px);
+  }
+
+  .link-item.catalog {
+  width: calc(var(--width-filter-container-inner-large) + 24px + var(--width-filter-container-large));
+  }
+
+  .link-item.map {
+    width: var(--width-filter-container-inner-large);
+  }
+
+  .search-button {
+    width: calc((var(--width-filter-container-inner-large)*2) + 24px);
+  }
+}
+
+/* Очень большие экраны (4K, ультраширокие мониторы) */
+@media (min-width: 1920px) {
+  .filter-bar {
+    padding: 24px 64px; /* Увеличиваем отступы по краям */
+  }
+
+  .filter-item {
+    min-width: 250px;
+    max-width: 350px;
+  }
+
+  .filter-item.long-input {
+    min-width: 500px;
+    max-width: 700px;
+  }
+
+  .link-item.catalog {
+    min-width: 400px;
+  }
 }
