@@ -1,10 +1,32 @@
 :root {
-  --width-filter-stand-notebook: 215px;
+  --gap-large: 24px;
+
+  --padding-bar-base: 16px 20px;
+  --padding-bar-mid: 20px 28px;
+  --padding-bar-large: 24px 40px;
+
+  /* Базовые (для ~1024–1400 px) */
+  --filter-stand-base: 170px;
+  --container-base: 230px;
+  --inner-base: 105px;
+
+  /* Твой основной ноутбук ~1536 px */
+  --filter-stand-target: 215px;
+  --container-target: 284px;
+  --inner-target: 130px;
+
+  /* Широкие экраны 1920+ */
+  --filter-stand-wide: 295px;
+  --container-wide: 354px;
+  --inner-wide: 165px;
+
+
+  /* !--width-filter-stand-notebook: 215px; */
   --width-filter-stand-large: 300px;
 
-  --width-filter-container-notebook: 284px;
+  /* !--width-filter-container-notebook: 284px; */
   --width-filter-container-large: 324px;
-  --width-filter-container-inner-notebook: 130px;
+  /* !--width-filter-container-inner-notebook: 130px; */
   --width-filter-container-inner-large: 150px;
 }
 
@@ -32,7 +54,7 @@
   background: white;
   overflow: hidden;
   transition: all 0.2s ease;
-  width: var(--width-filter-stand-notebook);
+  width: var(--filter-stand-target);
   box-sizing: border-box;
   height: 55px;
 }
@@ -44,10 +66,10 @@
   padding: 0;                 /* убираем любой внутренний отступ */
   margin: 0;
   pointer-events: none;
-  width: var(--width-filter-container-notebook);
+  flex: 0 1 var(--container-target);
 }
 .filter-item.inner {
-  width: var(--width-filter-container-inner-notebook);
+  width: var(--inner-target);
   border: 1px solid var(--accent-filters);
   border-radius: 15px;
   background: white;
@@ -61,7 +83,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  font-size: 16px;
+  font-size: 1rem;
   color: #333;
   outline: none;
 }
@@ -70,7 +92,7 @@
   box-shadow: 0 0 0 3px rgba(67, 171, 157, 0.15);
 }
 .filter-item.long-input {
-  width: calc(var(--width-filter-container-large)*2 + 24px);
+  width: calc(var(--filter-stand-target)*2 + 24px);
 }
 
 .filter-item select,
@@ -80,7 +102,7 @@
   padding: 10px 16px;
   border: none;
   background: transparent;
-  font-size: 16px;
+  font-size: 1rem;
   color: #333;
   outline: none;
   appearance: none;               /* убираем стандартную стрелку у select */
@@ -103,7 +125,7 @@
 }
 
 .search-button {
-  width: calc((var(--width-filter-container-inner-notebook)*2) + 24px);
+  width: calc((var(--inner-target)*2) + 24px);
   box-sizing: border-box;
 
   background: #43AB9D;
@@ -111,7 +133,7 @@
   border: none;
   padding: 12px 28px;
   border-radius: 25px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -159,10 +181,10 @@
   color: var(--accent-filters);
 }
 .link-item.catalog {
-  width: calc(var(--width-filter-container-inner-notebook) + 24px + var(--width-filter-container-notebook));
+  width: calc(var(--inner-target) + 24px + var(--filter-stand-target));
 }
 .link-item.map {
-  width: var(--width-filter-container-inner-notebook);
+  width: var(--inner-target);
 }
 .map-icon {
   stroke: black;
@@ -176,57 +198,65 @@
 }
 
 /* Большие экраны (настольные ПК, широкоформатные мониторы) */
-@media (min-width: 1440px) {
-  .filter-bar {
-    justify-content: space-between; /* Равномерное распределение с отступами между элементами */
+@media (min-width: 1500px) {
+  .filter-bar .filter-item {
+    width: var(--filter-stand-target);
   }
 
-  .filter-item {
-    width: var(--width-filter-stand-large);
+  .filter-bar .filter-item.container {
+    width: var(--container-target);
+    flex: 0 1 var(--container-target);
   }
 
-  .filter-item.container {
-    flex: 0 1 var(--width-filter-container-large);
+  .filter-bar .filter-item.inner {
+    width: var(--inner-target);
   }
 
-  .filter-item.inner {
-    width: var(--width-filter-container-inner-large);
+  .filter-bar .filter-item.long-input,
+  .filter-bar .filter-item.long-input .filter-item {
+    width: calc(var(--filter-stand-target) * 2 + var(--gap-large));
   }
 
-  .filter-item.long-input {
-    width: calc(var(--width-filter-stand-large) * 2 + 24px);
+  .filter-bar .search-button {
+    width: calc(var(--inner-target) * 2 + var(--gap-large));
   }
 
-  .link-item.catalog {
-  width: calc(var(--width-filter-container-inner-large) + 24px + var(--width-filter-container-large));
+  .filter-bar .link-item.catalog {
+    width: calc(var(--inner-target) + var(--gap-large) + var(--filter-stand-target));
   }
 
-  .link-item.map {
-    width: var(--width-filter-container-inner-large);
-  }
-
-  .search-button {
-    width: calc((var(--width-filter-container-inner-large)*2) + 24px);
+  .filter-bar .link-item.map {
+    width: var(--inner-target);
   }
 }
-
-/* Очень большие экраны (4K, ультраширокие мониторы) */
 @media (min-width: 1920px) {
-  .filter-bar {
-    padding: 24px 64px; /* Увеличиваем отступы по краям */
+  .filter-bar .filter-item {
+    width: var(--filter-stand-wide);
   }
 
-  .filter-item {
-    min-width: 250px;
-    max-width: 350px;
+  .filter-bar .filter-item.container {
+    width: var(--container-wide);
+    flex: 0 1 var(--container-wide);
   }
 
-  .filter-item.long-input {
-    min-width: 500px;
-    max-width: 700px;
+  .filter-bar .filter-item.inner {
+    width: var(--inner-wide);
   }
 
-  .link-item.catalog {
-    min-width: 400px;
+  .filter-bar .filter-item.long-input,
+  .filter-bar .filter-item.long-input .filter-item input {
+    width: calc(var(--filter-stand-wide) * 2 + var(--gap-large));
+  }
+
+  .filter-bar .search-button {
+    width: calc(var(--inner-wide) * 2 + var(--gap-large));
+  }
+
+  .filter-bar .link-item.catalog {
+    width: calc(var(--inner-wide) + var(--gap-large) + var(--filter-stand-wide));
+  }
+
+  .filter-bar .link-item.map {
+    width: var(--inner-wide);
   }
 }

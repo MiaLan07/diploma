@@ -40,7 +40,7 @@
 }
 
 .consultation-form h2 {
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 700;
   line-height: 1;
   margin: 0;
@@ -52,7 +52,7 @@
 
 .form-group label {
   display: block;
-  font-size: 16px;
+  font-size: 1rem;
   margin-bottom: 8px;
   opacity: 0.9;
 }
@@ -64,13 +64,13 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   background: transparent;
   color: white;
-  font-size: 18px;
+  font-size: 1.125rem;
   outline: none;
   transition: border-color 0.3s;
 }
 h2 .accent {
   color: white;
-  font-size: 44px;
+  font-size: 2.75rem;
 }
 
 .form-group input:focus {
@@ -85,7 +85,7 @@ h2 .accent {
   margin: 0;
   padding: 12px;
   color: white;
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 400;
   font-family: 'Novelist';
   margin-bottom: -5px;
@@ -98,7 +98,7 @@ h2 .accent {
   background: var(--accent-filters);
   border: none;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 1.125rem;
   cursor: pointer;
   transition: all 0.3s;
   display: flex;
@@ -128,7 +128,7 @@ h2 .accent {
 
 .status {
   margin-top: 24px;
-  font-size: 16px;
+  font-size: 1rem;
   text-align: center;
 }
 
@@ -158,7 +158,7 @@ h2 .accent {
   }
 
   .consultation-form h2 {
-    font-size: 32px;
+    font-size: 2rem;
   }
 }
 
@@ -168,7 +168,7 @@ h2 .accent {
   }
 
   .consultation-form h2 {
-    font-size: 28px;
+    font-size: 1.75rem;
     margin-bottom: 40px;
   }
 }

@@ -34,7 +34,7 @@
 }
 .hero-content h1 {
   font-weight: 600;
-  font-size: 64px;
+  font-size: 4rem;
   margin-bottom: 20px;
   color: white;
   margin: auto 122px;
@@ -47,7 +47,7 @@
   padding: 21px 71px;
   border-radius: 50px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
   text-transform: uppercase;
 }
 
@@ -63,6 +63,6 @@ span.accent {
 
 @media (max-width: 768px) {
   .hero-content h1 {
-    font-size: 32px;
+    font-size: 2rem;
   }
 }

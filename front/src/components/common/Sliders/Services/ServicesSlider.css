@@ -62,27 +62,27 @@
 }
 
 .service-card__title {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #1a1a1a;
   margin: 0;
 }
 
 .service-card__description {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: #555;
   line-height: 1.45;
   margin: 0;
   flex-grow: 1;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 5;           /* ← максимум 5 строк */
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
 }
 
 .service-card__price {
-  font-size: 15.5px;
+  font-size: 0.96875rem;
   font-weight: 700;
   color: #43AB9D;               /* твой акцентный цвет */
   margin: 8px 0;
@@ -94,7 +94,7 @@
   border: none;
   padding: 12px 28px;
   border-radius: 30px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -102,6 +102,7 @@
   margin: 0;
   max-height: max-content;
   box-sizing: border-box;
+  border: 1px solid white;
 }
 
 .service-card__button:hover {

@@ -39,7 +39,7 @@
 .ymaps-2-cluster__content {
   color: white !important;
   font-weight: 700 !important;
-  font-size: 15px !important; /* чуть крупнее */
+  font-size: 0.9374rem !important; /* чуть крупнее */
 }
 .custom-cluster {
   width: 50px; /* Размер кластера */
@@ -63,7 +63,7 @@
 .custom-cluster-inner {
   color: white;
   font-weight: bold;
-  font-size: 16px; /* Размер текста с количеством */
+  font-size: 1rem; /* Размер текста с количеством */
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Тень текста для читаемости */
 }
 

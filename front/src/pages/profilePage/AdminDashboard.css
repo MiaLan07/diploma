@@ -25,18 +25,18 @@
 
 .admin-dashboard-header-name {
   margin: 0;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 600;
 }
 
 .admin-dashboard-header-role {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 500;
   color: #555;
 }
 
 .admin-dashboard-header-contact {
-  font-size: 16px;
+  font-size: 1rem;
   color: #444;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .admin-dashboard-sidebar-item {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: #444;
   cursor: pointer;
@@ -82,7 +82,7 @@
 .admin-dashboard-sidebar-item.active {
   color: var(--accent-dark);
   font-weight: 600;
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 
 .admin-dashboard-sidebar-item.logout-item {
