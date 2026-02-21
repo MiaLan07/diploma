@@ -8,6 +8,7 @@ import AuthPage from './pages/Auth/AuthPage';
 import ProfilePage from './pages/profilePage/ProfilePage';
 import ForgotPasswordPage from './components/common/ForgotPassword';
 import ResetPasswordPage from './components/common/ResetPassword';
+import PropertyDetails from './pages/propertyDetailPage/PropertyDetalis';
 // другие страницы...
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path='/cabinet' element={<ProfilePage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/properties/:id" element={<PropertyDetails />} />
         {/* <Route path="/catalog" element={<CatalogPage />} /> */}
         {/* и т.д. */}
       </Routes>

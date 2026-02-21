@@ -12,6 +12,7 @@ export default function AdminDashboard({ user }) {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    window.dispatchEvent(new Event('authChange'));
     navigate('/auth');
   };
 

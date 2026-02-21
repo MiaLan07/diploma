@@ -7,32 +7,36 @@ import logoImg from '../../assets/logo.png'
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(!!localStorage.getItem('token'));
 
- const checkAuth = () => {
-    setIsLogin(!!localStorage.getItem('token'));
-  };
+  // Проверяем токен сразу и при любом изменении localStorage
+  const getIsLoggedIn = () => !!localStorage.getItem('token');
+  const [isLoggedIn, setIsLoggedIn] = useState(getIsLoggedIn());
 
   useEffect(() => {
-    // Проверка сразу при монтировании
-    checkAuth();
-    // Слушаем изменения в localStorage (из других вкладок или после логина/логаута)
-    window.addEventListener('storage', checkAuth);
+    // Функция обновления
+    const updateLoginStatus = () => {
+      setIsLoggedIn(getIsLoggedIn());
+    };
 
-    // Также полезно слушать изменения в текущей вкладке
-    // (если логин происходит без перезагрузки страницы)
-    const handleStorageChange = () => checkAuth();
-    window.addEventListener('storage', handleStorageChange);
+    // 1. Слушаем изменения в localStorage (работает между вкладками)
+    window.addEventListener('storage', updateLoginStatus);
+
+    // 2. Слушаем кастомное событие из AuthPage (для текущей вкладки)
+    window.addEventListener('authChange', updateLoginStatus);
+
+    // 3. Проверяем при монтировании
+    updateLoginStatus();
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storage', updateLoginStatus);
+      window.removeEventListener('authChange', updateLoginStatus);
     };
-  }, [])
+  }, []);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-
+  
   return (
     <header className="site-header">
       <div className="container header-container">
@@ -99,13 +103,21 @@ const Header = () => {
               КУПИТЬ НЕДВИЖИМОСТЬ
             </NavLink>
             
-            { isLogin ? 
-            (<NavLink to="/cabinet" className={({ isActive }) => isActive ? "btn--active btn-under" : "btn-under" }>
-              ЛИЧНЫЙ КАБИНЕТ
-            </NavLink>) : 
-            (<NavLink to="/auth" className={({ isActive }) => isActive ? "btn--active btn-under" : "btn-under"}>
-              ВОЙТИ
-            </NavLink>) }
+            {isLoggedIn ? (
+              <NavLink 
+                to="/cabinet" 
+                className={({ isActive }) => isActive ? "btn--active btn-under" : "btn-under"}
+              >
+                ЛИЧНЫЙ КАБИНЕТ
+              </NavLink>
+            ) : (
+              <NavLink 
+                to="/auth" 
+                className={({ isActive }) => isActive ? "btn--active btn-under" : "btn-under"}
+              >
+                ВОЙТИ
+              </NavLink>
+            )}
           </div>
         </nav>
 

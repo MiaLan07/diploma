@@ -52,7 +52,7 @@ const FilterBar = () => {
         </select>
       </div>
 
-      <div className='filter-item container'>
+      {/* <div className='filter-item container'> */}
         <div className="filter-item inner">
           <input
             type="number"
@@ -72,9 +72,9 @@ const FilterBar = () => {
             onChange={handleChange}
           />
         </div>
-      </div>
+      {/* </div> */}
 
-      <div className='filter-item container'>
+      {/* <div className='filter-item container'> */}
         <div className="filter-item inner">
           <input
             type="number"
@@ -94,7 +94,7 @@ const FilterBar = () => {
             onChange={handleChange}
           />
         </div>
-      </div>
+      {/* </div> */}
       <div className="filter-item long-input">
         <input
           type="text"

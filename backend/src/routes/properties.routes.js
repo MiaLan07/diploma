@@ -13,6 +13,7 @@ const {
   uploadImages,
   setMainImage,
   deleteImage,
+  deleteProperty,
 } = require('../controllers/property.controller');
 
 const {
@@ -107,6 +108,12 @@ router.put('/:id',
   validateParams(getByIdSchema),
   validate(updatePropertySchema),
   updateProperty
+);
+router.delete('/:id',
+  authMiddleware,
+  adminMiddleware,
+  validateParams(getByIdSchema),
+  deleteProperty
 );
 
 router.patch('/:id/archive', authMiddleware, adminMiddleware, archiveProperty);

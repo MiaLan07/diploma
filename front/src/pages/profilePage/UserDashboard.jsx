@@ -67,6 +67,7 @@ export default function UserDashboard({ user }) {
               className="user-dashboard-sidebar-item logout-item"
               onClick={() => {
                 localStorage.removeItem('token');
+                window.dispatchEvent(new Event('authChange'));
                 navigate('/auth');
               }}
             >

@@ -20,13 +20,14 @@
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  border: 0.5px solid rgba(0, 0, 0, 0.05);
-  border-top: 3px solid var(--accent-dark);
+  border: 2px solid rgba(0, 0, 0, 0.05);
+  border-top: 2px solid var(--accent-dark);
+  border-radius: 0 0 8px 8px;
 }
 
 .advantage-card:hover {
-  border: 0.5px solid color-mix(in srgb, var(--accent-dark) 50%, transparent);
-  border-top: 3px solid var(--accent-dark);
+  border: 2px solid var(--accent-dark);
+  border-radius: 12px;
 }
 
 .advantage-icon {
@@ -49,32 +50,4 @@
   line-height: 1.6;
   color: #555;
   margin: 0;
-}
-
-
-/* Адаптивность */
-@media (max-width: 1024px) {
-  .advantages-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  .section-title {
-    font-size: 2.25rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .why-with-us {
-    padding: 60px 16px;
-  }
-
-  .section-title {
-    font-size: 2rem;
-    margin-bottom: 48px;
-  }
-
-  .advantage-card {
-    padding: 32px 24px;
-  }
 }

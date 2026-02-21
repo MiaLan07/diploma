@@ -51,6 +51,7 @@
   flex-shrink: 0;
   background: #ffffff;
   border: 1px solid black;
+  border-radius: 8px 0 0 8px;
   border-right: none;
   padding: 34px 16px;
   height: fit-content;

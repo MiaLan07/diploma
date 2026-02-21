@@ -201,3 +201,34 @@
   text-decoration: underline;
   outline: none;
 }
+
+.field-error {
+  color: #d32f2f;
+  font-size: 13px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Общая ошибка под кнопкой */
+.general-error {
+  color: #d32f2f;
+  font-size: 14px;
+  text-align: center;
+  margin: 12px 0 8px;
+  padding: 8px;
+  background: rgba(211, 47, 47, 0.08);
+  border-radius: 8px;
+}
+
+/* Поля ввода при ошибке */
+.form-group input.error,
+.form-group textarea.error {
+  border-color: #d32f2f;
+  background: rgba(211, 47, 47, 0.03);
+}
+
+/* Фокус при ошибке */
+.form-group input.error:focus {
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.12);
+}

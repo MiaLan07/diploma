@@ -52,11 +52,12 @@
   flex-shrink: 0;
   background: #ffffff;
   border: 1px solid black;
+  border-radius: 8px 0 0 8px;
   border-right: none;
   padding: 34px 16px;
   height: fit-content;
   position: sticky;
-  top: 100px;
+  top: 120px;
 }
 
 .admin-dashboard-sidebar-list {
@@ -97,17 +98,19 @@
 /* ── КОНТЕНТНАЯ ОБЛАСТЬ ─────────────────────────────────── */
 .admin-dashboard-content-area {
   padding: 24px;
-  margin-left: 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 0 8px 8px 8px;
 
-  /* КЛЮЧЕВЫЕ СВОЙСТВА */
   flex: 1 1 auto;
   max-width: 100%;
-  overflow-x: auto;
+
+  overflow-x: visible;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 /* ── Плейсхолдер для пока пустых разделов ──────────────── */
@@ -123,53 +126,23 @@
 }
 
 
-.admin-properties-list-main-wrapper {
-  padding: 8px 0 32px;
-}
-
-.admin-properties-list-header-row {
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.admin-properties-list-page-title {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.admin-properties-list-add-new-button {
-  padding: 10px 20px;
-  background-color: #2563eb;
-  color: white;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.admin-properties-list-add-new-button:hover {
-  background-color: #1d4ed8;
-}
-
 /* ── ТАБЛИЦА ──────────────────────────────────────────────── */
 .admin-properties-list-table-scroll-wrapper {
+  flex: 1 1 auto;               /* займёт всё оставшееся пространство */
+  min-height: 0;                /* важно! позволяет дочернему элементу сжиматься */
+  overflow-y: auto;             /* вот здесь появляется вертикальный скролл */
+  overflow-x: auto;
   border-radius: 8px;
-  background-color: white;
 }
 .admin-properties-list-fixed-header {
+  flex: 0 0 auto;               /* не сжимается и не растягивается */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
   padding: 0 0 16px 0;
   background-color: white;
-  position: sticky;
-  top: 0;
   z-index: 5;
-  /* Чтобы при вертикальной прокрутке тоже оставался видимым */
+  margin-bottom: 16px;
 }
 
 .admin-properties-list-data-table {
@@ -201,7 +174,7 @@
   background-color: inherit;   /* наследует фон от thead */
 } 
 
-/* Ширина колонок (можно подстраивать под ваши нужды) */
+/* Ширина колонок */
 .id-column          { width: 60px; text-align: center; }
 .address-column     { width: 220px; }
 .rooms-column       { width: 70px;  text-align: center; }
@@ -275,4 +248,19 @@
   text-align: center;
   color: #6b7280;
   font-size: 1.1rem;
+}
+
+.admin-properties-list-add-new-button {
+  background: var(--accent-dark);
+  color: white;
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.4s;
+  cursor: pointer;
+}
+.admin-properties-list-add-new-button:hover {
+  transform: scale(1.05);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }

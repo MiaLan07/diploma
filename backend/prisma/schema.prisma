@@ -60,7 +60,35 @@ model Property {
   updatedAt         DateTime       @updatedAt
 
   status            String         @default("active")   // "draft", "active", "archived"
-  archivedAt    DateTime?
+  archivedAt        DateTime?
+
+  slug              String?        @unique  // Добавлено для SEO и лучшей индексации (генерируется автоматически)
+
+  totalArea         Float?         // общая площадь (дублирует area, но для ясности)
+  livingArea        Float?         // жилая площадь
+  kitchenArea       Float?         // площадь кухни
+
+  // Этажность дома (важно для понимания 6/9, 9/17 и т.д.)
+  totalFloors       Int?           // всего этажей в доме
+
+  // Более точное состояние
+  renovation        String?        // "свежий ремонт", "косметический", "требует ремонта", "дизайнерский", "без ремонта"
+  renovationYear    Int?           // год последнего ремонта (если известен)
+
+  // Дополнительные удобства / особенности (часто показывают иконками или списком)
+  balcony           String?        // "балкон", "лоджия", "два балкона", "нет"
+  bathroom          String?        // "совмещённый", "раздельный", "2 санузла"
+  windows           String?        // "деревянные", "пластиковые", "выходят во двор", "на улицу"
+  view              String?        // "во двор", "на парк", "на город", "на море"
+
+  // Юридическая информация (очень важна для покупателей)
+  ownership         String?        // "собственность", "приватизирована", "договор долевого участия"
+  encumbrance       Boolean?       @default(false)   // есть ли обременение
+  mortgagePossible  Boolean?       @default(false)   // можно ипотеку
+
+  // Для отображения "можно заехать сразу", "торг уместен" и т.п.
+  readyToMove       Boolean?       @default(false)   // можно сразу заехать
+  bargaining        Boolean?       @default(true)    // торг уместен
 }
 
 model User {

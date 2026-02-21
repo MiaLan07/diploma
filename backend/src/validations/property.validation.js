@@ -3,7 +3,7 @@ const Joi = require('joi');
 const createPropertySchema = Joi.object({
   operationId:      Joi.number().integer().positive().required(),
   propertyTypeId:   Joi.number().integer().positive().required(),
-  housingTypeId:    Joi.number().integer().positive().allow(null),
+  housingTypeId:    Joi.number().integer().allow(null),
   price:            Joi.number().precision(2).positive().required(),
   area:             Joi.number().precision(2).positive().min(1).allow(null),
   condition:        Joi.string().max(100).allow(null, ''),
@@ -18,6 +18,21 @@ const createPropertySchema = Joi.object({
   latitude:         Joi.number().precision(6).min(-90).max(90).allow(null),
   longitude:        Joi.number().precision(6).min(-180).max(180).allow(null),
   status:           Joi.string().valid('draft', 'active', 'archived').optional().default('active'),
+  totalArea:        Joi.number().precision(2).positive().min(1).allow(null),
+  livingArea:       Joi.number().precision(2).positive().min(1).allow(null),
+  kitchenArea:      Joi.number().precision(2).positive().min(1).allow(null),
+  totalFloors:      Joi.number().integer().min(1).allow(null),
+  renovation:       Joi.string().max(100).allow(null, ''),
+  renovationYear:   Joi.number().integer().min(1800).max(2100).allow(null),
+  balcony:          Joi.string().max(100).allow(null, ''),
+  bathroom:         Joi.string().max(100).allow(null, ''),
+  windows:          Joi.string().max(100).allow(null, ''),
+  view:             Joi.string().max(100).allow(null, ''),
+  ownership:        Joi.string().max(100).allow(null, ''),
+  encumbrance:      Joi.boolean().allow(null),
+  mortgagePossible: Joi.boolean().allow(null),
+  readyToMove:      Joi.boolean().allow(null),
+  bargaining:       Joi.boolean().allow(null),
 });
 
 const getByIdSchema = Joi.object({
@@ -58,6 +73,21 @@ const updatePropertySchema = Joi.object({
   latitude:         Joi.number().precision(6).min(-90).max(90).allow(null),
   longitude:        Joi.number().precision(6).min(-180).max(180).allow(null),
   status:           Joi.string().valid('draft', 'active', 'archived').optional().default('active'),
+  totalArea:        Joi.number().precision(2).positive().min(1).allow(null),
+  livingArea:       Joi.number().precision(2).positive().min(1).allow(null),
+  kitchenArea:      Joi.number().precision(2).positive().min(1).allow(null),
+  totalFloors:      Joi.number().integer().min(1).allow(null),
+  renovation:       Joi.string().max(100).allow(null, ''),
+  renovationYear:   Joi.number().integer().min(1800).max(2100).allow(null),
+  balcony:          Joi.string().max(100).allow(null, ''),
+  bathroom:         Joi.string().max(100).allow(null, ''),
+  windows:          Joi.string().max(100).allow(null, ''),
+  view:             Joi.string().max(100).allow(null, ''),
+  ownership:        Joi.string().max(100).allow(null, ''),
+  encumbrance:      Joi.boolean().allow(null),
+  mortgagePossible: Joi.boolean().allow(null),
+  readyToMove:      Joi.boolean().allow(null),
+  bargaining:       Joi.boolean().allow(null),
 }).min(1); // хотя бы одно поле должно быть
 
 const queryFilterSchema = Joi.object({
