@@ -71,6 +71,7 @@ const AdminPropertiesList = ({ setActiveSection }) => {
           <thead className="admin-properties-list-table-header-sticky">
             <tr className="admin-properties-list-header-row">
               <th className="admin-properties-list-table-header-cell id-column">ID</th>
+              <th className="admin-properties-list-table-header-cell title-column">Заголовок</th>           {/* новое */}
               <th className="admin-properties-list-table-header-cell address-column">Адрес</th>
               <th className="admin-properties-list-table-header-cell rooms-column">Комнат</th>
               <th className="admin-properties-list-table-header-cell area-column">Площадь</th>
@@ -79,11 +80,18 @@ const AdminPropertiesList = ({ setActiveSection }) => {
               <th className="admin-properties-list-table-header-cell operation-column">Операция</th>
               <th className="admin-properties-list-table-header-cell type-column">Тип недв.</th>
               <th className="admin-properties-list-table-header-cell subtype-column">Подтип</th>
+              <th className="admin-properties-list-table-header-cell building-type-column">Тип дома</th>    {/* новое */}
               <th className="admin-properties-list-table-header-cell condition-column">Состояние</th>
+              <th className="admin-properties-list-table-header-cell renovation-year-column">Ремонт, год</th> {/* новое */}
               <th className="admin-properties-list-table-header-cell parking-column">Парковка</th>
               <th className="admin-properties-list-table-header-cell floor-column">Этаж</th>
               <th className="admin-properties-list-table-header-cell elevator-column">Лифт</th>
-              <th className="admin-properties-list-table-header-cell year-column">Год</th>
+              <th className="admin-properties-list-table-header-cell year-column">Год постр.</th>
+              <th className="admin-properties-list-table-header-cell maternal-capital-column">Мат.кап.</th>  {/* новое */}
+              <th className="admin-properties-list-table-header-cell encumbrance-column">Обременения</th>   {/* новое */}
+              <th className="admin-properties-list-table-header-cell ready-to-move-column">Заселение</th>   {/* новое */}
+              <th className="admin-properties-list-table-header-cell bargaining-column">Торг</th>            {/* новое */}
+              <th className="admin-properties-list-table-header-cell mortgage-column">Ипотека</th>          {/* новое */}
               <th className="admin-properties-list-table-header-cell description-column">Описание</th>
               <th className="admin-properties-list-table-header-cell created-column">Создано</th>
               <th className="admin-properties-list-table-header-cell actions-column">Действия</th>
@@ -99,14 +107,32 @@ const AdminPropertiesList = ({ setActiveSection }) => {
               </tr>
             ) : (
               properties.map(property => (
-                <tr 
-                  key={property.id} 
-                  className="admin-properties-list-data-row"
-                >
+                <tr key={property.id} className="admin-properties-list-data-row">
                   <td className="admin-properties-list-table-cell id-column">{property.id}</td>
-                  <td className="admin-properties-list-table-cell address-column">{property.address || '—'}</td>
-                  <td className="admin-properties-list-table-cell rooms-column text-center">{property.rooms ?? '—'}</td>
-                  <td className="admin-properties-list-table-cell area-column text-right">{property.area ? `${property.area} м²` : '—'}</td>
+
+                  <td className="admin-properties-list-table-cell title-column">
+                    {property.title || '—'}
+                  </td>
+
+                  <td className="admin-properties-list-table-cell address-column">
+                    {property.slug ? (
+                      <a
+                        href={`/property/${property.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="admin-properties-list-table-cell address-column .address-link"
+                      >
+                        {property.address || '—'}
+                      </a>
+                    ) : (
+                      property.address || '—'
+                    )}
+                  </td>
+
+                  <td className="admin-properties-list-table-cell rooms-column text-center">{property.roomsCuant ?? '—'}</td>
+                  <td className="admin-properties-list-table-cell area-column text-right">
+                    {property.totalArea || property.area ? `${property.totalArea || property.area} м²` : '—'}
+                  </td>
                   <td className="admin-properties-list-table-cell price-column text-right">
                     {property.price ? property.price.toLocaleString('ru-RU') : '—'}
                   </td>
@@ -114,16 +140,37 @@ const AdminPropertiesList = ({ setActiveSection }) => {
                   <td className="admin-properties-list-table-cell operation-column">{property.operation?.name || '—'}</td>
                   <td className="admin-properties-list-table-cell type-column">{property.propertyType?.name || '—'}</td>
                   <td className="admin-properties-list-table-cell subtype-column">{property.housingType?.name || '—'}</td>
+
+                  {/* Новые колонки */}
+                  <td className="admin-properties-list-table-cell building-type-column">{property.buildingType || '—'}</td>
                   <td className="admin-properties-list-table-cell condition-column">{property.condition || '—'}</td>
+                  <td className="admin-properties-list-table-cell renovation-year-column">{property.renovationYear || '—'}</td>
                   <td className="admin-properties-list-table-cell parking-column">{property.parking || '—'}</td>
                   <td className="admin-properties-list-table-cell floor-column text-center">{property.floor ?? '—'}</td>
                   <td className="admin-properties-list-table-cell elevator-column text-center">
                     {property.hasElevator ? '✓' : '—'}
                   </td>
                   <td className="admin-properties-list-table-cell year-column text-center">{property.yearBuilt || '—'}</td>
+
+                  {/* Флаги */}
+                  <td className="admin-properties-list-table-cell maternal-capital-column text-center">
+                    {property.maternalCapital ? 'да' : '—'}
+                  </td>
+                  <td className="admin-properties-list-table-cell encumbrance-column text-center">
+                    {property.encumbrance ? 'есть' : '—'}
+                  </td>
+                  <td className="admin-properties-list-table-cell ready-to-move-column text-center">
+                    {property.readyToMove ? 'да' : '—'}
+                  </td>
+                  <td className="admin-properties-list-table-cell bargaining-column text-center">
+                    {property.bargaining ? 'да' : '—'}
+                  </td>
+                  <td className="admin-properties-list-table-cell mortgage-column text-center">
+                    {property.mortgagePossible ? 'да' : '—'}
+                  </td>
+
                   <td className="admin-properties-list-table-cell description-column">
-                    {property.shortDescription?.slice(0, 60) || '—'}
-                    {property.shortDescription?.length > 60 && '...'}
+                    {property.shortDescription?.slice(0, 60) || '—'}{property.shortDescription?.length > 60 && '...'}
                   </td>
                   <td className="admin-properties-list-table-cell created-column">
                     {new Date(property.createdAt).toLocaleDateString('ru-RU')}

@@ -41,7 +41,7 @@
 }
 
 .hero-button {
-  background-color: #43AB9D;
+  background-color: var(--accent-filters);
   color: white;
   border: none;
   padding: 21px 71px;

@@ -86,7 +86,7 @@
 .service-card__price {
   font-size: 0.96875rem;
   font-weight: 700;
-  color: #43AB9D;               /* твой акцентный цвет */
+  color: var(--accent-filters);               /* твой акцентный цвет */
   margin: 8px 0;
 }
 

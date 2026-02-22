@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 const { 
   getAllProperties,
   getPropertyById,
+  getPropertyBySlug,
   createProperty,
   updateProperty,
   archiveProperty,
@@ -91,7 +92,8 @@ router.get('/map', async (req, res) => {
 });
 // Доступны всем (или можно ограничить авторизацией, если нужно)
 router.get('/', validate(queryFilterSchema), getAllProperties);
-router.get('/:id', validateParams(getByIdSchema), getPropertyById);
+router.get('/:slug', getPropertyBySlug);
+router.get('/id/:id', validateParams(getByIdSchema), getPropertyById);
 
 // Только админы
 router.post('/',

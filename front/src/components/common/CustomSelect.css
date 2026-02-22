@@ -1,0 +1,82 @@
+.filter-item.custom-select-wrapper {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-item.custom-select-wrapper .custom-select-trigger {
+  width: 100%;
+  height: 100%;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  font-size: 1rem;
+  color: #333;
+  text-transform: uppercase;
+  box-sizing: border-box;
+}
+
+.filter-item.custom-select-wrapper .custom-select-trigger .selected-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filter-item.custom-select-wrapper .custom-select-trigger .custom-arrow svg{
+  height: 10px;
+  width: 15px;
+  color: #666;
+  transition: transform 0.2s ease;
+}
+
+
+/* Выпадающий список */
+.filter-item.custom-select-wrapper .custom-options-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--accent-filters);
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  max-height: 240px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+}
+
+.filter-item.custom-select-wrapper .custom-options-list .custom-option {
+  padding: 10px 16px;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-item.custom-select-wrapper .custom-options-list .custom-option:hover {
+  background: rgba(67, 171, 157, 0.08);          /* светлый оттенок вашего акцента */
+}
+
+.filter-item.custom-select-wrapper .custom-options-list .custom-option.selected {
+  background: rgba(67, 171, 157, 0.15);
+  font-weight: 600;
+  color: #2a7a6f;
+}
+
+/* hover на весь блок (как у вас было) */
+.filter-item.custom-select-wrapper:hover {
+  border-color: var(--accent-filters);
+  box-shadow: 0 0 0 3px rgba(67, 171, 157, 0.15);
+}
+
+/* Когда открыт — чуть ярче бордер */
+.filter-item.custom-select-wrapper.open {
+  border-color: var(--accent-filters);
+  box-shadow: 0 0 0 3px rgba(67, 171, 157, 0.2);
+}

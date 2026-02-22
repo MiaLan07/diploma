@@ -1,54 +1,79 @@
 // src/pages/Admin/AdminAddProperty.jsx
 import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-import './AdminAddProperty.css'; // предполагаем, что стили будут в отдельном файле
+import './AdminAddProperty.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+// ────────────────────────────────────────────────
+// Схема валидации (только действительно обязательные поля)
+// ────────────────────────────────────────────────
 const schema = yup.object({
-  operationId: yup.number().integer().positive().required('Выберите тип операции'),
-  propertyTypeId: yup.number().integer().positive().required('Выберите тип недвижимости'),
-  housingTypeId: yup.number().integer().positive().nullable(),
+  title:            yup.string().max(120).required('Укажите заголовок объявления'),
+  operationId:      yup.number().integer().positive().required('Выберите тип операции'),
+  propertyTypeId:   yup.number().integer().positive().required('Выберите тип недвижимости'),
+  housingTypeId:    yup.number().integer().positive().nullable(),
 
-  price: yup.number().positive().required('Укажите цену').min(100_000, 'Слишком низкая цена'),
-  area: yup.number().positive().nullable().min(5, 'Площадь слишком мала'),
+  price:            yup.number().positive().required('Укажите цену').min(100000),
+  area:             yup.number().positive().nullable().min(5),
 
-  totalArea: yup.number().positive().nullable().min(5),
-  livingArea: yup.number().positive().nullable().min(5),
-  kitchenArea: yup.number().positive().nullable().min(3),
+  totalArea:        yup.number().positive().nullable().min(5),
+  livingArea:       yup.number().positive().nullable().min(5),
+  kitchenArea:      yup.number().positive().nullable().min(3),
 
-  rooms: yup.number().integer().min(0).max(20).nullable(),
-  floor: yup.number().integer().min(-10).max(150).nullable(),
-  totalFloors: yup.number().integer().min(1).max(150).nullable(),
+  roomsCount:       yup.number().integer().min(0).max(20).nullable(), // общее кол-во комнат (для быстрого фильтра)
 
-  // Строковые необязательные — разрешаем пустую строку
-  condition: yup.string().max(100).nullable(),
-  renovation: yup.string().max(100).nullable(),
-  parking: yup.string().max(50).nullable(),
-  balcony: yup.string().max(100).nullable(),
-  bathroom: yup.string().max(100).nullable(),
-  windows: yup.string().max(100).nullable(),
-  view: yup.string().max(100).nullable(),
-  ownership: yup.string().max(100).nullable(),
+  floor:            yup.number().integer().min(-10).max(150).nullable(),
+  totalFloors:      yup.number().integer().min(1).max(150).nullable(),
 
-  // Текстовые описания — тоже разрешаем пустые
+  buildingType:     yup.string().max(100).nullable(),
+  condition:        yup.string().max(100).nullable(),
+  renovation:       yup.string().max(100).nullable(),
+  renovationYear:   yup.number().integer().min(1900).max(2030).nullable(),
+
+  parking:          yup.string().max(50).nullable(),
+  balcony:          yup.string().max(100).nullable(),
+  bathroom:         yup.string().max(100).nullable(),
+  windows:          yup.string().max(100).nullable(),
+  view:             yup.string().max(100).nullable(),
+  ownership:        yup.string().max(100).nullable(),
+
+  hasElevator:      yup.boolean().nullable(),
+  yearBuilt:        yup.number().integer().min(1800).max(2030).nullable(),
+
+  address:          yup.string().trim().max(255).required('Укажите адрес'),
   shortDescription: yup.string().trim().max(500).nullable(),
-  fullDescription: yup.string().trim().max(10000).nullable(),
+  fullDescription:  yup.string().trim().max(10000).nullable(),
 
-  address: yup.string().trim().max(255).required('Укажите адрес'),
+  buildingDescription:     yup.string().max(2000).nullable(),
+  yearBuiltDescription:    yup.string().max(500).nullable(),
+  environment:             yup.string().max(1000).nullable(),
+  infrastructure:          yup.string().max(1000).nullable(),
+  transportAccessibility:  yup.string().max(500).nullable(),
+  communications:          yup.string().max(500).nullable(),
+  legalPurity:             yup.string().max(500).nullable(),
+  mortgageDescription:     yup.string().max(500).nullable(),
+  livingDescription:       yup.string().max(1000).nullable(),
 
-  hasElevator: yup.boolean().nullable(),
-  renovationYear: yup.number().integer().min(1900).max(new Date().getFullYear() + 5).nullable(),
-
-  encumbrance: yup.boolean().nullable(),
+  encumbrance:      yup.boolean().nullable(),
   mortgagePossible: yup.boolean().nullable(),
-  readyToMove: yup.boolean().nullable(),
-  bargaining: yup.boolean().nullable(),
+  maternalCapital:  yup.boolean().nullable(),
+  readyToMove:      yup.boolean().nullable(),
+  bargaining:       yup.boolean().nullable(),
+
+  // Комнаты — массив объектов
+  rooms: yup.array().of(
+    yup.object({
+      type:        yup.string().required('Укажите тип комнаты'),
+      area:        yup.number().positive().min(2).required('Укажите площадь комнаты'),
+      description: yup.string().max(500).nullable(),
+    })
+  ).nullable(),
 }).required();
 
 const AdminAddProperty = () => {
@@ -72,11 +97,13 @@ const AdminAddProperty = () => {
     formState: { errors },
     watch,
     reset,
+    control,
   } = useForm({
     resolver: yupResolver(schema),
-    mode: 'onChange',                 // ← полезно для моментальной обратной связи
+    mode: 'onChange',
     shouldFocusError: false,
     defaultValues: {
+      title: '',
       operationId: '',
       propertyTypeId: '',
       housingTypeId: null,
@@ -85,9 +112,10 @@ const AdminAddProperty = () => {
       totalArea: '',
       livingArea: '',
       kitchenArea: '',
-      rooms: '',
+      roomsCount: '',
       floor: '',
       totalFloors: '',
+      buildingType: '',
       condition: '',
       renovation: '',
       renovationYear: '',
@@ -96,35 +124,48 @@ const AdminAddProperty = () => {
       bathroom: '',
       windows: '',
       view: '',
+      ownership: '',
       hasElevator: false,
+      yearBuilt: '',
       address: '',
       shortDescription: '',
       fullDescription: '',
+      buildingDescription: '',
+      yearBuiltDescription: '',
+      environment: '',
+      infrastructure: '',
+      transportAccessibility: '',
+      communications: '',
+      legalPurity: '',
+      mortgageDescription: '',
+      livingDescription: '',
       encumbrance: false,
       mortgagePossible: false,
+      maternalCapital: false,
       readyToMove: false,
       bargaining: true,
-      ownership: '',
+      rooms: [],
     },
   });
 
-  const selectedPropertyType = watch('propertyTypeId');
-  const isResidential = selectedPropertyType === '1'; // ← замените на реальный ID "Жилая"
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'rooms',
+  });
 
-  // Загрузка справочников
+  const selectedPropertyType = watch('propertyTypeId');
+  const isResidential = selectedPropertyType === '1'; // ← замени на реальный ID "Жилая"
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/auth');
-      return;
-    }
+    if (!token) return navigate('/auth');
 
     const fetchData = async () => {
       try {
         const [ops, ptypes, htypes] = await Promise.all([
-          axios.get(`${API_URL}/api/references/operations`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API_URL}/api/references/operations`,     { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API_URL}/api/references/property-types`, { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get(`${API_URL}/api/references/housing-types`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API_URL}/api/references/housing-types`,  { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         setOperations(ops.data.data || []);
@@ -141,68 +182,74 @@ const AdminAddProperty = () => {
     fetchData();
   }, [navigate]);
 
-  // Фильтрация housingTypes по выбранному propertyType (если бэкенд этого не делает)
   useEffect(() => {
-    if (selectedPropertyType) {
-      // Если у housingTypes есть поле propertyTypeId — фильтруем
-      const filtered = housingTypes.filter(
-        ht => !ht.propertyTypeId || String(ht.propertyTypeId) === selectedPropertyType
-      );
-      setFilteredHousingTypes(filtered);
-    } else {
+    if (!selectedPropertyType) {
       setFilteredHousingTypes([]);
+      return;
     }
+    const filtered = housingTypes.filter(
+      ht => !ht.propertyTypeId || String(ht.propertyTypeId) === selectedPropertyType
+    );
+    setFilteredHousingTypes(filtered);
   }, [selectedPropertyType, housingTypes]);
 
-  const onSubmit = async (formData) => {
-    console.log("Данные из формы (сырые):", formData);
+  const onSubmit = async (formValues) => {
     setLoading(true);
     setServerError(null);
 
-    const data = new FormData();
+    const formData = new FormData();
 
-    // Явно приводим типы к тому, что ожидает сервер
-    const preparedData = {
-      ...formData,
-      operationId:       formData.operationId       ? Number(formData.operationId)       : undefined,
-      propertyTypeId:    formData.propertyTypeId    ? Number(formData.propertyTypeId)    : undefined,
-      housingTypeId:     formData.housingTypeId     ? Number(formData.housingTypeId)     : undefined,
-      price:             formData.price             ? Number(formData.price)             : undefined,
-      area:              formData.area              ? Number(formData.area)              : undefined,
-      totalArea:         formData.totalArea         ? Number(formData.totalArea)         : undefined,
-      livingArea:        formData.livingArea        ? Number(formData.livingArea)        : undefined,
-      kitchenArea:       formData.kitchenArea       ? Number(formData.kitchenArea)       : undefined,
-      rooms:             formData.rooms             ? Number(formData.rooms)             : undefined,
-      floor:             formData.floor             ? Number(formData.floor)             : undefined,
-      totalFloors:       formData.totalFloors       ? Number(formData.totalFloors)       : undefined,
-      renovationYear:    formData.renovationYear    ? Number(formData.renovationYear)    : undefined,
-
-      hasElevator:       formData.hasElevator       === true,
-      encumbrance:       formData.encumbrance       === true,
-      mortgagePossible:  formData.mortgagePossible  === true,
-      readyToMove:       formData.readyToMove       === true,
-      bargaining:        formData.bargaining        === true,
-    };
-
-    // Добавляем подготовленные данные
-    Object.entries(preparedData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        data.append(key, value);
+    // Числовые поля
+    [
+      'operationId', 'propertyTypeId', 'housingTypeId', 'price', 'area',
+      'totalArea', 'livingArea', 'kitchenArea', 'roomsCount', 'floor', 'totalFloors',
+      'yearBuilt', 'renovationYear'
+    ].forEach(field => {
+      const val = formValues[field];
+      if (val !== '' && val !== null && val !== undefined) {
+        formData.append(field, Number(val));
       }
     });
 
-    // Файлы
-    images.forEach(file => {
-      data.append('images', file);
+    // Булевы поля
+    [
+      'hasElevator', 'encumbrance', 'mortgagePossible', 'maternalCapital',
+      'readyToMove', 'bargaining'
+    ].forEach(field => {
+      formData.append(field, formValues[field] ? 'true' : 'false');
     });
+
+    // Строки
+    [
+      'title', 'address', 'shortDescription', 'fullDescription',
+      'buildingType', 'condition', 'renovation', 'parking', 'balcony',
+      'bathroom', 'windows', 'view', 'ownership',
+      'buildingDescription', 'yearBuiltDescription', 'environment',
+      'infrastructure', 'transportAccessibility', 'communications',
+      'legalPurity', 'mortgageDescription', 'livingDescription'
+    ].forEach(field => {
+      const val = formValues[field]?.trim();
+      if (val) formData.append(field, val);
+    });
+
+    // Комнаты (массив)
+    formValues.rooms?.forEach((room, index) => {
+      formData.append(`rooms[${index}][type]`,        room.type);
+      formData.append(`rooms[${index}][area]`,        Number(room.area));
+      if (room.description?.trim()) {
+        formData.append(`rooms[${index}][description]`, room.description.trim());
+      }
+    });
+
+    // Изображения
+    images.forEach(file => formData.append('images', file));
 
     try {
       const res = await axios.post(
         `${API_URL}/api/properties`,
-        data,
+        formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
@@ -216,14 +263,14 @@ const AdminAddProperty = () => {
         navigate('/admin/properties');
       }
     } catch (err) {
-      console.error("Ошибка при создании объекта:", err);
-      console.log("Ответ сервера:", err.response?.data);
+      console.error('Ошибка создания объекта:', err);
+      console.log('Ответ сервера:', err.response?.data);
 
       setServerError(
         err.response?.data?.message ||
         err.response?.data?.errors?.[0]?.message ||
         err.message ||
-        'Ошибка при сохранении объекта'
+        'Ошибка сервера'
       );
     } finally {
       setLoading(false);
@@ -233,14 +280,9 @@ const AdminAddProperty = () => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setImages(prev => [...prev, ...files]);
-
     const newPreviews = files.map(file => URL.createObjectURL(file));
     setImagePreviews(prev => [...prev, ...newPreviews]);
-
-    // cleanup
-    return () => {
-      newPreviews.forEach(URL.revokeObjectURL);
-    };
+    return () => newPreviews.forEach(URL.revokeObjectURL);
   };
 
   if (loadingRefs) return <div className="admin-loading">Загрузка справочников...</div>;
@@ -248,9 +290,13 @@ const AdminAddProperty = () => {
 
   return (
     <div className="admin-add-property-page">
+      <div className="admin-header">
+        <h1>Добавить объект недвижимости</h1>
+      </div>
+
       {Object.keys(errors).length > 0 && (
         <div className="form-errors-block">
-          <p>Проверьте обязательные поля:</p>
+          <p>Заполните обязательные поля:</p>
           <ul>
             {Object.entries(errors).map(([key, err]) => (
               <li key={key}>{err.message}</li>
@@ -258,24 +304,29 @@ const AdminAddProperty = () => {
           </ul>
         </div>
       )}
-      <div className="admin-header">
-        <h1>Добавить новый объект недвижимости</h1>
-      </div>
 
-      {serverError && (
-        <div className="server-error-message">{serverError}</div>
-      )}
+      {serverError && <div className="server-error-message">{serverError}</div>}
 
       <form onSubmit={handleSubmit(onSubmit)} className="property-create-form">
 
-        {/* Блок 1 — Основная классификация */}
+        {/* ── Основная информация ── */}
         <fieldset className="form-section">
-          <legend>Классификация объекта</legend>
+          <legend>Основная информация</legend>
+
+          <div className="form-group full-width">
+            <label>Заголовок объявления *</label>
+            <input
+              type="text"
+              placeholder="Например: 2-комн. квартира с ремонтом, 15 мин до центра"
+              {...register('title')}
+            />
+            {errors.title && <span className="field-error">{errors.title.message}</span>}
+          </div>
 
           <div className="form-row">
             <div className="form-group">
               <label>Тип операции *</label>
-              <select {...register('operationId')}>
+              <select {...register('operationId', { valueAsNumber: true })}>
                 <option value="">— выберите —</option>
                 {operations.map(op => (
                   <option key={op.id} value={op.id}>{op.name}</option>
@@ -286,7 +337,7 @@ const AdminAddProperty = () => {
 
             <div className="form-group">
               <label>Тип недвижимости *</label>
-              <select {...register('propertyTypeId')}>
+              <select {...register('propertyTypeId', { valueAsNumber: true })}>
                 <option value="">— выберите —</option>
                 {propertyTypes.map(pt => (
                   <option key={pt.id} value={pt.id}>{pt.name}</option>
@@ -299,7 +350,7 @@ const AdminAddProperty = () => {
           {filteredHousingTypes.length > 0 && (
             <div className="form-group">
               <label>Тип жилья</label>
-              <select {...register('housingTypeId')}>
+              <select {...register('housingTypeId', { valueAsNumber: true })}>
                 <option value="">— не выбран —</option>
                 {filteredHousingTypes.map(ht => (
                   <option key={ht.id} value={ht.id}>{ht.name}</option>
@@ -309,161 +360,168 @@ const AdminAddProperty = () => {
           )}
         </fieldset>
 
-        {/* Блок 2 — Цена и площади */}
+        {/* ── Цена и площади ── */}
         <fieldset className="form-section">
           <legend>Цена и площади</legend>
 
           <div className="form-row">
             <div className="form-group">
               <label>Цена (₽) *</label>
-              <input type="number" {...register('price')} />
+              <input type="number" {...register('price', { valueAsNumber: true })} />
               {errors.price && <span className="field-error">{errors.price.message}</span>}
             </div>
 
             <div className="form-group">
               <label>Общая площадь (м²)</label>
-              <input type="number" step="0.1" {...register('totalArea')} />
+              <input type="number" step="0.1" {...register('totalArea', { valueAsNumber: true })} />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label>Жилая площадь (м²)</label>
-              <input type="number" step="0.1" {...register('livingArea')} />
+              <input type="number" step="0.1" {...register('livingArea', { valueAsNumber: true })} />
             </div>
 
             <div className="form-group">
               <label>Площадь кухни (м²)</label>
-              <input type="number" step="0.1" {...register('kitchenArea')} />
+              <input type="number" step="0.1" {...register('kitchenArea', { valueAsNumber: true })} />
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Площадь по документам / указанная (м²)</label>
-            <input type="number" step="0.1" {...register('area')} />
+          <div className="form-row">
+            <div className="form-group">
+              <label>Площадь по документам (м²)</label>
+              <input type="number" step="0.1" {...register('area', { valueAsNumber: true })} />
+            </div>
+
+            <div className="form-group">
+              <label>Количество комнат (общее)</label>
+              <input type="number" min="0" {...register('roomsCount', { valueAsNumber: true })} />
+            </div>
           </div>
         </fieldset>
 
-        {/* Блок 3 — Параметры квартиры (условно жилые) */}
-        {isResidential && (
-          <fieldset className="form-section">
-            <legend>Параметры квартиры / дома</legend>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Комнат</label>
-                <input type="number" min="0" {...register('rooms')} />
-              </div>
-
-              <div className="form-group">
-                <label>Этаж / всего этажей</label>
-                <div className="inline-fields">
-                  <input type="number" placeholder="Этаж" {...register('floor')} />
-                  <span>/</span>
-                  <input type="number" placeholder="Всего" {...register('totalFloors')} />
-                </div>
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Состояние</label>
-                <select {...register('condition')}>
-                  <option value="">— не указано —</option>
-                  <option value="Без ремонта">Без ремонта</option>
-                  <option value="Требует ремонта">Требует ремонта</option>
-                  <option value="Косметический">Косметический</option>
-                  <option value="С ремонтом">С ремонтом</option>
-                  <option value="Евроремонт">Евроремонт</option>
-                  <option value="Дизайнерский">Дизайнерский</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Ремонт / год</label>
-                <div className="inline-fields">
-                  <select {...register('renovation')}>
-                    <option value="">—</option>
-                    <option value="Без ремонта">Без ремонта</option>
-                    <option value="Косметический">Косметический</option>
-                    <option value="Евроремонт">Евроремонт</option>
-                    <option value="Дизайнерский">Дизайнерский</option>
-                  </select>
-                  <input type="number" placeholder="Год" {...register('renovationYear')} />
-                </div>
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Санузел</label>
-                <select {...register('bathroom')}>
-                  <option value="">—</option>
-                  <option value="Совмещённый">Совмещённый</option>
-                  <option value="Раздельный">Раздельный</option>
-                  <option value="2 санузла">2 санузла</option>
-                  <option value="3+ санузла">3+ санузла</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Балкон / лоджия</label>
-                <select {...register('balcony')}>
-                  <option value="">—</option>
-                  <option value="Нет">Нет</option>
-                  <option value="Балкон">Балкон</option>
-                  <option value="Лоджия">Лоджия</option>
-                  <option value="Два балкона">Два балкона</option>
-                  <option value="Две лоджии">Две лоджии</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="form-row checkbox-row">
-              <label className="checkbox-label">
-                <input type="checkbox" {...register('hasElevator')} />
-                Есть лифт
-              </label>
-
-              <label className="checkbox-label">
-                <input type="checkbox" {...register('readyToMove')} />
-                Готово к заселению
-              </label>
-            </div>
-
-            <div className="form-row checkbox-row">
-              <label className="checkbox-label">
-                <input type="checkbox" {...register('mortgagePossible')} />
-                Возможна ипотека
-              </label>
-
-              <label className="checkbox-label">
-                <input type="checkbox" {...register('bargaining')} />
-                Торг уместен
-              </label>
-            </div>
-          </fieldset>
-        )}
-
-        {/* Блок 4 — Адрес, координаты, описание */}
+        {/* ── Комнаты (динамический блок) ── */}
         <fieldset className="form-section">
-          <legend>Местоположение и описание</legend>
+          <legend>Комнаты</legend>
+
+          {fields.map((field, index) => (
+            <div key={field.id} className="room-item">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Тип комнаты *</label>
+                  <select {...register(`rooms.${index}.type`)}>
+                    <option value="">— выберите —</option>
+                    <option value="kitchen">Кухня</option>
+                    <option value="living_room">Гостиная</option>
+                    <option value="bedroom">Спальня</option>
+                    <option value="child_room">Детская</option>
+                    <option value="office">Кабинет</option>
+                    <option value="bathroom">Санузел</option>
+                    <option value="balcony">Балкон/лоджия</option>
+                    <option value="hallway">Прихожая</option>
+                    <option value="storage">Кладовая</option>
+                    <option value="other">Другое</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Площадь (м²) *</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    {...register(`rooms.${index}.area`, { valueAsNumber: true })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Описание комнаты</label>
+                <textarea {...register(`rooms.${index}.description`)} rows={2} />
+              </div>
+
+              <button
+                type="button"
+                className="btn-remove-room"
+                onClick={() => remove(index)}
+              >
+                Удалить комнату
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            className="btn-add-room"
+            onClick={() => append({ type: '', area: '', description: '' })}
+          >
+            + Добавить комнату
+          </button>
+        </fieldset>
+
+        {/* ── Параметры дома и объекта ── */}
+        <fieldset className="form-section">
+          <legend>Параметры дома и объекта</legend>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Тип дома</label>
+              <select {...register('buildingType')}>
+                <option value="">— не указано —</option>
+                <option value="Кирпичный">Кирпичный</option>
+                <option value="Монолитный">Монолитный</option>
+                <option value="Панельный">Панельный</option>
+                <option value="Блочный">Блочный</option>
+                <option value="Деревянный">Деревянный</option>
+                <option value="Каркасный">Каркасный</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Этаж / всего этажей</label>
+              <div className="inline-fields">
+                <input type="number" placeholder="Этаж" {...register('floor', { valueAsNumber: true })} />
+                <span>/</span>
+                <input type="number" placeholder="Всего" {...register('totalFloors', { valueAsNumber: true })} />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Год постройки</label>
+              <input type="number" {...register('yearBuilt', { valueAsNumber: true })} />
+            </div>
+
+            <div className="form-group">
+              <label>Год последнего ремонта</label>
+              <input type="number" {...register('renovationYear', { valueAsNumber: true })} />
+            </div>
+          </div>
+
+          <div className="form-row checkbox-row">
+            <label><input type="checkbox" {...register('hasElevator')} /> Есть лифт</label>
+            <label><input type="checkbox" {...register('readyToMove')}    /> Можно заехать сразу</label>
+            <label><input type="checkbox" {...register('mortgagePossible')} /> Возможна ипотека</label>
+            <label><input type="checkbox" {...register('maternalCapital')}  /> Мат. капитал</label>
+            <label><input type="checkbox" {...register('bargaining')}       /> Торг уместен</label>
+          </div>
+        </fieldset>
+
+        {/* ── Адрес и описание ── */}
+        <fieldset className="form-section">
+          <legend>Адрес и описание</legend>
 
           <div className="form-group full-width">
             <label>Адрес *</label>
-            <input
-              type="text"
-              placeholder="Например: г. Симферополь, ул. Киевская, 12"
-              {...register('address')}
-            />
+            <input type="text" {...register('address')} />
             {errors.address && <span className="field-error">{errors.address.message}</span>}
-            <small className="form-hint">
-              Координаты будут определены автоматически
-            </small>
+            <small>Координаты определятся автоматически</small>
           </div>
 
           <div className="form-group">
-            <label>Краткое описание (до 500 символов)</label>
+            <label>Краткое описание</label>
             <textarea {...register('shortDescription')} rows={3} maxLength={500} />
           </div>
 
@@ -473,35 +531,74 @@ const AdminAddProperty = () => {
           </div>
         </fieldset>
 
-        {/* Блок 5 — Фотографии */}
+        {/* ── Дополнительные описания ── */}
         <fieldset className="form-section">
-          <legend>Фотографии</legend>
+          <legend>Дополнительные характеристики</legend>
+
           <div className="form-group">
-            <input
-              type="file"
-              multiple
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleImageChange}
-            />
-            {imagePreviews.length > 0 && (
-              <div className="image-preview-container">
-                {imagePreviews.map((src, idx) => (
-                  <div key={idx} className="preview-item">
-                    <img src={src} alt={`preview ${idx + 1}`} />
-                  </div>
-                ))}
-              </div>
-            )}
+            <label>Описание дома / здания</label>
+            <textarea {...register('buildingDescription')} rows={4} />
+          </div>
+
+          <div className="form-group">
+            <label>Окружение</label>
+            <textarea {...register('environment')} rows={3} />
+          </div>
+
+          <div className="form-group">
+            <label>Инфраструктура</label>
+            <textarea {...register('infrastructure')} rows={3} />
+          </div>
+
+          <div className="form-group">
+            <label>Транспортная доступность</label>
+            <textarea {...register('transportAccessibility')} rows={2} />
+          </div>
+
+          <div className="form-group">
+            <label>Коммуникации</label>
+            <textarea {...register('communications')} rows={2} />
+          </div>
+
+          <div className="form-group">
+            <label>Юридическая чистота</label>
+            <textarea {...register('legalPurity')} rows={2} />
+          </div>
+
+          <div className="form-group">
+            <label>Описание ипотеки</label>
+            <textarea {...register('mortgageDescription')} rows={2} />
+          </div>
+
+          <div className="form-group">
+            <label>Особенности проживания</label>
+            <textarea {...register('livingDescription')} rows={3} />
           </div>
         </fieldset>
 
-        {/* Кнопка отправки */}
+        {/* ── Фотографии ── */}
+        <fieldset className="form-section">
+          <legend>Фотографии</legend>
+          <input
+            type="file"
+            multiple
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleImageChange}
+          />
+          {imagePreviews.length > 0 && (
+            <div className="image-preview-container">
+              {imagePreviews.map((src, idx) => (
+                <div key={idx} className="preview-item">
+                  <img src={src} alt={`preview ${idx + 1}`} />
+                </div>
+              ))}
+            </div>
+          )}
+        </fieldset>
+
+        {/* ── Кнопка ── */}
         <div className="form-actions">
-          <button
-            type="submit"                    // ← возвращаем submit
-            disabled={loading}
-            className="btn-primary"
-          >
+          <button type="submit" disabled={loading} className="btn-primary">
             {loading ? 'Сохранение...' : 'Создать объект'}
           </button>
         </div>

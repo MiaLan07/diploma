@@ -8,7 +8,7 @@ import './PropertyDetails.css';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const PropertyDetails = () => {
-  const { id } = useParams();
+  const { slug } = useParams(); // теперь используем slug вместо id
   const navigate = useNavigate();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,14 +18,11 @@ const PropertyDetails = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/properties/${id}`);
+        const res = await axios.get(`${API_URL}/api/properties/${slug}`);
         setProperty(res.data.data);
 
-        // Проверка избранного (раскомментируй, когда будет готов эндпоинт)
-        // const favRes = await axios.get(`${API_URL}/api/favorites/check/${id}`, {
-        //   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        // });
-        // setIsFavorite(favRes.data.isFavorite);
+        // Проверка избранного (если будет эндпоинт)
+        // const favRes = await axios.get(`${API_URL}/api/favorites/check/${slug}`, { ... });
       } catch (err) {
         setError('Не удалось загрузить объявление');
         console.error(err);
@@ -35,7 +32,7 @@ const PropertyDetails = () => {
     };
 
     fetchProperty();
-  }, [id]);
+  }, [slug]);
 
   const toggleFavorite = async (e) => {
     e.stopPropagation();
@@ -47,11 +44,11 @@ const PropertyDetails = () => {
 
     try {
       if (isFavorite) {
-        await axios.delete(`${API_URL}/api/favorites/${id}`, {
+        await axios.delete(`${API_URL}/api/favorites/${slug}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post(`${API_URL}/api/favorites/${id}`, {}, {
+        await axios.post(`${API_URL}/api/favorites/${slug}`, {}, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -62,7 +59,6 @@ const PropertyDetails = () => {
   };
 
   const handleBuyClick = () => {
-    // Здесь можно открыть модалку заявки или перейти на страницу создания заявки
     alert('Заявка на просмотр / покупку отправлена (заглушка)');
     // navigate('/requests/new', { state: { propertyId: id } });
   };
@@ -77,10 +73,10 @@ const PropertyDetails = () => {
   return (
     <div className="property-details-page">
 
-      {/* Верхний блок — заголовок, цена, сердце */}
-      <div className="property-details-page .hero-section">
+      {/* Герой-секция: заголовок, цена, сердце */}
+      <section className="property-details-page .hero-section">
         <h1 className="property-details-page .hero-section .property-title">
-          {property.shortDescription || `${property.rooms || '?'}–комнатная квартира`}
+          {property.title || property.shortDescription || 'Объект недвижимости'}
         </h1>
 
         <div className="property-details-page .hero-section .price-and-favorite">
@@ -99,128 +95,209 @@ const PropertyDetails = () => {
         <div className="property-details-page .hero-section .address-line">
           {property.address || 'Адрес не указан'}, Симферополь
         </div>
-      </div>
+      </section>
 
-      {/* Галерея — коллаж из 4–5 фото */}
-      <div className="property-details-page .gallery-collage-wrapper">
+      {/* Галерея */}
+      <section className="property-details-page .gallery-section">
         {property.images?.length > 0 ? (
-          <>
-            {/* Главное фото слева */}
+          <div className="property-details-page .gallery-section .collage-wrapper">
             {mainImage && (
-              <div className="property-details-page .gallery-collage-wrapper .main-photo">
+              <div className="property-details-page .gallery-section .collage-wrapper .main-photo">
                 <img
                   src={`${API_URL}${mainImage.url}`}
-                  alt="Главное фото квартиры"
+                  alt="Главное фото"
                   onError={e => { e.target.src = '/images/fallback-property-large.jpg'; }}
                 />
               </div>
             )}
 
-            {/* Правая колонка — 2 фото */}
-            <div className="property-details-page .gallery-collage-wrapper .right-column">
-              {otherImages.slice(0, 2).map((img, idx) => (
-                <div key={img.id} className="property-details-page .gallery-collage-wrapper .right-column .small-photo">
+            <div className="property-details-page .gallery-section .collage-wrapper .right-column">
+              {otherImages.slice(0, 2).map(img => (
+                <div key={img.id} className="property-details-page .gallery-section .collage-wrapper .right-column .small-photo">
                   <img
                     src={`${API_URL}${img.url}`}
-                    alt={`Фото ${idx + 2}`}
+                    alt="Дополнительное фото"
                     onError={e => { e.target.src = '/images/fallback-property.jpg'; }}
                   />
                 </div>
               ))}
             </div>
 
-            {/* Нижняя строка — ещё 2 фото */}
-            <div className="property-details-page .gallery-collage-wrapper .bottom-row">
-              {otherImages.slice(2, 4).map((img, idx) => (
-                <div key={img.id} className="property-details-page .gallery-collage-wrapper .bottom-row .small-photo">
+            <div className="property-details-page .gallery-section .collage-wrapper .bottom-row">
+              {otherImages.slice(2, 5).map(img => (
+                <div key={img.id} className="property-details-page .gallery-section .collage-wrapper .bottom-row .small-photo">
                   <img
                     src={`${API_URL}${img.url}`}
-                    alt={`Фото ${idx + 4}`}
+                    alt="Дополнительное фото"
                     onError={e => { e.target.src = '/images/fallback-property.jpg'; }}
                   />
                 </div>
               ))}
-              {/* Если фото меньше — заполняем заглушкой */}
-              {otherImages.length < 4 && Array.from({ length: 4 - otherImages.length }).map((_, i) => (
-                <div key={`placeholder-${i}`} className="property-details-page .gallery-collage-wrapper .bottom-row .small-photo">
-                  <img src="/images/fallback-property.jpg" alt="Нет фото" />
-                </div>
-              ))}
             </div>
-          </>
+          </div>
         ) : (
-          <div className="property-details-page .gallery-collage-wrapper .no-images">
+          <div className="property-details-page .gallery-section .no-images">
             Фотографии отсутствуют
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Ключевые параметры одной строкой */}
-      <div className="property-details-page .key-params-bar">
-        <div className="property-details-page .key-params-bar .param">
-          <strong>{property.area || '?'} м²</strong>
-          <span>общая</span>
+      {/* Ключевые параметры */}
+      <section className="property-details-page .key-params-section">
+        <div className="property-details-page .key-params-section .params-grid">
+          <div className="property-details-page .key-params-section .params-grid .param-item">
+            <strong>{property.totalArea || property.area || '—'} м²</strong>
+            <span>общая площадь</span>
+          </div>
+          <div className="property-details-page .key-params-section .params-grid .param-item">
+            <strong>{property.livingArea || '—'} м²</strong>
+            <span>жилая</span>
+          </div>
+          <div className="property-details-page .key-params-section .params-grid .param-item">
+            <strong>{property.kitchenArea || '—'} м²</strong>
+            <span>кухня</span>
+          </div>
+          <div className="property-details-page .key-params-section .params-grid .param-item">
+            <strong>{property.roomsCuant || '—'}</strong>
+            <span>комнат</span>
+          </div>
+          <div className="property-details-page .key-params-section .params-grid .param-item">
+            <strong>{property.floor || '?'} / {property.totalFloors || '?'}</strong>
+            <span>этаж</span>
+          </div>
+          <div className="property-details-page .key-params-section .params-grid .param-item">
+            <strong>{property.yearBuilt || '—'} г.</strong>
+            <span>год постройки</span>
+          </div>
         </div>
-        <div className="property-details-page .key-params-bar .param">
-          <strong>{property.rooms || '?'}–комн.</strong>
-          <span></span>
-        </div>
-        <div className="property-details-page .key-params-bar .param">
-          <strong>{property.floor || '?'}/{property.totalFloors || '?'}</strong>
-          <span>этаж</span>
-        </div>
-        <div className="property-details-page .key-params-bar .param">
-          <strong>{property.yearBuilt || '—'} г.</strong>
-          <span>сдача</span>
-        </div>
-      </div>
+      </section>
 
       {/* Подробное описание */}
-      <div className="property-details-page .detailed-info-section">
-        <h2 className="property-details-page .detailed-info-section .section-title">Подробно об объекте</h2>
+      <section className="property-details-page .details-section">
+        <h2 className="property-details-page .details-section .section-title">Подробно об объекте</h2>
 
-        <div className="property-details-page .detailed-info-section .features-grid">
-          <div>Площадь кухни: <strong>{property.kitchenArea || '—'} м²</strong></div>
+        <div className="property-details-page .details-section .features-grid">
+          <div>Состояние: <strong>{property.condition || '—'}</strong></div>
+          <div>Отделка: <strong>{property.renovation || '—'}</strong></div>
+          <div>Год ремонта: <strong>{property.renovationYear || '—'}</strong></div>
+          <div>Тип дома: <strong>{property.buildingType || '—'}</strong></div>
           <div>Санузел: <strong>{property.bathroom || '—'}</strong></div>
           <div>Балкон/лоджия: <strong>{property.balcony || 'нет'}</strong></div>
-          <div>Ремонт: <strong>{property.renovation || property.condition || '—'}</strong></div>
           <div>Окна: <strong>{property.windows || '—'}</strong></div>
-          <div>Вид: <strong>{property.view || '—'}</strong></div>
+          <div>Вид из окна: <strong>{property.view || '—'}</strong></div>
+          <div>Лифт: <strong>{property.hasElevator ? 'есть' : 'нет'}</strong></div>
         </div>
 
         {property.fullDescription && (
-          <div className="property-details-page .detailed-info-section .full-description">
+          <div className="property-details-page .details-section .full-description">
             <h3>Описание</h3>
             <p>{property.fullDescription}</p>
           </div>
         )}
 
-        <ul className="property-details-page .detailed-info-section .extra-features-list">
-          <li>Можно заехать сразу: <strong>{property.readyToMove ? 'да' : 'нет'}</strong></li>
-          <li>Торг уместен: <strong>{property.bargaining ? 'да' : 'нет'}</strong></li>
-          <li>Ипотека: <strong>{property.mortgagePossible ? 'принимается' : 'не принимается'}</strong></li>
-          {property.encumbrance && <li>Обременения: <strong>есть</strong></li>}
+        <ul className="property-details-page .details-section .flags-list">
+          <li>Готово к заселению: <strong>{property.readyToMove ? 'да' : 'нет'}</strong></li>
+          <li>Торг: <strong>{property.bargaining ? 'уместен' : 'не уместен'}</strong></li>
+          <li>Ипотека: <strong>{property.mortgagePossible ? 'возможна' : 'нет'}</strong></li>
+          <li>Материнский капитал: <strong>{property.maternalCapital ? 'принимается' : 'нет'}</strong></li>
+          <li>Обременения: <strong>{property.encumbrance ? 'есть' : 'нет'}</strong></li>
         </ul>
-      </div>
+      </section>
 
-      {/* Место для карты (Yandex Maps, Leaflet и т.д.) */}
-      <div className="property-details-page .map-section">
+      {/* Дополнительные описания (если заполнены) */}
+      {(property.buildingDescription || property.yearBuiltDescription || property.environment ||
+        property.infrastructure || property.transportAccessibility || property.communications ||
+        property.legalPurity || property.mortgageDescription || property.livingDescription) && (
+        <section className="property-details-page .extra-descriptions-section">
+          <h2 className="property-details-page .extra-descriptions-section .section-title">Дополнительно</h2>
+
+          {property.buildingDescription && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>О доме / здании</h4>
+              <p>{property.buildingDescription}</p>
+            </div>
+          )}
+
+          {property.yearBuiltDescription && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>О годе постройки</h4>
+              <p>{property.yearBuiltDescription}</p>
+            </div>
+          )}
+
+          {property.environment && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>Окружение</h4>
+              <p>{property.environment}</p>
+            </div>
+          )}
+
+          {property.infrastructure && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>Инфраструктура</h4>
+              <p>{property.infrastructure}</p>
+            </div>
+          )}
+
+          {property.transportAccessibility && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>Транспорт</h4>
+              <p>{property.transportAccessibility}</p>
+            </div>
+          )}
+
+          {property.communications && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>Коммуникации</h4>
+              <p>{property.communications}</p>
+            </div>
+          )}
+
+          {property.legalPurity && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>Юридическая чистота</h4>
+              <p>{property.legalPurity}</p>
+            </div>
+          )}
+
+          {property.mortgageDescription && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>Ипотека</h4>
+              <p>{property.mortgageDescription}</p>
+            </div>
+          )}
+
+          {property.livingDescription && (
+            <div className="property-details-page .extra-descriptions-section .description-block">
+              <h4>Особенности проживания</h4>
+              <p>{property.livingDescription}</p>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Карта */}
+      <section className="property-details-page .map-section">
         <h2 className="property-details-page .map-section .section-title">Расположение</h2>
-        <div className="property-details-page .map-section .map-placeholder">
-          {/* Здесь будет <YandexMap ... lat={property.latitude} lng={property.longitude} /> */}
-          <div className="placeholder-text">
-            Карта (широта: {property.latitude?.toFixed(5) || '—'}, долгота: {property.longitude?.toFixed(5) || '—'})
-          </div>
+        <div className="property-details-page .map-section .map-container">
+          {property.latitude && property.longitude ? (
+            <div className="property-details-page .map-section .map-container .map-placeholder">
+              {/* Здесь будет <YandexMap lat={property.latitude} lng={property.longitude} /> */}
+              Координаты: {property.latitude.toFixed(6)}, {property.longitude.toFixed(6)}
+            </div>
+          ) : (
+            <p>Координаты не определены</p>
+          )}
         </div>
-      </div>
+      </section>
 
-      {/* Большая кнопка */}
+      {/* Кнопка действия */}
       <div className="property-details-page .action-bar">
         <button
-          className="property-details-page .action-bar .big-buy-button"
+          className="property-details-page .action-bar .big-action-button"
           onClick={handleBuyClick}
         >
-          КУПИТЬ КВАРТИРУ
+          Оставить заявку
         </button>
       </div>
     </div>

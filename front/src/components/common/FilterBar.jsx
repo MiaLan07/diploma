@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import './FilterBar.css';
 import { ReactComponent as MapIcon } from '../../assets/map1.svg'
+import CustomSelect from './CustomSelect'
 
 const FilterBar = () => {
   const [filters, setFilters] = useState({
@@ -28,28 +29,30 @@ const FilterBar = () => {
   return (
     <div className="filter-bar">
       <div className="filter-item">
-        <select name="operation" value={filters.operation} onChange={handleChange}>
-          <option>Купить</option>
-          <option>Арендовать</option>
-        </select>
+        <CustomSelect
+          name="operation"
+          value={filters.operation}
+          onChange={handleChange}
+          options={["Купить", "Арендовать"]}
+        />
       </div>
 
       <div className="filter-item">
-        <select name="type" value={filters.type} onChange={handleChange}>
-          <option>Квартиры</option>
-          <option>Дома</option>
-          <option>Коммерческая</option>
-        </select>
+        <CustomSelect
+          name="type"
+          value={filters.type}
+          onChange={handleChange}
+          options={["Квартиры", "Дома", "Коммерческая"]}
+        />
       </div>
 
       <div className="filter-item">
-        <select name="rooms" value={filters.rooms} onChange={handleChange}>
-          <option>Студия</option>
-          <option>1-к</option>
-          <option>2-к</option>
-          <option>3-к</option>
-          <option>4+</option>
-        </select>
+        <CustomSelect
+          name="rooms"
+          value={filters.rooms}
+          onChange={handleChange}
+          options={["Студия", "1-к", "2-к", "3-к", "4+"]}
+        />
       </div>
 
       {/* <div className='filter-item container'> */}

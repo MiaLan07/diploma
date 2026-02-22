@@ -1,0 +1,7 @@
+.preview-item img {
+    width: 200px;
+}
+.preview-item {
+    width: 200px;
+    display: inline-block;
+}

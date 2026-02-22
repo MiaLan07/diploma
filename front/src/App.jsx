@@ -22,7 +22,7 @@ function App() {
         <Route path='/cabinet' element={<ProfilePage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/properties/:id" element={<PropertyDetails />} />
+        <Route path="/property/:slug" element={<PropertyDetails />} />
         {/* <Route path="/catalog" element={<CatalogPage />} /> */}
         {/* и т.д. */}
       </Routes>

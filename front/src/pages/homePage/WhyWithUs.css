@@ -33,7 +33,7 @@
 .advantage-icon {
   font-size: 3rem;
   margin-bottom: 24px;
-  color: #43AB9D;
+  color: var(--accent-filters);
   opacity: 0.9;
 }
 

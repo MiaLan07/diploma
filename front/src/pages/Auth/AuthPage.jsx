@@ -230,7 +230,7 @@ export default function AuthPage() {
                         className={fieldErrors.password ? 'input-error' : ''}
                       />
                       <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? <IconEyeClose /> : <IconEyeOpen />}
+                        {!showPassword ? <IconEyeClose /> : <IconEyeOpen />}
                       </button>
                     </div>
                     {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
@@ -317,7 +317,7 @@ export default function AuthPage() {
                     className={fieldErrors.regPassword ? 'input-error' : ''}
                   />
                   <button type="button" className="toggle-password" onClick={() => setShowRegPassword(!showRegPassword)}>
-                    {showRegPassword ? <IconEyeClose /> : <IconEyeOpen />}
+                    {!showRegPassword ? <IconEyeClose /> : <IconEyeOpen />}
                   </button>
                 </div>
                 {fieldErrors.regPassword && <span className="field-error">{fieldErrors.regPassword}</span>}
@@ -338,7 +338,7 @@ export default function AuthPage() {
                     className={fieldErrors.confirmPassword ? 'input-error' : ''}
                   />
                   <button type="button" className="toggle-password" onClick={() => setShowConfirm(!showConfirm)}>
-                    {showConfirm ? <IconEyeClose /> : <IconEyeOpen />}
+                    {!showConfirm ? <IconEyeClose /> : <IconEyeOpen />}
                   </button>
                 </div>
                 {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}

@@ -155,83 +155,100 @@ const createProperty = async (req, res) => {
     let latitude = null;
     let longitude = null;
 
-    // Всегда геокодируем
     if (data.address?.trim()) {
       const geo = await geocodeAddress(data.address.trim());
-      if (geo.latitude !== null && geo.longitude !== null) {
+      if (geo?.latitude !== null && geo?.longitude !== null) {
         latitude = geo.latitude;
         longitude = geo.longitude;
-        console.log(`Геокодировано: ${data.address} → ${latitude}, ${longitude} (точность: ${geo.precision})`);
+        console.log(`Геокодировано: ${data.address} → ${latitude}, ${longitude}`);
       } else {
-        console.warn(`Не удалось геокодировать: ${data.address}`);
+        console.warn(`Геокодирование не удалось: ${data.address}`);
       }
     }
 
     const propertyData = {
-      operationId:       Number(data.operationId),
-      propertyTypeId:    Number(data.propertyTypeId),
-      housingTypeId:     data.housingTypeId ? Number(data.housingTypeId) : null,
-      price:             data.price     ? Number(data.price)     : undefined,
-      area:              data.area      ? Number(data.area)      : undefined,
-      rooms:             data.rooms     ? Number(data.rooms)     : null,
-      floor:             data.floor     ? Number(data.floor)     : null,
-      latitude,          // используем вычисленное значение
-      longitude,         // используем вычисленное значение
-      condition:         data.condition || null,
-      parking:           data.parking   || null,
-      hasElevator:       data.hasElevator !== undefined ? (data.hasElevator === 'true' || data.hasElevator === true) : null,
-      yearBuilt:         data.yearBuilt ? Number(data.yearBuilt) : null,
-      shortDescription:  data.shortDescription || null,
-      fullDescription:   data.fullDescription  || null,
-      address:           data.address || null,
-      status:            'active',
-      totalArea:         data.totalArea ? Number(data.totalArea) : null,
-      livingArea:        data.livingArea ? Number(data.livingArea) : null,
-      kitchenArea:       data.kitchenArea ? Number(data.kitchenArea) : null,
-      totalFloors:       data.totalFloors ? Number(data.totalFloors) : null,
-      renovation:        data.renovation || null,
-      renovationYear:    data.renovationYear ? Number(data.renovationYear) : null,
-      balcony:           data.balcony || null,
-      bathroom:          data.bathroom || null,
-      windows:           data.windows || null,
-      view:              data.view || null,
-      ownership:         data.ownership || null,
-      encumbrance:       data.encumbrance !== undefined ? (data.encumbrance === 'true' || data.encumbrance === true) : false,
-      mortgagePossible:  data.mortgagePossible !== undefined ? (data.mortgagePossible === 'true' || data.mortgagePossible === true) : false,
-      readyToMove:       data.readyToMove !== undefined ? (data.readyToMove === 'true' || data.readyToMove === true) : false,
-      bargaining:        data.bargaining !== undefined ? (data.bargaining === 'true' || data.bargaining === true) : true,
-      slug:              await generateSlug(data.address, data.shortDescription, null),  // Генерация slug (исправлено на await)
+      title:                data.title                || null,
+      operationId:          Number(data.operationId),
+      propertyTypeId:       Number(data.propertyTypeId),
+      housingTypeId:        data.housingTypeId ? Number(data.housingTypeId) : null,
+      price:                Number(data.price),
+      area:                 data.area                 ? Number(data.area)                 : null,
+      totalArea:            data.totalArea            ? Number(data.totalArea)            : null,
+      livingArea:           data.livingArea           ? Number(data.livingArea)           : null,
+      kitchenArea:          data.kitchenArea          ? Number(data.kitchenArea)          : null,
+      roomsCount:           data.roomsCount           ? Number(data.roomsCount)           : null,
+      floor:                data.floor                ? Number(data.floor)                : null,
+      totalFloors:          data.totalFloors          ? Number(data.totalFloors)          : null,
+      buildingType:         data.buildingType         || null,
+      condition:            data.condition            || null,
+      renovation:           data.renovation           || null,
+      renovationYear:       data.renovationYear       ? Number(data.renovationYear)       : null,
+      balcony:              data.balcony              || null,
+      bathroom:             data.bathroom             || null,
+      windows:              data.windows              || null,
+      view:                 data.view                 || null,
+      hasElevator:          data.hasElevator          === true || data.hasElevator === 'true',
+      yearBuilt:            data.yearBuilt            ? Number(data.yearBuilt)            : null,
+      shortDescription:     data.shortDescription     || null,
+      fullDescription:      data.fullDescription      || null,
+      address:              data.address              || null,
+      latitude,
+      longitude,
+      ownership:            data.ownership            || null,
+      encumbrance:          data.encumbrance          === true || data.encumbrance === 'true',
+      readyToMove:          data.readyToMove          === true || data.readyToMove === 'true',
+      bargaining:           data.bargaining           !== false && data.bargaining !== 'false', // дефолт true
+      mortgagePossible:     data.mortgagePossible     === true || data.mortgagePossible === 'true',
+      maternalCapital:      data.maternalCapital      === true || data.maternalCapital === 'true',
+      status:               'active',
+      slug:                 await generateSlug(data.address, data.shortDescription, null),
+
+      // Длинные текстовые описания (все nullable)
+      buildingDescription:     data.buildingDescription     || null,
+      yearBuiltDescription:    data.yearBuiltDescription    || null,
+      environment:             data.environment             || null,
+      infrastructure:          data.infrastructure          || null,
+      transportAccessibility:  data.transportAccessibility  || null,
+      communications:          data.communications          || null,
+      legalPurity:             data.legalPurity             || null,
+      mortgageDescription:     data.mortgageDescription     || null,
+      livingDescription:       data.livingDescription       || null,
     };
 
-    // Проверка на NaN (если пользователь ввёл не число)
-    if (
-      isNaN(propertyData.operationId) ||
-      isNaN(propertyData.propertyTypeId) ||
-      (propertyData.housingTypeId !== null && isNaN(propertyData.housingTypeId)) ||
-      (propertyData.price !== undefined && isNaN(propertyData.price)) ||
-      (propertyData.area !== undefined && isNaN(propertyData.area)) ||
-      (propertyData.rooms !== null && isNaN(propertyData.rooms)) ||
-      (propertyData.floor !== null && isNaN(propertyData.floor)) ||
-      (propertyData.totalArea !== null && isNaN(propertyData.totalArea)) ||
-      (propertyData.livingArea !== null && isNaN(propertyData.livingArea)) ||
-      (propertyData.kitchenArea !== null && isNaN(propertyData.kitchenArea)) ||
-      (propertyData.totalFloors !== null && isNaN(propertyData.totalFloors)) ||
-      (propertyData.renovationYear !== null && isNaN(propertyData.renovationYear))
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'Некоторые числовые поля содержат некорректные значения'
-      });
+    // Защита от NaN для всех числовых полей
+    const numericRequired = ['operationId', 'propertyTypeId', 'price'];
+    const numericOptional = [
+      'housingTypeId', 'area', 'totalArea', 'livingArea', 'kitchenArea',
+      'roomsCount', 'floor', 'totalFloors', 'yearBuilt', 'renovationYear',
+      'latitude', 'longitude'
+    ];
+
+    for (const field of numericRequired) {
+      if (isNaN(propertyData[field])) {
+        return res.status(400).json({
+          success: false,
+          message: `Обязательное поле ${field} должно быть числом`
+        });
+      }
+    }
+
+    for (const field of numericOptional) {
+      if (propertyData[field] !== null && isNaN(propertyData[field])) {
+        return res.status(400).json({
+          success: false,
+          message: `Поле ${field} содержит некорректное число`
+        });
+      }
     }
 
     const newProperty = await prisma.property.create({ data: propertyData });
 
-    if (req.files?.length > 0) {
-      const hasMain = false; // или проверь в БД
+    // Загрузка изображений
+    if (req.files?.length) {
       const imageRecords = req.files.map((file, idx) => ({
         propertyId: newProperty.id,
         url: `/uploads/properties/${file.filename}`,
-        isMain: !hasMain && idx === 0,
+        isMain: idx === 0, // первое фото — главное
       }));
 
       await prisma.propertyImage.createMany({ data: imageRecords });
@@ -243,12 +260,24 @@ const createProperty = async (req, res) => {
     });
   } catch (error) {
     console.error('Create property error:', error);
-    if (error.code === 'P2003') { // foreign key violation
-      return res.status(400).json({ success: false, message: 'Некорректные ссылки на справочники (operationId, propertyTypeId и т.д.)' });
-    } else if (error.code === 'P2002' && error.meta.constraint === 'Property_slug_key') {
-      return res.status(409).json({ success: false, message: 'Slug уже существует, попробуйте изменить описание или адрес' });
+
+    if (error.code === 'P2003') {
+      return res.status(400).json({
+        success: false,
+        message: 'Некорректные ссылки на справочники (operationId, propertyTypeId, housingTypeId)'
+      });
     }
-    res.status(500).json({ success: false, message: 'Ошибка при создании объекта' });
+    if (error.code === 'P2002' && error.meta?.constraint === 'Property_slug_key') {
+      return res.status(409).json({
+        success: false,
+        message: 'Slug уже занят — измените адрес или описание'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка сервера при создании объекта'
+    });
   }
 };
 
@@ -256,75 +285,84 @@ const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    let latitude = null;
-    let longitude = null;
-    if (data.address && (!data.latitude || !data.longitude || isNaN(Number(data.latitude)) || isNaN(Number(data.longitude)))) {
+
+    let latitude = data.latitude ? Number(data.latitude) : undefined;
+    let longitude = data.longitude ? Number(data.longitude) : undefined;
+
+    if (data.address && (!latitude || !longitude || isNaN(latitude) || isNaN(longitude))) {
       const geo = await geocodeAddress(data.address.trim());
-      if (geo.latitude !== null && geo.longitude !== null) {
+      if (geo?.latitude !== null && geo?.longitude !== null) {
         latitude = geo.latitude;
         longitude = geo.longitude;
-        console.log(`Геокодировано: ${data.address} → ${latitude}, ${longitude} (точность: ${geo.precision})`);
-      } else {
-        console.warn(`Не удалось геокодировать: ${data.address}`);
       }
     }
 
     const updateData = {
-      operationId:       data.operationId       ? Number(data.operationId)       : undefined,
-      propertyTypeId:    data.propertyTypeId    ? Number(data.propertyTypeId)    : undefined,
-      housingTypeId:     data.housingTypeId     ? Number(data.housingTypeId)     : undefined,
-      price:             data.price             ? Number(data.price)             : undefined,
-      area:              data.area              ? Number(data.area)              : undefined,
-      rooms:             data.rooms             ? Number(data.rooms)             : undefined,
-      floor:             data.floor             ? Number(data.floor)             : undefined,
-      latitude:          data.latitude          ? Number(data.latitude)          : undefined,
-      longitude:         data.longitude         ? Number(data.longitude)         : undefined,
-      condition:         data.condition         !== undefined ? data.condition         : undefined,
-      parking:           data.parking           !== undefined ? data.parking           : undefined,
-      hasElevator:       data.hasElevator       !== undefined ? (data.hasElevator === 'true' || data.hasElevator === true) : undefined,
-      yearBuilt:         data.yearBuilt         ? Number(data.yearBuilt)         : undefined,
-      shortDescription:  data.shortDescription  !== undefined ? data.shortDescription  : undefined,
-      fullDescription:   data.fullDescription   !== undefined ? data.fullDescription   : undefined,
-      address:           data.address           !== undefined ? data.address           : undefined,
-      status:            data.status            !== undefined ? data.status            : undefined,
-      totalArea:         data.totalArea         ? Number(data.totalArea)         : undefined,
-      livingArea:        data.livingArea        ? Number(data.livingArea)        : undefined,
-      kitchenArea:       data.kitchenArea       ? Number(data.kitchenArea)       : undefined,
-      totalFloors:       data.totalFloors       ? Number(data.totalFloors)       : undefined,
-      renovation:        data.renovation        !== undefined ? data.renovation        : undefined,
-      renovationYear:    data.renovationYear    ? Number(data.renovationYear)    : undefined,
-      balcony:           data.balcony           !== undefined ? data.balcony           : undefined,
-      bathroom:          data.bathroom          !== undefined ? data.bathroom          : undefined,
-      windows:           data.windows           !== undefined ? data.windows           : undefined,
-      view:              data.view              !== undefined ? data.view              : undefined,
-      ownership:         data.ownership         !== undefined ? data.ownership         : undefined,
-      encumbrance:       data.encumbrance       !== undefined ? (data.encumbrance === 'true' || data.encumbrance === true) : undefined,
-      mortgagePossible:  data.mortgagePossible  !== undefined ? (data.mortgagePossible === 'true' || data.mortgagePossible === true) : undefined,
-      readyToMove:       data.readyToMove       !== undefined ? (data.readyToMove === 'true' || data.readyToMove === true) : undefined,
-      bargaining:        data.bargaining        !== undefined ? (data.bargaining === 'true' || data.bargaining === true) : undefined,
-      slug:              await generateSlug(data.address, data.shortDescription, id),  // Перегенерация slug при необходимости (исправлено на await)
+      title:                data.title                !== undefined ? data.title                : undefined,
+      operationId:          data.operationId          ? Number(data.operationId)          : undefined,
+      propertyTypeId:       data.propertyTypeId       ? Number(data.propertyTypeId)       : undefined,
+      housingTypeId:        data.housingTypeId        ? Number(data.housingTypeId)        : undefined,
+      price:                data.price                ? Number(data.price)                : undefined,
+      area:                 data.area                 ? Number(data.area)                 : undefined,
+      totalArea:            data.totalArea            ? Number(data.totalArea)            : undefined,
+      livingArea:           data.livingArea           ? Number(data.livingArea)           : undefined,
+      kitchenArea:          data.kitchenArea          ? Number(data.kitchenArea)          : undefined,
+      roomsCount:           data.roomsCount           ? Number(data.roomsCount)           : undefined,
+      floor:                data.floor                ? Number(data.floor)                : undefined,
+      totalFloors:          data.totalFloors          ? Number(data.totalFloors)          : undefined,
+      buildingType:         data.buildingType         !== undefined ? data.buildingType         : undefined,
+      condition:            data.condition            !== undefined ? data.condition            : undefined,
+      renovation:           data.renovation           !== undefined ? data.renovation           : undefined,
+      renovationYear:       data.renovationYear       ? Number(data.renovationYear)       : undefined,
+      balcony:              data.balcony              !== undefined ? data.balcony              : undefined,
+      bathroom:             data.bathroom             !== undefined ? data.bathroom             : undefined,
+      windows:              data.windows              !== undefined ? data.windows              : undefined,
+      view:                 data.view                 !== undefined ? data.view                 : undefined,
+      hasElevator:          data.hasElevator          !== undefined ? (data.hasElevator === true || data.hasElevator === 'true') : undefined,
+      yearBuilt:            data.yearBuilt            ? Number(data.yearBuilt)            : undefined,
+      shortDescription:     data.shortDescription     !== undefined ? data.shortDescription     : undefined,
+      fullDescription:      data.fullDescription      !== undefined ? data.fullDescription      : undefined,
+      address:              data.address              !== undefined ? data.address              : undefined,
+      latitude,
+      longitude,
+      ownership:            data.ownership            !== undefined ? data.ownership            : undefined,
+      encumbrance:          data.encumbrance          !== undefined ? (data.encumbrance === true || data.encumbrance === 'true') : undefined,
+      readyToMove:          data.readyToMove          !== undefined ? (data.readyToMove === true || data.readyToMove === 'true') : undefined,
+      bargaining:           data.bargaining           !== undefined ? (data.bargaining === true || data.bargaining === 'true') : undefined,
+      mortgagePossible:     data.mortgagePossible     !== undefined ? (data.mortgagePossible === true || data.mortgagePossible === 'true') : undefined,
+      maternalCapital:      data.maternalCapital      !== undefined ? (data.maternalCapital === true || data.maternalCapital === 'true') : undefined,
+      status:               data.status               !== undefined ? data.status               : undefined,
+
+      buildingDescription:     data.buildingDescription     !== undefined ? data.buildingDescription     : undefined,
+      yearBuiltDescription:    data.yearBuiltDescription    !== undefined ? data.yearBuiltDescription    : undefined,
+      environment:             data.environment             !== undefined ? data.environment             : undefined,
+      infrastructure:          data.infrastructure          !== undefined ? data.infrastructure          : undefined,
+      transportAccessibility:  data.transportAccessibility  !== undefined ? data.transportAccessibility  : undefined,
+      communications:          data.communications          !== undefined ? data.communications          : undefined,
+      legalPurity:             data.legalPurity             !== undefined ? data.legalPurity             : undefined,
+      mortgageDescription:     data.mortgageDescription     !== undefined ? data.mortgageDescription     : undefined,
+      livingDescription:       data.livingDescription       !== undefined ? data.livingDescription       : undefined,
+
+      slug: data.address || data.shortDescription
+        ? await generateSlug(data.address, data.shortDescription, id)
+        : undefined,
     };
 
-    if (
-      isNaN(updateData.operationId) ||
-      isNaN(updateData.propertyTypeId) ||
-      (updateData.housingTypeId !== null && isNaN(updateData.housingTypeId)) ||
-      (updateData.price !== undefined && isNaN(updateData.price)) ||
-      (updateData.area !== undefined && isNaN(updateData.area)) ||
-      (updateData.rooms !== null && isNaN(updateData.rooms)) ||
-      (updateData.floor !== null && isNaN(updateData.floor)) ||
-      (updateData.latitude !== undefined && isNaN(updateData.latitude)) ||
-      (updateData.longitude !== undefined && isNaN(updateData.longitude)) ||
-      (updateData.totalArea !== undefined && isNaN(updateData.totalArea)) ||
-      (updateData.livingArea !== undefined && isNaN(updateData.livingArea)) ||
-      (updateData.kitchenArea !== undefined && isNaN(updateData.kitchenArea)) ||
-      (updateData.totalFloors !== null && isNaN(updateData.totalFloors)) ||
-      (updateData.renovationYear !== null && isNaN(updateData.renovationYear))
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: 'Некоторые числовые поля содержат некорректные значения'
-      });
+    // Защита от NaN
+    const numericFields = [
+      'operationId', 'propertyTypeId', 'housingTypeId', 'price', 'area',
+      'totalArea', 'livingArea', 'kitchenArea', 'roomsCount', 'floor', 'totalFloors',
+      'yearBuilt', 'renovationYear', 'latitude', 'longitude'
+    ];
+
+    for (const field of numericFields) {
+      const val = updateData[field];
+      if (val !== undefined && isNaN(val)) {
+        return res.status(400).json({
+          success: false,
+          message: `Поле ${field} содержит некорректное число`
+        });
+      }
     }
 
     const updated = await prisma.property.update({
@@ -334,7 +372,7 @@ const updateProperty = async (req, res) => {
         operation:     { select: { name: true } },
         propertyType:  { select: { name: true } },
         housingType:   { select: { name: true } },
-        images:        true,  // или select нужные поля
+        images:        true,
       },
     });
 
@@ -347,27 +385,22 @@ const updateProperty = async (req, res) => {
     console.error('Update property error:', error);
 
     if (error.code === 'P2025') {
-      return res.status(404).json({
-        success: false,
-        message: 'Объект недвижимости не найден'
-      });
+      return res.status(404).json({ success: false, message: 'Объект не найден' });
     }
-
     if (error.code === 'P2003') {
       return res.status(400).json({
         success: false,
-        message: 'Некорректные ссылки на справочники (operationId, propertyTypeId и т.д.)'
+        message: 'Некорректные ссылки на справочники'
+      });
+    }
+    if (error.code === 'P2002' && error.meta?.constraint === 'Property_slug_key') {
+      return res.status(409).json({
+        success: false,
+        message: 'Slug уже занят'
       });
     }
 
-    if (error.code === 'P2002' && error.meta.constraint === 'Property_slug_key') {
-      return res.status(409).json({ success: false, message: 'Slug уже существует, попробуйте изменить описание или адрес' });
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка при обновлении объекта'
-    });
+    res.status(500).json({ success: false, message: 'Ошибка сервера' });
   }
 };
 
@@ -655,9 +688,57 @@ const deleteProperty = async (req, res) => {
   }
 };
 
+const getPropertyBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    if (!slug) {
+      return res.status(400).json({
+        success: false,
+        message: 'Slug обязателен в URL'
+      });
+    }
+
+    const property = await prisma.property.findUnique({
+      where: { slug },
+      include: {
+        operation:     { select: { name: true } },
+        propertyType:  { select: { name: true } },
+        housingType:   { select: { name: true } },
+        images: {
+          select: { id: true, url: true, isMain: true },
+          orderBy: [
+            { isMain: 'desc' },    // главное фото первым
+            { createdAt: 'asc' }   // остальные по порядку загрузки
+          ],
+        },
+      }
+    });
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Объект недвижимости по данному адресу (slug) не найден'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: property
+    });
+  } catch (error) {
+    console.error('Get property by slug error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка сервера при получении объекта'
+    });
+  }
+};
+
 module.exports = {
   getAllProperties,
   getPropertyById,
+  getPropertyBySlug,          // ← добавили
   createProperty,
   updateProperty,
   archiveProperty,
