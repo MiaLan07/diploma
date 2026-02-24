@@ -97,7 +97,8 @@
 
 .form-group input,
 .form-group textarea {
-  color: black;
+  height: 60px;
+  color: white;
   width: 100%;
   padding: 16px 18px;
   border: none;
@@ -109,9 +110,15 @@
   box-sizing: border-box;
 }
 
+.form-group input:hover,
+.form-group textarea:hover {
+  padding-left: 8px;
+}
+
 .form-group input:focus,
 .form-group textarea:focus {
-  border-bottom: 2px solid var(--accent-dark);
+  border-bottom: 2px solid black;
+  padding-left: 8px;
 }
 
 .contact-form-wrapper .form-group input::placeholder,

@@ -28,100 +28,104 @@ const FilterBar = () => {
 
   return (
     <div className="filter-bar">
-      <div className="filter-item">
-        <CustomSelect
-          name="operation"
-          value={filters.operation}
-          onChange={handleChange}
-          options={["Купить", "Арендовать"]}
-        />
-      </div>
-
-      <div className="filter-item">
-        <CustomSelect
-          name="type"
-          value={filters.type}
-          onChange={handleChange}
-          options={["Квартиры", "Дома", "Коммерческая"]}
-        />
-      </div>
-
-      <div className="filter-item">
-        <CustomSelect
-          name="rooms"
-          value={filters.rooms}
-          onChange={handleChange}
-          options={["Студия", "1-к", "2-к", "3-к", "4+"]}
-        />
-      </div>
-
-      {/* <div className='filter-item container'> */}
-        <div className="filter-item inner">
-          <input
-            type="number"
-            name="priceFrom"
-            placeholder="₽ от"
-            value={filters.priceFrom}
+      <div className='container'>
+        <div className="filter-item">
+          <CustomSelect
+            name="operation"
+            value={filters.operation}
             onChange={handleChange}
+            options={["Купить", "Арендовать"]}
           />
         </div>
 
-        <div className="filter-item inner">
-          <input
-            type="number"
-            name="priceTo"
-            placeholder="₽ до"
-            value={filters.priceTo}
+        <div className="filter-item">
+          <CustomSelect
+            name="type"
+            value={filters.type}
             onChange={handleChange}
-          />
-        </div>
-      {/* </div> */}
-
-      {/* <div className='filter-item container'> */}
-        <div className="filter-item inner">
-          <input
-            type="number"
-            name="areaFrom"
-            placeholder="м² от"
-            value={filters.areaFrom}
-            onChange={handleChange}
+            options={["Квартиры", "Дома", "Коммерческая"]}
           />
         </div>
 
-        <div className="filter-item inner">
-          <input
-            type="number"
-            name="areaTo"
-            placeholder="м² до"
-            value={filters.areaTo}
+        <div className="filter-item">
+          <CustomSelect
+            name="rooms"
+            value={filters.rooms}
             onChange={handleChange}
+            options={["Студия", "1-к", "2-к", "3-к", "4+"]}
           />
         </div>
-      {/* </div> */}
-      <div className="filter-item long-input">
-        <input
-          type="text"
-          name="query"
-          placeholder="Город, район, улица, ЖК..."
-          value={filters.query}
-          onChange={handleChange}
-          className="filter-item"
-        />
-      </div>
 
-      <div className='link-item catalog'>
-        <a href='/catalog'>Все фильтры</a>
-      </div>
+        {/* <div className='filter-item container'> */}
+          <div className="filter-item inner">
+            <input
+              type="number"
+              name="priceFrom"
+              placeholder="₽ от"
+              value={filters.priceFrom}
+              onChange={handleChange}
+            />
+          </div>
 
-      <div className='link-item map'>
-        <a href='/map'>
-          <MapIcon width="30" height="30" className='map-icon' strokeWidth={15} />
-        </a>
-      </div>
+          <div className="filter-item inner">
+            <input
+              type="number"
+              name="priceTo"
+              placeholder="₽ до"
+              value={filters.priceTo}
+              onChange={handleChange}
+            />
+          </div>
+        {/* </div> */}
 
-      <button className="search-button" onClick={handleSearch}>
-        Посмотреть
-      </button>
+        {/* <div className='filter-item container'> */}
+          <div className="filter-item inner">
+            <input
+              type="number"
+              name="areaFrom"
+              placeholder="м² от"
+              value={filters.areaFrom}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="filter-item inner">
+            <input
+              type="number"
+              name="areaTo"
+              placeholder="м² до"
+              value={filters.areaTo}
+              onChange={handleChange}
+            />
+          </div>
+        {/* </div> */}
+      </div>
+      <div className='container'>
+        <div className="filter-item long-input">
+          <input
+            type="text"
+            name="query"
+            placeholder="Город, район, улица, ЖК..."
+            value={filters.query}
+            onChange={handleChange}
+            className="filter-item"
+          />
+        </div>
+
+        <div className='link-item catalog'>
+          <a href='/catalog'>Все фильтры</a>
+        </div>
+
+        <div className='link-item map'>
+          <a href='/map'>
+            <MapIcon width="30" height="30" className='map-icon' strokeWidth={15} />
+          </a>
+        </div>
+
+        <button className="search-button" onClick={handleSearch}>
+          Посмотреть
+        </button>
+      </div>
     </div>
   );
 };

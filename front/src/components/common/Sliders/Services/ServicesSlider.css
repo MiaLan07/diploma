@@ -17,8 +17,8 @@
 }
 
 .service-card {
-  flex: 0 0 calc((100vw - 24px*3 - 64px*2) / 4);
-  max-width: 310px;
+  flex: 1 0 calc((100% - 24px*3) / 4);
+  max-width: 375px;
   min-height: 480px;
   background: white;
   border-radius: 16px;
