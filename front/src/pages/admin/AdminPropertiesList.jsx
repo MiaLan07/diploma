@@ -70,6 +70,7 @@ const AdminPropertiesList = ({ setActiveSection }) => {
         <table className="admin-properties-list-data-table">
           <thead className="admin-properties-list-table-header-sticky">
             <tr className="admin-properties-list-header-row">
+              <th className="admin-properties-list-table-header-cell actions-column"></th>
               <th className="admin-properties-list-table-header-cell id-column">ID</th>
               <th className="admin-properties-list-table-header-cell title-column">Заголовок</th>           {/* новое */}
               <th className="admin-properties-list-table-header-cell address-column">Адрес</th>
@@ -94,7 +95,6 @@ const AdminPropertiesList = ({ setActiveSection }) => {
               <th className="admin-properties-list-table-header-cell mortgage-column">Ипотека</th>          {/* новое */}
               <th className="admin-properties-list-table-header-cell description-column">Описание</th>
               <th className="admin-properties-list-table-header-cell created-column">Создано</th>
-              <th className="admin-properties-list-table-header-cell actions-column">Действия</th>
             </tr>
           </thead>
 
@@ -108,6 +108,22 @@ const AdminPropertiesList = ({ setActiveSection }) => {
             ) : (
               properties.map(property => (
                 <tr key={property.id} className="admin-properties-list-data-row">
+                  <td className="admin-properties-list-table-cell actions-column">
+                    <div className="admin-properties-list-actions-group">
+                      <Link
+                        to={`/admin/properties/edit/${property.id}`}
+                        className="admin-properties-list-action-button edit-button"
+                      >
+                        Изменить
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(property.id)}
+                        className="admin-properties-list-action-button delete-button"
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </td>
                   <td className="admin-properties-list-table-cell id-column">{property.id}</td>
 
                   <td className="admin-properties-list-table-cell title-column">
@@ -174,22 +190,6 @@ const AdminPropertiesList = ({ setActiveSection }) => {
                   </td>
                   <td className="admin-properties-list-table-cell created-column">
                     {new Date(property.createdAt).toLocaleDateString('ru-RU')}
-                  </td>
-                  <td className="admin-properties-list-table-cell actions-column">
-                    <div className="admin-properties-list-actions-group">
-                      <Link
-                        to={`/admin/properties/edit/${property.id}`}
-                        className="admin-properties-list-action-button edit-button"
-                      >
-                        Изменить
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(property.id)}
-                        className="admin-properties-list-action-button delete-button"
-                      >
-                        Удалить
-                      </button>
-                    </div>
                   </td>
                 </tr>
               ))

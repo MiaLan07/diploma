@@ -12,6 +12,8 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [activeTab, setActiveTab] = useState('email');
+  const [loginText, setLoginText] = useState('ВОЙТИ')
+  const [registerText, setRegisterText] = useState('ЗАРЕГИСТРИРОВАТЬСЯ')
 
   // Поля логина
   const [email, setEmail] = useState('');
@@ -62,6 +64,7 @@ export default function AuthPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoginText('Загрузка...')
     setFieldErrors({});
     setGeneralError('');
 
@@ -76,6 +79,7 @@ export default function AuthPage() {
       window.dispatchEvent(new Event('authChange'));
       navigate('/cabinet');
     } catch (err) {
+      setLoginText('ВОЙТИ')
       const errData = err.response?.data;
 
       if (errData?.errors && Array.isArray(errData.errors)) {
@@ -98,6 +102,7 @@ export default function AuthPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setRegisterText('Загрузка...')
     setFieldErrors({});
     setGeneralError('');
 
@@ -117,6 +122,7 @@ export default function AuthPage() {
       window.dispatchEvent(new Event('authChange'));
       navigate('/cabinet');
     } catch (err) {
+      setRegisterText('ЗАРЕГИСТРИРОВАТЬСЯ')
       const errData = err.response?.data;
 
       if (errData?.errors && Array.isArray(errData.errors)) {
@@ -249,7 +255,7 @@ export default function AuthPage() {
               {generalError && <div className="general-error">{generalError}</div>}
 
               <button type="submit" className="submit-btn">
-                ВОЙТИ
+                {loginText}
               </button>
             </form>
           ) : (
@@ -347,7 +353,7 @@ export default function AuthPage() {
               {generalError && <div className="general-error">{generalError}</div>}
 
               <button type="submit" className="submit-btn">
-                ЗАРЕГИСТРИРОВАТЬСЯ
+                {registerText}
               </button>
             </form>
           )}

@@ -7,6 +7,20 @@ import logoImg from '../../assets/logo.png'
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
+  const [visibleSections, setVisibleSections] = useState({
+    about: false,
+    team: false,
+    reviews: false,
+    contacts: false,
+  });
+
+  const sections = [
+    { id: 'about-company', key: 'about' },
+    { id: 'team', key: 'team' },
+    { id: 'reviews', key: 'reviews' },
+    { id: 'contacts', key: 'contacts' },
+  ];
 
   // Проверяем токен сразу и при любом изменении localStorage
   const getIsLoggedIn = () => !!localStorage.getItem('token');
@@ -33,6 +47,31 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleSectionVisible = (e) => {
+      const { section, inView } = e.detail;
+      setVisibleSections(prev => ({ ...prev, [section]: inView }));
+    };
+    window.addEventListener('sectionVisible', handleSectionVisible);
+    return () => window.removeEventListener('sectionVisible', handleSectionVisible);
+  }, []);
+
+  // Вычисляем активную секцию – первую в порядке массива, которая видна
+  useEffect(() => {
+    const order = ['about', 'team', 'reviews', 'contacts'];
+    const active = order.find(key => visibleSections[key]) || null;
+    setActiveSection(active);
+  }, [visibleSections]);
+
+  const scrollToSection = (e, sectionId) => {
+    e.preventDefault();
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      window.location.hash = sectionId;
+    }
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -58,36 +97,40 @@ const Header = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/about" 
-                className={({ isActive }) => isActive ? "nav__link nav__link--active" : "nav__link"}
+              <a
+                href="/#about-company"
+                className={`nav__link ${activeSection === 'about' ? 'nav__link--active' : ''}`}
+                onClick={(e) => scrollToSection(e, 'about-company')}
               >
                 О КОМПАНИИ
-              </NavLink>
+              </a>
             </li>
             <li>
-              <NavLink 
-                to="/team" 
-                className={({ isActive }) => isActive ? "nav__link nav__link--active" : "nav__link"}
+              <a 
+                href="/#team" 
+                className={`nav__link ${activeSection === 'team' ? 'nav__link--active' : ''}`}
+                onClick={(e) => scrollToSection(e, 'team')}
               >
                 КОМАНДА
-              </NavLink>
+              </a>
             </li>
             <li>
-              <NavLink 
-                to="/reviews" 
-                className={({ isActive }) => isActive ? "nav__link nav__link--active" : "nav__link"}
+              <a 
+                href="/#reviews" 
+                className={`nav__link ${activeSection === 'reviews' ? 'nav__link--active' : ''}`}
+                onClick={(e) => scrollToSection(e, 'reviews')}
               >
                 ОТЗЫВЫ
-              </NavLink>
+              </a>
             </li>
             <li>
-              <NavLink 
-                to="/contacts" 
-                className={({ isActive }) => isActive ? "nav__link nav__link--active" : "nav__link"}
+              <a 
+                href="/#contacts" 
+                className={`nav__link ${activeSection === 'contacts' ? 'nav__link--active' : ''}`}
+                onClick={(e) => scrollToSection(e, 'contacts')}
               >
                 КОНТАКТЫ
-              </NavLink>
+              </a>
             </li>
           </ul>
 

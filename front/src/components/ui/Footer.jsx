@@ -8,6 +8,7 @@ import { YMaps, Map, Placemark, ZoomControl } from '@mr-igorinni/react-yandex-ma
 import './Footer.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_YANDEX_MAP = import.meta.env.REACT_APP_YANDEX_MAPS_API_KEY;
 const OFFICE_COORDINATES = [44.949532, 34.116685];
 
 const Footer = ({ backForm = false }) => {
@@ -44,7 +45,7 @@ const Footer = ({ backForm = false }) => {
         }}>
         <div className="footer-map-column">
           <div className="map-wrapper">
-            <YMaps query={{ lang: 'ru_RU', apikey: 'ВАШ_API_КЛЮЧ_ЯНДЕКС_КАРТ' }}>
+            <YMaps query={{ lang: 'ru_RU', apikey: API_YANDEX_MAP }}>
               <Map
                 className="footer-map"
                 defaultState={{
@@ -79,10 +80,10 @@ const Footer = ({ backForm = false }) => {
 
         <div className="footer-info-column">
           <div className="contact-info-block">
-            <div className="logo-overlay">
+            <a className="logo-overlay" href='/'>
               <LogoIcon width={70} height={70} />
               <span>ДОМ ЗДЕСЬ</span>
-            </div>
+            </a>
             <div className="contact-item">
               <span className="label">Телефон</span>
               <a href="tel:+79784577889" className="value phone">

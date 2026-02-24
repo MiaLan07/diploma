@@ -17,7 +17,13 @@ router.get('/property-types', async (req, res) => {
 
 // GET /api/references/housing-types
 router.get('/housing-types', async (req, res) => {
-  const housing = await prisma.housingType.findMany({ select: { id: true, name: true } });
+  const housing = await prisma.housingType.findMany({ 
+    select: { 
+      id: true, 
+      name: true, 
+      propertyTypeId: true   // <-- добавляем это поле
+    } 
+  });
   res.json({ success: true, data: housing });
 });
 

@@ -1,7 +1,6 @@
 .property-details-page {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 24px 16px 80px;
+  margin: 0;
+  padding: 24px 64px;
   font-family: system-ui, -apple-system, sans-serif;
   background: #f9fafb;
   color: #1f2937;

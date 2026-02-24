@@ -26,6 +26,8 @@
   font-size: 1rem;
   box-sizing: border-box;
   transition: all 0.2s;
+  height: auto;
+  color: black;
 }
 .auth-card input::placeholder,
 .auth-card textarea::placeholder {

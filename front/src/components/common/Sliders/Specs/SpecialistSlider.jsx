@@ -4,6 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import './SpecialistSlider.css';
 import axios from 'axios';
+import { useInView } from 'react-intersection-observer';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -96,8 +97,17 @@ const SpecialistsSlider = () => {
     };
   }, []);
 
+  const { ref } = useInView({
+    threshold: 0.5,
+    onChange: (inView) => {
+      window.dispatchEvent(new CustomEvent('sectionVisible', {
+        detail: { section: 'team', inView }
+      }));
+    },
+  });
+
   return (
-    <div className="specialists-slider">
+    <div ref={ref} className="specialists-slider" id='team'>
         <h2 className='section-title'>Наши специалисты</h2>
       <div className="embla" ref={emblaRef}>
         <div className="embla__container">

@@ -1,5 +1,6 @@
 // src/components/AboutCompany.jsx
 import React, {useState, useEffect} from 'react';
+import { useInView } from 'react-intersection-observer';
 import axios from 'axios';
 import './AboutCompany.css';
 
@@ -7,7 +8,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const AboutCompany = () => {
   const [bgImage, setBgImage] = useState('/fallback-hero.jpg'); // запасное изображение
-    useEffect(() => {
+  useEffect(() => {
       const loadBackground = async () => {
         try {
           const response = await axios.get(`${API_URL}/images/about.jpg`, {
@@ -27,10 +28,19 @@ const AboutCompany = () => {
           URL.revokeObjectURL(bgImage);
         }
       };
-    }, []);
+  }, []);
+
+  const { ref } = useInView({
+    threshold: 0.5,
+    onChange: (inView) => {
+      window.dispatchEvent(new CustomEvent('sectionVisible', {
+        detail: { section: 'about', inView }
+      }));
+    },
+  });
 
   return (
-    <section className="about-company">
+    <section ref={ref} className="about-company" id='about-company'>
       <div className="container">
         <h2 className="section-title">О КОМПАНИИ</h2>
 

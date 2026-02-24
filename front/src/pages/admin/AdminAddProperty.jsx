@@ -154,7 +154,6 @@ const AdminAddProperty = () => {
   });
 
   const selectedPropertyType = watch('propertyTypeId');
-  const isResidential = selectedPropertyType === '1'; // ← замени на реальный ID "Жилая"
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -187,8 +186,9 @@ const AdminAddProperty = () => {
       setFilteredHousingTypes([]);
       return;
     }
-    const filtered = housingTypes.filter(
-      ht => !ht.propertyTypeId || String(ht.propertyTypeId) === selectedPropertyType
+    // Приводим оба значения к числу для надёжного сравнения
+    const filtered = housingTypes.filter(ht => 
+      ht.propertyTypeId && Number(ht.propertyTypeId) === Number(selectedPropertyType)
     );
     setFilteredHousingTypes(filtered);
   }, [selectedPropertyType, housingTypes]);
@@ -293,19 +293,6 @@ const AdminAddProperty = () => {
       <div className="admin-header">
         <h1>Добавить объект недвижимости</h1>
       </div>
-
-      {Object.keys(errors).length > 0 && (
-        <div className="form-errors-block">
-          <p>Заполните обязательные поля:</p>
-          <ul>
-            {Object.entries(errors).map(([key, err]) => (
-              <li key={key}>{err.message}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {serverError && <div className="server-error-message">{serverError}</div>}
 
       <form onSubmit={handleSubmit(onSubmit)} className="property-create-form">
 
@@ -603,6 +590,19 @@ const AdminAddProperty = () => {
           </button>
         </div>
       </form>
+
+      {Object.keys(errors).length > 0 && (
+        <div className="form-errors-block">
+          <p>Заполните обязательные поля:</p>
+          <ul>
+            {Object.entries(errors).map(([key, err]) => (
+              <li key={key}>{err.message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {serverError && <div className="server-error-message">{serverError}</div>}
     </div>
   );
 };

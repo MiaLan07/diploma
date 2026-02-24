@@ -69,26 +69,30 @@ export default function AdminDashboard({ user }) {
         {/* Левая колонка — меню */}
         <aside className="admin-dashboard-sidebar">
           <ul className="admin-dashboard-sidebar-list">
-            <li
-              className={`admin-dashboard-sidebar-item ${
-                activeSection === 'properties-list' ? 'active' : ''
-              }`}
-              onClick={() => setActiveSection('properties-list')}
-            >
-              Список объектов
+            {/* Родительский пункт "Объекты" */}
+            <li className="admin-dashboard-sidebar-item admin-dashboard-sidebar-parent">
+              Объекты
             </li>
-            <li
-              className={`admin-dashboard-sidebar-item ${
-                activeSection === 'properties-add' ? 'active' : ''
-              }`}
-              onClick={() => setActiveSection('properties-add')}
-            >
-              Добавить объект
-            </li>
+            <ul className="admin-dashboard-sidebar-sublist">
+              <li
+                className={`admin-dashboard-sidebar-subitem ${
+                  activeSection === 'properties-list' ? 'active' : ''
+                }`}
+                onClick={() => setActiveSection('properties-list')}
+              >
+                Список объектов
+              </li>
+              <li
+                className={`admin-dashboard-sidebar-subitem ${
+                  activeSection === 'properties-add' ? 'active' : ''
+                }`}
+                onClick={() => setActiveSection('properties-add')}
+              >
+                Добавить объект
+              </li>
+            </ul>
 
-            {/* <li className="admin-dashboard-sidebar-item">Список заявок</li> */}
-            {/* <li className="admin-dashboard-sidebar-item">Пользователи</li> */}
-
+            {/* Пункт выхода */}
             <li
               className="admin-dashboard-sidebar-item logout-item"
               onClick={handleLogout}

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import './ContactBlock.css';
 import { ReactComponent as IconMessage } from '../../assets/message2.svg'
+import { useInView } from 'react-intersection-observer';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -31,8 +32,17 @@ const ContactBlock = () => {
     }
   };
 
+  const { ref } = useInView({
+    threshold: 0.5,
+    onChange: (inView) => {
+      window.dispatchEvent(new CustomEvent('sectionVisible', {
+        detail: { section: 'contacts', inView }
+      }));
+    },
+  });
+
   return (
-    <section className="contact-section">
+    <section ref={ref} className="contact-section" id='contacts'>
       <h2 className="section-title">СВЯЖИТЕСЬ С НАМИ</h2>
       <p className="contact-subtitle">Ваша будущая квартира, уютный дом или выгодная продажа &ndash; всё начинается с&nbsp;разговора. Наша команда экспертов по недвижимости готова стать вашим надёжным проводником на&nbsp;каждом этапе.</p>
       <div className="contact-container">

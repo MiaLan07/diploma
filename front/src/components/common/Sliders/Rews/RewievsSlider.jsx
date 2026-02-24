@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import './ReviewsSlider.css';
+import { useInView } from 'react-intersection-observer';
 
 const reviewsData = [
   {
@@ -79,8 +80,17 @@ const ReviewsSlider = () => {
     slides.push(reviewsData.slice(i, i + 3));
   }
 
+  const { ref } = useInView({
+    threshold: 0.5,
+    onChange: (inView) => {
+      window.dispatchEvent(new CustomEvent('sectionVisible', {
+        detail: { section: 'reviews', inView }
+      }));
+    },
+  });
+  
   return (
-    <section className="reviews-section-wrapper">
+    <section ref={ref} className="reviews-section-wrapper" id='reviews'>
       <div className="reviews-section">
         <h2 className="section-title">Отзывы наших клиентов</h2>
 
