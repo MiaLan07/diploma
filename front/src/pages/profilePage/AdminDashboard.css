@@ -125,6 +125,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  position: relative;
 }
 
 /* ── Плейсхолдер для пока пустых разделов ──────────────── */
@@ -161,7 +162,7 @@
 
 .admin-properties-list-data-table {
   width: 100%;
-  min-width: 1800px;
+  min-width: 2600px;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -183,15 +184,35 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  box-sizing: border-box;
 
   /* Важно для sticky */
   background-color: inherit;   /* наследует фон от thead */
 } 
 
+td.id-column, th.id-column,
+td.title-column, th.title-column,
+td.address-column, th.address-column {
+  position: sticky;
+  z-index: 10;
+  background-color: inherit; /* теперь будут наследовать фон от строки */
+  box-sizing: border-box;
+}
+/* Чтобы шапка оставалась серой */
+.admin-properties-list-table-header-sticky th.id-column,
+.admin-properties-list-table-header-sticky th.title-column,
+.admin-properties-list-table-header-sticky th.address-column {
+  background-color: #f3f4f6;
+}
+
+.id-column       { left: 0; width: 60px; }
+.title-column    { left: 60px; width: 120px; }
+.address-column  { left: 180px; width: 220px; }
+
 /* Ширина колонок */
-.id-column                   { width: 60px; text-align: center; }
+/* .id-column                   { width: 60px; text-align: center; }
 .title-column                { width: 100px ;}
-.address-column              { width: 220px; }
+.address-column              { width: 220px; } */
 .rooms-column                { width: 70px;  text-align: center; }
 .area-column                 { width: 100px; text-align: right; }
 .price-column                { width: 130px; text-align: right; }
@@ -213,29 +234,11 @@
 .mortgage-column             { width: 100px ;}
 .description-column          { width: 220px; }
 .created-column              { width: 110px; }
-.actions-column              { width: 180px; text-align: center; }
-
-
-/* .id-column          
-.address-column     
-.rooms-column       
-.area-column        
-.price-column       
-.status-column      
-.operation-column   
-.type-column        
-.subtype-column     
-.condition-column   
-.parking-column     
-.floor-column       
-.elevator-column    
-.year-column        
-.description-column 
-.created-column     
-.actions-column      */
 
 .admin-properties-list-data-row {
   border-bottom: 1px solid #e5e7eb;
+  background-color: white;
+  height: 100px;
 }
 
 .admin-properties-list-data-row:hover {
@@ -247,13 +250,27 @@
   font-size: 0.875rem;
   color: #1f2937;
   vertical-align: middle;
+  box-sizing: border-box;
 }
 
 .admin-properties-list-actions-group {
   display: flex;
   gap: 8px;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
+  position: absolute;
+  right: 0;
+  width: 220px;
+  opacity: 0;
+  transition: all 0.2s;
+  pointer-events: none;
+  height: 100px;
+}
+
+.admin-properties-list-data-row:hover .admin-properties-list-actions-group {
+  opacity: 1;
+  pointer-events: all;
 }
 
 .admin-properties-list-action-button {

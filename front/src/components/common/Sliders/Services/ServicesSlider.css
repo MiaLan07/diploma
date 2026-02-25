@@ -34,7 +34,7 @@
   height: fit-content;
   gap: 8px;
   justify-content: space-between;
-  align-items: center;
+  align-items: end;
 }
 
 .service-card:hover {
@@ -68,6 +68,7 @@
   font-weight: 600;
   color: #1a1a1a;
   margin: 0;
+  height: 50px;
 }
 
 .service-card__description {
@@ -104,7 +105,7 @@
   margin: 0;
   max-height: max-content;
   box-sizing: border-box;
-  border: 1px solid white;
+  border: 1px solid color-mix(in srgb, var(--accent-dark) 50%, transparent);
 }
 
 .service-card__button:hover {

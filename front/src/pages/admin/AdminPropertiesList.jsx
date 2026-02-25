@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const AdminPropertiesList = ({ setActiveSection }) => {
+const AdminPropertiesList = ({ setActiveSection, onToggleSidebar }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,6 +59,9 @@ const AdminPropertiesList = ({ setActiveSection }) => {
 
   return (
     <div className="admin-properties-list-main-wrapper">
+      <button className="admin-properties-list-toggle-sidebar" onClick={onToggleSidebar}>
+        ☰
+      </button>
       <div className="admin-properties-list-fixed-header">
         <h1 className="admin-properties-list-page-title">Список объектов недвижимости</h1>
         <button onClick={() => setActiveSection('properties-add')} className="admin-properties-list-add-new-button">
@@ -70,7 +73,6 @@ const AdminPropertiesList = ({ setActiveSection }) => {
         <table className="admin-properties-list-data-table">
           <thead className="admin-properties-list-table-header-sticky">
             <tr className="admin-properties-list-header-row">
-              <th className="admin-properties-list-table-header-cell actions-column"></th>
               <th className="admin-properties-list-table-header-cell id-column">ID</th>
               <th className="admin-properties-list-table-header-cell title-column">Заголовок</th>           {/* новое */}
               <th className="admin-properties-list-table-header-cell address-column">Адрес</th>
@@ -101,29 +103,13 @@ const AdminPropertiesList = ({ setActiveSection }) => {
           <tbody className="admin-properties-list-table-body">
             {properties.length === 0 ? (
               <tr>
-                <td colSpan={17} className="admin-properties-list-empty-row">
+                <td colSpan={25} className="admin-properties-list-empty-row">
                   Объекты отсутствуют
                 </td>
               </tr>
             ) : (
               properties.map(property => (
                 <tr key={property.id} className="admin-properties-list-data-row">
-                  <td className="admin-properties-list-table-cell actions-column">
-                    <div className="admin-properties-list-actions-group">
-                      <Link
-                        to={`/admin/properties/edit/${property.id}`}
-                        className="admin-properties-list-action-button edit-button"
-                      >
-                        Изменить
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(property.id)}
-                        className="admin-properties-list-action-button delete-button"
-                      >
-                        Удалить
-                      </button>
-                    </div>
-                  </td>
                   <td className="admin-properties-list-table-cell id-column">{property.id}</td>
 
                   <td className="admin-properties-list-table-cell title-column">
@@ -191,6 +177,20 @@ const AdminPropertiesList = ({ setActiveSection }) => {
                   <td className="admin-properties-list-table-cell created-column">
                     {new Date(property.createdAt).toLocaleDateString('ru-RU')}
                   </td>
+                    <div className="admin-properties-list-actions-group">
+                      <Link
+                        to={`/admin/properties/edit/${property.id}`}
+                        className="admin-properties-list-action-button edit-button"
+                      >
+                        Изменить
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(property.id)}
+                        className="admin-properties-list-action-button delete-button"
+                      >
+                        Удалить
+                      </button>
+                    </div>
                 </tr>
               ))
             )}

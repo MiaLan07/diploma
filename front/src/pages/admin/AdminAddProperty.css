@@ -5,3 +5,6 @@
     width: 200px;
     display: inline-block;
 }
+.property-create-form .form-group input{
+    color: black;
+}

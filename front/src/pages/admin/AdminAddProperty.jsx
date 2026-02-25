@@ -260,7 +260,7 @@ const AdminAddProperty = () => {
         reset();
         setImages([]);
         setImagePreviews([]);
-        navigate('/admin/properties');
+        navigate('/cabinet');
       }
     } catch (err) {
       console.error('Ошибка создания объекта:', err);

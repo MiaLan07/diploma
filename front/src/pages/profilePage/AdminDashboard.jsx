@@ -8,6 +8,7 @@ import './AdminDashboard.css'
 
 export default function AdminDashboard({ user }) {
   const [activeSection, setActiveSection] = useState('properties-list');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,6 +16,8 @@ export default function AdminDashboard({ user }) {
     window.dispatchEvent(new Event('authChange'));
     navigate('/auth');
   };
+
+  const toggleSidebar = () => setSidebarCollapsed(prev => !prev);
 
   const renderContent = () => {
     switch (activeSection) {
@@ -27,7 +30,7 @@ export default function AdminDashboard({ user }) {
         );
 
       case 'properties-list':
-        return <AdminPropertiesList setActiveSection={setActiveSection} />;
+        return <AdminPropertiesList setActiveSection={setActiveSection} onToggleSidebar={toggleSidebar} />
 
       case 'properties-add':
         return <AdminAddProperty />;
@@ -67,43 +70,45 @@ export default function AdminDashboard({ user }) {
       {/* Основная область */}
       <div className="admin-dashboard-main-content">
         {/* Левая колонка — меню */}
-        <aside className="admin-dashboard-sidebar">
-          <ul className="admin-dashboard-sidebar-list">
-            {/* Родительский пункт "Объекты" */}
-            <li className="admin-dashboard-sidebar-item admin-dashboard-sidebar-parent">
-              Объекты
-            </li>
-            <ul className="admin-dashboard-sidebar-sublist">
-              <li
-                className={`admin-dashboard-sidebar-subitem ${
-                  activeSection === 'properties-list' ? 'active' : ''
-                }`}
-                onClick={() => setActiveSection('properties-list')}
-              >
-                Список объектов
+         {!sidebarCollapsed && (
+          <aside className="admin-dashboard-sidebar">
+            <ul className="admin-dashboard-sidebar-list">
+              {/* Родительский пункт "Объекты" */}
+              <li className="admin-dashboard-sidebar-item admin-dashboard-sidebar-parent">
+                Объекты
               </li>
+              <ul className="admin-dashboard-sidebar-sublist">
+                <li
+                  className={`admin-dashboard-sidebar-subitem ${
+                    activeSection === 'properties-list' ? 'active' : ''
+                  }`}
+                  onClick={() => setActiveSection('properties-list')}
+                >
+                  Список объектов
+                </li>
+                <li
+                  className={`admin-dashboard-sidebar-subitem ${
+                    activeSection === 'properties-add' ? 'active' : ''
+                  }`}
+                  onClick={() => setActiveSection('properties-add')}
+                >
+                  Добавить объект
+                </li>
+              </ul>
+
+              {/* Пункт выхода */}
               <li
-                className={`admin-dashboard-sidebar-subitem ${
-                  activeSection === 'properties-add' ? 'active' : ''
-                }`}
-                onClick={() => setActiveSection('properties-add')}
+                className="admin-dashboard-sidebar-item logout-item"
+                onClick={handleLogout}
               >
-                Добавить объект
+                Выйти
               </li>
             </ul>
-
-            {/* Пункт выхода */}
-            <li
-              className="admin-dashboard-sidebar-item logout-item"
-              onClick={handleLogout}
-            >
-              Выйти
-            </li>
-          </ul>
-        </aside>
+          </aside>
+        )}
 
         {/* Правая часть — контент выбранного раздела */}
-        <main className="admin-dashboard-content-area">
+        <main className={`admin-dashboard-content-area ${sidebarCollapsed ? 'full-width' : ''}`}>
           {renderContent()}
         </main>
       </div>

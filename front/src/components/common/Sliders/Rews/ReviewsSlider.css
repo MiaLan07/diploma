@@ -42,7 +42,7 @@
   transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: start;
   gap: 16px;
 }
 
