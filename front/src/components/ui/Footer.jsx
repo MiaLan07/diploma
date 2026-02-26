@@ -7,8 +7,8 @@ import { ReactComponent as LogoIcon } from '../../assets/logo_white1.svg';
 import { YMaps, Map, Placemark, ZoomControl } from '@mr-igorinni/react-yandex-maps-fork';
 import './Footer.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const API_YANDEX_MAP = import.meta.env.REACT_APP_YANDEX_MAPS_API_KEY;
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_YANDEX_MAP = process.env.REACT_APP_YANDEX_MAPS_API_KEY;
 const OFFICE_COORDINATES = [44.949532, 34.116685];
 
 const Footer = ({ backForm = false }) => {

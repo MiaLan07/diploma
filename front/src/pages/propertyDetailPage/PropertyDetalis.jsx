@@ -5,7 +5,7 @@ import axios from 'axios';
 import { ReactComponent as IconHartLoved } from '../../assets/heart1.svg';
 import './PropertyDetails.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const PropertyDetails = () => {
   const { slug } = useParams(); // теперь используем slug вместо id

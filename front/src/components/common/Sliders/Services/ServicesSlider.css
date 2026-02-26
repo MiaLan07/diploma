@@ -105,7 +105,7 @@
   margin: 0;
   max-height: max-content;
   box-sizing: border-box;
-  border: 1px solid color-mix(in srgb, var(--accent-dark) 50%, transparent);
+  border: 1px solid var(--accent-light);
 }
 
 .service-card__button:hover {

@@ -6,7 +6,7 @@ import './ContactBlock.css';
 import { ReactComponent as IconMessage } from '../../assets/message2.svg'
 import { useInView } from 'react-intersection-observer';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ContactBlock = () => {
   const {

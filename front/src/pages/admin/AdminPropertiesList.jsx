@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { ReactComponent as ArrowLeftIcon } from '../../assets/arrow-left1.svg'
 
-const AdminPropertiesList = ({ setActiveSection, onToggleSidebar }) => {
+const AdminPropertiesList = ({ setActiveSection, onToggleSidebar, sidebarCollapsed }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -60,7 +61,7 @@ const AdminPropertiesList = ({ setActiveSection, onToggleSidebar }) => {
   return (
     <div className="admin-properties-list-main-wrapper">
       <button className="admin-properties-list-toggle-sidebar" onClick={onToggleSidebar}>
-        ☰
+        <ArrowLeftIcon className={sidebarCollapsed ? 'active' : ''}/> <span>{sidebarCollapsed ? 'Развернуть меню' : 'Свернуть меню'}</span>
       </button>
       <div className="admin-properties-list-fixed-header">
         <h1 className="admin-properties-list-page-title">Список объектов недвижимости</h1>

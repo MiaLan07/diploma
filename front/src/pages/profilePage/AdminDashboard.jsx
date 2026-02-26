@@ -6,6 +6,10 @@ import AdminAddProperty from '../admin/AdminAddProperty'; // Ваш сущест
 // Другие компоненты: AdminRequestsList, AdminUsersList, AdminSettings и т.д. (добавьте по мере необходимости)
 import './AdminDashboard.css'
 
+import { ReactComponent as AddPropertyIcon } from '../../assets/plus-add1.svg'
+import { ReactComponent as ViewPropertiesIcon } from '../../assets/table1.svg'
+import { ReactComponent as LogoutIcon } from '../../assets/logout1.svg'
+
 export default function AdminDashboard({ user }) {
   const [activeSection, setActiveSection] = useState('properties-list');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -30,10 +34,10 @@ export default function AdminDashboard({ user }) {
         );
 
       case 'properties-list':
-        return <AdminPropertiesList setActiveSection={setActiveSection} onToggleSidebar={toggleSidebar} />
+        return <AdminPropertiesList setActiveSection={setActiveSection} onToggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
 
       case 'properties-add':
-        return <AdminAddProperty />;
+        return <AdminAddProperty onToggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />;
 
       // case 'requests':
       //   return <AdminRequestsList />;
@@ -68,14 +72,13 @@ export default function AdminDashboard({ user }) {
       </header>
 
       {/* Основная область */}
-      <div className="admin-dashboard-main-content">
+      <div className={`admin-dashboard-main-content ${sidebarCollapsed ? 'small' : ''}`}>
         {/* Левая колонка — меню */}
-         {!sidebarCollapsed && (
           <aside className="admin-dashboard-sidebar">
             <ul className="admin-dashboard-sidebar-list">
               {/* Родительский пункт "Объекты" */}
               <li className="admin-dashboard-sidebar-item admin-dashboard-sidebar-parent">
-                Объекты
+                <span className='textinli'>Объекты</span>
               </li>
               <ul className="admin-dashboard-sidebar-sublist">
                 <li
@@ -84,7 +87,7 @@ export default function AdminDashboard({ user }) {
                   }`}
                   onClick={() => setActiveSection('properties-list')}
                 >
-                  Список объектов
+                  <ViewPropertiesIcon /> <span className='textinli'>Список объектов</span>
                 </li>
                 <li
                   className={`admin-dashboard-sidebar-subitem ${
@@ -92,7 +95,7 @@ export default function AdminDashboard({ user }) {
                   }`}
                   onClick={() => setActiveSection('properties-add')}
                 >
-                  Добавить объект
+                  <AddPropertyIcon /> <span className='textinli'>Добавить объект</span>
                 </li>
               </ul>
 
@@ -101,14 +104,13 @@ export default function AdminDashboard({ user }) {
                 className="admin-dashboard-sidebar-item logout-item"
                 onClick={handleLogout}
               >
-                Выйти
+                <LogoutIcon /> <span className='textinli'>Выйти</span>
               </li>
             </ul>
           </aside>
-        )}
 
         {/* Правая часть — контент выбранного раздела */}
-        <main className={`admin-dashboard-content-area ${sidebarCollapsed ? 'full-width' : ''}`}>
+        <main className='admin-dashboard-content-area'>
           {renderContent()}
         </main>
       </div>

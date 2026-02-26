@@ -10,7 +10,7 @@ import UserDashboard from './UserDashboard'; // Компонент для обы
 import AdminDashboard from './AdminDashboard'; // Компонент для админа (управление объектами, заявками, пользователями)
 import Footer from '../../components/ui/Footer'; // Футер, если нужен
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -27,7 +27,7 @@ export default function ProfilePage() {
       }
 
       try {
-        const res = await axios.get(`${API_URL}/auth/me`, {
+        const res = await axios.get(`${API_URL}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.user);

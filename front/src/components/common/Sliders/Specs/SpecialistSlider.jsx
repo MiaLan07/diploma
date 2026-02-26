@@ -6,7 +6,7 @@ import './SpecialistSlider.css';
 import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const SpecialistsSlider = () => {
   // Настройка Embla Carousel с автопрокруткой

@@ -8,3 +8,28 @@
 .property-create-form .form-group input{
     color: black;
 }
+
+.property-create-form {
+  /* display: flex;
+  flex-direction: column;
+  flex-wrap: wrap; */
+  /* grid-template-columns: 1fr 1fr;  /* две равные колонки
+  gap: 20px;                        /* промежутки между карточками
+  align-items: start;               каждая карточка занимает высоту только своего контента */
+  column-count: 2;          /* две колонки */
+  column-gap: 20px;         /* отступ между колонками */
+}
+.property-create-form fieldset {
+  /* margin: 0;                         /* сбрасываем стандартные отступы 
+  padding: 16px;                     /* оставляем внутренние поля по вкусу 
+  border: 1px solid #ccc;            /* пример рамки, можно свою 
+  border-radius: 8px;
+  background: #fff;
+  box-sizing: border-box; */
+
+  display: inline-block;    /* чтобы не ломать колонки */
+  width: 100%;              /* занимают всю ширину своей колонки */
+  margin-bottom: 20px;      /* отступ снизу между карточками */
+  break-inside: avoid;      /* предотвращает разрыв карточки между колонками */
+  box-sizing: border-box;
+}

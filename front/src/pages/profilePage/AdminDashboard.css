@@ -40,10 +40,46 @@
   color: #444;
 }
 
+span.textinli {
+  white-space: nowrap;
+  opacity: 1;
+  max-width: 200px;          /* достаточно большое значение, чтобы текст помещался */
+  overflow: hidden;
+  display: inline-block;     /* чтобы max-width работал */
+  transition: opacity 0.3s ease, max-width 0.3s ease;
+}
 /* ── ОСНОВНОЙ LAYOUT ────────────────────────────────────── */
 .admin-dashboard-main-content {
   display: flex;
   padding: 0 64px;
+}
+.admin-dashboard-main-content.small .admin-dashboard-sidebar {
+  width: min-content;
+  overflow: hidden;
+  transition: all 1s;
+}
+.admin-dashboard-main-content.small .admin-dashboard-sidebar span.textinli {
+  opacity: 0;
+  max-width: 0;
+  max-height: 0;
+}
+
+.admin-dashboard-main-content.small .admin-dashboard-sidebar .admin-dashboard-sidebar-sublist {
+  padding: 0;
+  margin: 0;
+}
+.admin-dashboard-main-content.small .admin-dashboard-sidebar .admin-dashboard-sidebar-item.logout-item {
+  margin: 0;
+}
+.admin-dashboard-main-content.small .admin-dashboard-sidebar .admin-dashboard-sidebar-subitem,
+.admin-dashboard-main-content.small .admin-dashboard-sidebar .admin-dashboard-sidebar-item.logout-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 32px;
+}
+.admin-dashboard-main-content.small .admin-dashboard-sidebar .admin-dashboard-sidebar-parent {
+  display: none;
 }
 
 /* ── SIDEBAR ────────────────────────────────────────────── */
@@ -76,11 +112,32 @@
   margin-bottom: 4px;
   transition: all 0.2s;
 }
-
+.admin-dashboard-sidebar-subitem,
+.admin-dashboard-sidebar-item.logout-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 8px;
+  align-items: center;
+  height: 28px;
+}
+.admin-dashboard-sidebar-subitem svg,
+.admin-dashboard-sidebar-item.logout-item svg {
+  height: 24px;
+  width: 24px;
+  justify-self: center;
+  margin: auto;
+  transition: all 0.2s;
+}
+.admin-dashboard-sidebar-subitem:hover svg, .admin-dashboard-sidebar-subitem.active svg,
+.admin-dashboard-sidebar-item.logout-item:hover svg {
+  height: 28px;
+  width: 28px;
+}
 .admin-dashboard-sidebar-parent {
   color: black;
   cursor: default;
   font-size: 1.1rem;
+  margin-bottom: 8px;
 }
 .admin-dashboard-sidebar-sublist {
   list-style: none;
@@ -105,8 +162,11 @@
   margin-top: 20px;
 }
 
-.admin-dashboard-sidebar-item.logout-item:hover {
+.admin-dashboard-sidebar-item.logout-item:hover,
+.admin-dashboard-sidebar-item.logout-item:hover svg g path {
   color: #e74c3c;
+  stroke: #e74c3c !important;
+  stroke-opacity: 1 !important;
 }
 
 /* ── КОНТЕНТНАЯ ОБЛАСТЬ ─────────────────────────────────── */
@@ -321,4 +381,31 @@ td.address-column, th.address-column {
 .admin-properties-list-add-new-button:hover {
   transform: scale(1.05);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+button.admin-properties-list-toggle-sidebar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 1.1rem;
+  background: none;
+  border: 2px solid var(--accent-light);
+  border-radius: 8px;
+  transition: all 0.3s;
+  background-color: color-mix(in srgb, var(--accent-light) 20%, transparent);
+}
+button.admin-properties-list-toggle-sidebar:hover {
+  transform: scale(1.05);
+}
+button.admin-properties-list-toggle-sidebar svg {
+  height: 20px;
+  width: auto;
+  transition: all 0.5s;
+}
+button.admin-properties-list-toggle-sidebar svg path {
+  stroke: var(--accent-light) !important;
+}
+button.admin-properties-list-toggle-sidebar svg.active {
+  transform: rotate(180deg);
 }

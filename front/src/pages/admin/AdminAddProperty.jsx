@@ -7,8 +7,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 import './AdminAddProperty.css';
+import { ReactComponent as ArrowLeftIcon } from '../../assets/arrow-left1.svg'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // ────────────────────────────────────────────────
 // Схема валидации (только действительно обязательные поля)
@@ -76,7 +77,7 @@ const schema = yup.object({
   ).nullable(),
 }).required();
 
-const AdminAddProperty = () => {
+const AdminAddProperty = ({ onToggleSidebar, sidebarCollapsed }) => {
   const navigate = useNavigate();
   const [operations, setOperations] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
@@ -290,6 +291,9 @@ const AdminAddProperty = () => {
 
   return (
     <div className="admin-add-property-page">
+      <button className="admin-properties-list-toggle-sidebar" onClick={onToggleSidebar}>
+        <ArrowLeftIcon className={sidebarCollapsed ? 'active' : ''}/> <span>{sidebarCollapsed ? 'Развернуть меню' : 'Свернуть меню'}</span>
+      </button>
       <div className="admin-header">
         <h1>Добавить объект недвижимости</h1>
       </div>
