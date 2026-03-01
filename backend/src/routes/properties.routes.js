@@ -34,7 +34,7 @@ const router = express.Router();
 
 router.get('/map', async (req, res) => {
   try {
-    console.log('Запрос на /map начат');
+    console.log('Запрос /properties/map');
 
     const properties = await prisma.property.findMany({
       where: {
@@ -44,9 +44,11 @@ router.get('/map', async (req, res) => {
       },
       select: {
         id: true,
+        title: true,           // ← добавили
+        slug: true,            // ← добавили (главное!)
         address: true,
         price: true,
-        rooms: true,
+        roomsCount: true,      // ← правильное название поля из schema.prisma
         shortDescription: true,
         latitude: true,
         longitude: true,
@@ -60,20 +62,18 @@ router.get('/map', async (req, res) => {
 
     console.log(`Найдено объектов: ${properties.length}`);
 
-    const mapData = properties.map(p => {
-      console.log(`Обработка объекта ${p.id}: lat=${p.latitude}, lng=${p.longitude}`);
-      return {
-        id: p.id,
-        title: `Объект №${p.id}`,
-        address: p.address || 'Адрес не указан',
-        price: p.price,
-        rooms: p.rooms,
-        shortDescription: p.shortDescription || '',
-        lat: Number(p.latitude),   // ← принудительно в number
-        lng: Number(p.longitude),
-        mainImage: p.images[0]?.url || '/images/placeholder.jpg',
-      };
-    });
+    const mapData = properties.map(p => ({
+      id: p.id,
+      title: p.title || `Объект №${p.id}`,
+      slug: p.slug || p.id.toString(),           // fallback на id, если slug ещё не сгенерирован
+      address: p.address || 'Адрес не указан',
+      price: p.price,
+      rooms: p.roomsCount,                       // ← переименовали для фронтенда
+      shortDescription: p.shortDescription || '',
+      lat: Number(p.latitude),
+      lng: Number(p.longitude),
+      mainImage: p.images[0]?.url || '/images/placeholder.jpg',
+    }));
 
     res.json({
       success: true,
@@ -82,11 +82,10 @@ router.get('/map', async (req, res) => {
     });
   } catch (err) {
     console.error('Map route error:', err);
-    console.error('Stack:', err.stack);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Ошибка при загрузке карты',
-      error: err.message 
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при загрузке данных для карты',
+      error: err.message,
     });
   }
 });

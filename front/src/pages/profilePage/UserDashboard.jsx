@@ -22,7 +22,7 @@ export default function UserDashboard({ user }) {
       }
 
       try {
-        const res = await axios.get(`${API_URL}/favorites`, {
+        const res = await axios.get(`${API_URL}/api/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Предполагаем, что бэк возвращает массив объектов Property

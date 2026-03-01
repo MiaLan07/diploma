@@ -1,224 +1,256 @@
-.property-details-page {
-  margin: 0;
-  padding: 24px 64px;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: #f9fafb;
-  color: #1f2937;
+div.property-details-page#main {
+    padding: 32px 64px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;               /* глобальная защита от скролла */
 }
 
-.property-details-page .hero-section {
-  margin-bottom: 32px;
+section.property-details-page.hero-section {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 100px;
+    align-items: center;
+    gap: 32px;
+}
+.property-details-page.hero-section .property-title {
+  margin: 0;                     /* убираем внешние отступы */
+  line-height: 1;              /* фиксируем высоту строки (подберите под свой дизайн) */
+  font-weight: 500;
+}
+.property-details-page.hero-section .price-and-favorite.big-price {
+    line-height: 1;              /* согласуем с заголовком */
+    display: flex;                 /* для точного позиционирования */
+    align-items: center;           /* центрируем текст по вертикали внутри блока */
+    justify-content: flex-end;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Novelist';
+    font-size: 3rem;
+}
+.property-details-page.hero-section .price-and-favorite.favorite-btn {
+    width: 100px;
+    height: 100px;
+    box-sizing: border-box;
+    justify-self: center;
+    border: none;
+    background: none;
+}
+.property-details-page.hero-section .price-and-favorite.favorite-btn svg {
+    width: 65px;
+    height: auto;
+    transition: all 0.2s;
+}
+.property-details-page.hero-section .price-and-favorite.favorite-btn:hover svg {
+    width: 75px;
 }
 
-.property-details-page .hero-section .property-title {
-  font-size: 2.1rem;
-  font-weight: 700;
-  line-height: 1.28;
-  margin: 0 0 12px;
+section.property-details-page.gallery-section {
+    margin: 24px 0;
+    width: 100%;
+    max-width: 100%;                  /* на всякий случай */
+    overflow-x: hidden;               /* ← ключевое: обрезаем горизонтальное переполнение */
+    box-sizing: border-box;
 }
-
-.property-details-page .hero-section .price-and-favorite {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
+.property-details-page.gallery-section.collage-wrapper,
+.property-details-page.gallery-section.others-photo {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;                 /* центрируем, если нужно */
+    padding: 0;
+    box-sizing: border-box;
 }
-
-.property-details-page .hero-section .price-and-favorite .big-price {
-  font-size: 2.8rem;
-  font-weight: 800;
-  color: #166534;
+.property-details-page.gallery-section.collage-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    height: 500px;                    /* твоя высота */
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;                   /* если хочешь центрировать */
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;                 /* обрезает всё, что пытается вылезти */
 }
-
-.property-details-page .hero-section .price-and-favorite .favorite-btn {
-  width: 48px;
-  height: 48px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.15s;
+.property-details-page.gallery-section.main-photo,
+.property-details-page.gallery-section.other-img {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;           /* если скругление нужно и на родителе */
 }
-
-.property-details-page .hero-section .price-and-favorite .favorite-btn svg {
-  width: 100%;
-  height: 100%;
-  fill: #9ca3af;
-  transition: fill 0.2s;
+.property-details-page.gallery-section.collage-wrapper img,
+.property-details-page.gallery-section.others-photo img,
+.property-details-page.gallery-section.other-img img {
+    width: 100%;
+    height: 100%;
+    min-width: 0;                     /* ← важно при flex/grid */
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 15px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    transform-origin: center center;
 }
-
-.property-details-page .hero-section .price-and-favorite .favorite-btn.active svg {
-  fill: #ef4444;
-}
-
-.property-details-page .hero-section .price-and-favorite .favorite-btn:hover {
+.property-details-page.gallery-section.main-photo:hover img,
+.property-details-page.gallery-section.other-img:hover img {
   transform: scale(1.08);
 }
-
-.property-details-page .hero-section .address-line {
-  font-size: 1.1rem;
-  color: #4b5563;
+.property-details-page.gallery-section.others-photo {
+    display: grid;
+    gap: 24px;
+    row-gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;                 /* обязательно */
+}
+/* Для каждого варианта грида тоже добавляем защиту */
+.property-details-page.gallery-section.others-photo#grid-2,
+.property-details-page.gallery-section.others-photo#grid-3,
+.property-details-page.gallery-section.others-photo#grid-3-4,
+.property-details-page.gallery-section.others-photo#grid-4,
+.property-details-page.gallery-section.others-photo#grid-5 {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+.property-details-page.gallery-section.others-photo#grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, calc((100% - 16px) / 2));
+}
+.property-details-page.gallery-section.others-photo#grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, calc((100% - 16px) / 3)); 
+}
+.property-details-page.gallery-section.others-photo#grid-3-4 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, calc((100% - 16px) / 4)); 
+}
+.property-details-page.gallery-section.others-photo#grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, calc((100% - 16px) / 4)); 
+}
+.property-details-page.gallery-section.others-photo#grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, calc((100% - 16px) / 5)); 
 }
 
-/* ─── Галерея ──────────────────────────────────────── */
-.property-details-page .gallery-collage-wrapper {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 8px;
-  height: 520px;
-  margin-bottom: 40px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #e5e7eb;
-}
-
-.property-details-page .gallery-collage-wrapper .main-photo {
-  grid-row: 1 / 3;
-}
-
-.property-details-page .gallery-collage-wrapper .main-photo img,
-.property-details-page .gallery-collage-wrapper .small-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.property-details-page .gallery-collage-wrapper .right-column {
+section.property-details-page.key-params-section {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.property-details-page .gallery-collage-wrapper .right-column .small-photo {
-  flex: 1;
-}
-
-.property-details-page .gallery-collage-wrapper .bottom-row {
-  grid-column: 1 / 3;
-  display: flex;
-  gap: 8px;
-}
-
-.property-details-page .gallery-collage-wrapper .bottom-row .small-photo {
-  flex: 1;
-}
-
-.property-details-page .gallery-collage-wrapper .no-images {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  color: #6b7280;
-}
-
-/* ─── Ключевые параметры ───────────────────────────── */
-.property-details-page .key-params-bar {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 0;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 40px;
-}
-
-.property-details-page .key-params-bar .param {
-  text-align: center;
-  flex: 1;
-}
-
-.property-details-page .key-params-bar .param strong {
-  display: block;
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.property-details-page .key-params-bar .param span {
-  font-size: 0.95rem;
-  color: #6b7280;
-}
-
-/* ─── Подробная информация ─────────────────────────── */
-.property-details-page .detailed-info-section {
-  margin-bottom: 48px;
-}
-
-.property-details-page .detailed-info-section .section-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 0 0 24px;
-}
-
-.property-details-page .detailed-info-section .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px 24px;
-  margin-bottom: 32px;
-  font-size: 1.05rem;
-}
-
-.property-details-page .detailed-info-section .full-description {
   margin: 32px 0;
-  line-height: 1.65;
+}
+.property-details-page.key-params-section div.params-grid {
+  display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+}
+.property-details-page.key-params-section div.param-item p {
+  font-family: 'Novelist';
+  font-size: 2.4rem;
+  margin: 0;
+}
+.property-details-page.key-params-section div.param-item .submit-btn {
+  margin: 0;
+}
+.property-details-page.key-params-section div.param-item .submit-btn p {
+  margin-bottom: -0.5rem;
 }
 
-.property-details-page .detailed-info-section .extra-features-list {
-  list-style: none;
-  padding: 0;
+section.property-details-page.short-details-section {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
   font-size: 1.05rem;
 }
-
-.property-details-page .detailed-info-section .extra-features-list li {
-  margin-bottom: 10px;
-}
-
-/* ─── Карта ────────────────────────────────────────── */
-.property-details-page .map-section .section-title {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-}
-
-.property-details-page .map-section .map-placeholder {
-  height: 380px;
-  background: #d1d5db;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #4b5563;
-  font-size: 1.2rem;
-}
-
-/* ─── Кнопка действия ──────────────────────────────── */
-.property-details-page .action-bar {
-  text-align: center;
-}
-
-.property-details-page .action-bar .big-buy-button {
-  padding: 18px 60px;
-  font-size: 1.35rem;
+section.property-details-page.short-details-section p.bolder {
   font-weight: 700;
-  color: white;
-  background: #15803d;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.2s;
+  margin: 0;
+}
+section.property-details-page.short-details-section .flags-list {
+  margin: 5px;
 }
 
-.property-details-page .action-bar .big-buy-button:hover {
-  background: #166534;
-}
 
-/* ─── Состояния загрузки / ошибок ──────────────────── */
-.property-details-page.loading,
-.property-details-page.error,
-.property-details-page.not-found {
-  min-height: 60vh;
+.property-details-page.fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
-  color: #4b5563;
+}
+.property-details-page.fullscreen-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  width: auto;
+  height: auto;
+}
+.property-details-page.fullscreen-image {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+.property-details-page.fullscreen-close {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  background: rgba(0,0,0,0.6);
+  color: var(--accent-light);
+  border: none;
+  font-size: 40px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.property-details-page.fullscreen-close:hover {
+  background: rgba(0,0,0,0.9);
+  transform: scale(1.1);
+}
+.property-details-page.fullscreen-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: var(--accent-light);
+  border: none;
+  font-size: 40px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+}
+.property-details-page.fullscreen-nav:hover {
+  background: rgba(0,0,0,0.8);
+  transform: translateY(-50%) scale(1.1);
+}
+.property-details-page.fullscreen-nav.prev {
+  left: -80px;
+}
+.property-details-page.fullscreen-nav.next {
+  right: -80px;
 }

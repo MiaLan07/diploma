@@ -1,5 +1,5 @@
 // src/components/ServicesSlider.jsx
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import axios from 'axios';
@@ -8,7 +8,7 @@ import './ServicesSlider.css';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const ServicesSlider = () => {
-  const [emblaRef] = useEmblaCarousel(
+   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: false,
       align: 'start',
@@ -62,6 +62,9 @@ const ServicesSlider = () => {
     },
   ])
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [slidesCount, setSlidesCount] = useState(0);
+
   useEffect(() => {
     const loadServiceImages = async () => {
       const updatedServices = await Promise.all(
@@ -94,6 +97,29 @@ const ServicesSlider = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+      setSlidesCount(emblaApi.scrollSnapList().length);
+    };
+
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    onSelect(); // инициализация
+
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
+  }, [emblaApi]);
+
+  // Обработчики
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+
   return (
     <div className="services-section">
       <h2 className='section-title'>Услуги</h2>
@@ -125,6 +151,36 @@ const ServicesSlider = () => {
             </div>
           ))}
         </div>
+      </div>
+      <div className="services-navigation">
+        <button
+          className="services-arrow services-arrow--prev"
+          onClick={scrollPrev}
+          disabled={selectedIndex === 0}
+          aria-label="Предыдущие услуги"
+        >
+          ←
+        </button>
+
+        <div className="services-dots">
+          {Array.from({ length: slidesCount }).map((_, idx) => (
+            <button
+              key={idx}
+              className={`services-dot ${idx === selectedIndex ? 'services-dot--active' : ''}`}
+              onClick={() => scrollTo(idx)}
+              aria-label={`Перейти к услуге ${idx + 1}`}
+            />
+          ))}
+        </div>
+
+        <button
+          className="services-arrow services-arrow--next"
+          onClick={scrollNext}
+          disabled={selectedIndex === slidesCount - 1}
+          aria-label="Следующие услуги"
+        >
+          →
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 // src/components/SpecialistsSlider.jsx
-import React, {useState, useEffect} from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import './SpecialistSlider.css';
@@ -11,9 +11,10 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const SpecialistsSlider = () => {
   // Настройка Embla Carousel с автопрокруткой
   const autoplayOptions = { delay: 6500, stopOnInteraction: false };
-  const [emblaRef] = useEmblaCarousel({ loop: false, dragFree: true, slidesToScroll: 2 }, [Autoplay(autoplayOptions)]);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: true, slidesToScroll: 2 }, [Autoplay(autoplayOptions)]);
+  const blobUrlsRef = useRef([]);
 
-    const [specialists, setSpecialists] = useState([
+  const [specialists, setSpecialists] = useState([
     {
       id: 1,
       name: 'Максим Петров',
@@ -65,19 +66,27 @@ const SpecialistsSlider = () => {
     },
   ])
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [slidesCount, setSlidesCount] = useState(0);
+
   useEffect(() => {
     const loadSpecImages = async () => {
       const updatedSpecs = await Promise.all(
         specialists.map(async (specialist) => {
+          // Пропускаем, если изображение уже является blob URL (уже загружено)
+          if (specialist.image && specialist.image.startsWith('blob:')) {
+            return specialist;
+          }
           try {
             const filename = `Специалист_${specialist.id}.jpg`;
             const response = await axios.get(`${API_URL}/images/${filename}`, { responseType: 'blob' });
-
             const imageUrl = URL.createObjectURL(response.data);
+            // Сохраняем blob URL для последующей очистки
+            blobUrlsRef.current.push(imageUrl);
             return { ...specialist, image: imageUrl };
           } catch (error) {
             console.warn(`Не удалось загрузить изображение для специалиста ${specialist.name}:`, error);
-            return specialist; // оставляем fallback
+            return specialist; // оставляем исходный путь (fallback)
           }
         })
       );
@@ -87,13 +96,10 @@ const SpecialistsSlider = () => {
 
     loadSpecImages();
 
-    // Очистка blob-URL при размонтировании
+    // Очистка всех созданных blob URL при размонтировании
     return () => {
-      specialists.forEach((specialist) => {
-        if (specialist.image?.startsWith('blob:')) {
-          URL.revokeObjectURL(specialist.image);
-        }
-      });
+      blobUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+      blobUrlsRef.current = [];
     };
   }, []);
 
@@ -105,6 +111,29 @@ const SpecialistsSlider = () => {
       }));
     },
   });
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+      setSlidesCount(emblaApi.scrollSnapList().length);
+    };
+  
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    onSelect(); // инициализация
+  
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
+  }, [emblaApi]);
+  
+    // Обработчики
+    const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+    const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+    const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
 
   return (
     <div ref={ref} className="specialists-slider" id='team'>
@@ -130,6 +159,36 @@ const SpecialistsSlider = () => {
             </div>
           ))}
         </div>
+      </div>
+      <div className="specialists-navigation">
+        <button
+          className="specialists-arrow specialists-arrow--prev"
+          onClick={scrollPrev}
+          disabled={selectedIndex === 0}
+          aria-label="Предыдущие услуги"
+        >
+          ←
+        </button>
+
+        <div className="specialists-dots">
+          {Array.from({ length: slidesCount }).map((_, idx) => (
+            <button
+              key={idx}
+              className={`specialists-dot ${idx === selectedIndex ? 'specialists-dot--active' : ''}`}
+              onClick={() => scrollTo(idx)}
+              aria-label={`Перейти к услуге ${idx + 1}`}
+            />
+          ))}
+        </div>
+
+        <button
+          className="specialists-arrow specialists-arrow--next"
+          onClick={scrollNext}
+          disabled={selectedIndex === slidesCount - 1}
+          aria-label="Следующие услуги"
+        >
+          →
+        </button>
       </div>
     </div>
   );

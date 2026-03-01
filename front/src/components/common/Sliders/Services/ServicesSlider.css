@@ -114,6 +114,60 @@
   border: 1px solid var(--accent-dark);
 }
 
+.services-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.services-arrow {
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.services-arrow:hover:not(:disabled) {
+  color: var(--accent-dark);
+  transform: scale(1.4);
+}
+
+.services-arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.services-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.services-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: #D9D9D9;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.services-dot--active {
+  background: var(--accent-dark);
+}
+.services-dot:hover {
+    background: var(--accent-dots);
+}
+
 /* Responsive — показываем меньше карточек на мобильных */
 @media (max-width: 1024px) {
   .service-card {

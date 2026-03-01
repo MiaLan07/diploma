@@ -16,7 +16,7 @@ const requestsRoutes = require('./routes/requests.routes');
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'http://192.168.1.36:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -46,7 +46,7 @@ const registerLimiter = rateLimit({
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,                 // более мягкий лимит для остальных роутов
+  max: 1000,                 // более мягкий лимит для остальных роутов
 });
 
 // Применяем

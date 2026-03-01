@@ -6,8 +6,9 @@
 
 .consultation-container {
   display: flex;
-  min-height: 600px;
-  max-height: 800px;
+  height: 75vh;
+  /* min-height: 60vh;
+  max-height: 70vh; */
   overflow: hidden;
   position: relative;
   background-size: cover;
@@ -83,28 +84,33 @@ h2 .accent {
 
 .submit-btn p {
   margin: 0;
-  padding: 12px;
+  margin-bottom: -0.5rem;
+  padding: 0 24px;              /* ← отступы слева-справа от текста */
   color: white;
   font-size: 2.25rem;
   font-weight: 400;
   font-family: 'Novelist';
-  margin-bottom: -5px;
+  display: flex;
+  align-items: center;          /* центрируем текст по вертикали */
+  white-space: nowrap;
   transition: all 0.5s;
 }
 
 .submit-btn {
-  width: min-content;
-  padding: 4px 6px;
+  /* убираем min-content — пусть кнопка растягивается по контенту естественно */
+  width: fit-content;           /* или min-content — на твой вкус */
+  min-height: 64px;             /* ← задаём минимальную высоту, чтобы было место */
+  padding: 0;                   /* убираем внутренние отступы у кнопки */
   background: var(--accent-filters);
   border: none;
   border-radius: 12px;
   font-size: 1.125rem;
   cursor: pointer;
   transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: inline-flex;         /* или flex */
+  align-items: stretch;         /* ← важно! растягиваем детей по вертикали */
+  gap: 0;                       /* убираем gap, управляем отступами вручную */
+  overflow: hidden;             /* чтобы скругление работало корректно */
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -121,6 +127,8 @@ h2 .accent {
   background: rgba(255, 255, 255, 0.4);
   box-sizing: border-box;
   transition: all 0.5s;
+  display: flex;
+  align-items: center;
 }
 .submit-btn:hover .icon-btn {
   padding: 12px 18px;

@@ -218,7 +218,7 @@ const PropertiesSlider = ({
                           </div>
 
                           <a
-                            href={`/properties/${property.id}`}
+                            href={`/property/${property.slug}`}
                             className="property-address"
                             onClick={(e) => {
                               e.preventDefault();

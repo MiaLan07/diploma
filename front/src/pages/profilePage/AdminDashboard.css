@@ -43,7 +43,7 @@
 span.textinli {
   white-space: nowrap;
   opacity: 1;
-  max-width: 200px;          /* достаточно большое значение, чтобы текст помещался */
+  max-width: 300px;          /* достаточно большое значение, чтобы текст помещался */
   overflow: hidden;
   display: inline-block;     /* чтобы max-width работал */
   transition: opacity 0.3s ease, max-width 0.3s ease;
@@ -62,6 +62,7 @@ span.textinli {
   opacity: 0;
   max-width: 0;
   max-height: 0;
+  display: none;
 }
 
 .admin-dashboard-main-content.small .admin-dashboard-sidebar .admin-dashboard-sidebar-sublist {
@@ -84,7 +85,7 @@ span.textinli {
 
 /* ── SIDEBAR ────────────────────────────────────────────── */
 .admin-dashboard-sidebar {
-  width: 250px;
+  width: 300px;
   flex-shrink: 0;
   background: #ffffff;
   border: 1px solid black;
@@ -257,7 +258,7 @@ td.address-column, th.address-column {
   z-index: 10;
   background-color: inherit; /* теперь будут наследовать фон от строки */
   box-sizing: border-box;
-}
+} 
 /* Чтобы шапка оставалась серой */
 .admin-properties-list-table-header-sticky th.id-column,
 .admin-properties-list-table-header-sticky th.title-column,
@@ -266,39 +267,40 @@ td.address-column, th.address-column {
 }
 
 .id-column       { left: 0; width: 60px; }
-.title-column    { left: 60px; width: 120px; }
-.address-column  { left: 180px; width: 220px; }
+.title-column    { left: 60px; width: 220px; }
+.address-column  { left: 280px; width: 220px; }
 
 /* Ширина колонок */
 /* .id-column                   { width: 60px; text-align: center; }
 .title-column                { width: 100px ;}
 .address-column              { width: 220px; } */
-.rooms-column                { width: 70px;  text-align: center; }
-.area-column                 { width: 100px; text-align: right; }
-.price-column                { width: 130px; text-align: right; }
-.status-column               { width: 90px;  text-align: center; }
-.operation-column            { width: 110px; }
-.type-column                 { width: 130px; }
-.subtype-column              { width: 110px; }
-.building-type-column        { width: 100px ;}
-.condition-column            { width: 120px; }
-.renovation-year-column      { width: 100px ;}
-.parking-column              { width: 100px; }
-.floor-column                { width: 70px;  text-align: center; }
-.elevator-column             { width: 60px;  text-align: center; }
-.year-column                 { width: 80px;  text-align: center; }
-.maternal-capital-column     { width: 100px ;}
-.encumbrance-column          { width: 100px ;}
-.ready-to-move-column        { width: 100px ;}
-.bargaining-column           { width: 100px ;}
-.mortgage-column             { width: 100px ;}
+.rooms-column                { width: 100px;  text-align: center; }
+.area-column                 { width: 130px; text-align: right; }
+.price-column                { width: 160px; text-align: right; }
+.status-column               { width: 120px;  text-align: center; }
+.operation-column            { width: 140px; }
+.type-column                 { width: 170px; }
+.subtype-column              { width: 140px; }
+.building-type-column        { width: 130px ;}
+.condition-column            { width: 150px; }
+.renovation-year-column      { width: 130px ;}
+.parking-column              { width: 130px; }
+.floor-column                { width: 100px;  text-align: center; }
+.elevator-column             { width: 90px;  text-align: center; }
+.year-column                 { width: 110px;  text-align: center; }
+.maternal-capital-column     { width: 130px ;}
+.encumbrance-column          { width: 130px ;}
+.ready-to-move-column        { width: 130px ;}
+.bargaining-column           { width: 130px ;}
+.mortgage-column             { width: 130px ;}
 .description-column          { width: 220px; }
-.created-column              { width: 110px; }
+.created-column              { width: 140px; }
 
 .admin-properties-list-data-row {
   border-bottom: 1px solid #e5e7eb;
   background-color: white;
   height: 100px;
+  box-sizing: border-box;
 }
 
 .admin-properties-list-data-row:hover {
@@ -310,7 +312,12 @@ td.address-column, th.address-column {
   font-size: 0.875rem;
   color: #1f2937;
   vertical-align: middle;
-  box-sizing: border-box;
+  height: 100px;
+}
+
+th.admin-properties-list-table-header-cell,
+td.admin-properties-list-table-cell {
+  border-right: 1px solid #e5e7eb; /* светло-серая граница */
 }
 
 .admin-properties-list-actions-group {
@@ -320,12 +327,13 @@ td.address-column, th.address-column {
   align-items: center;
   flex-wrap: wrap;
   position: absolute;
-  right: 0;
+  right: 32px;
   width: 220px;
   opacity: 0;
   transition: all 0.2s;
   pointer-events: none;
   height: 100px;
+  box-sizing: border-box;
 }
 
 .admin-properties-list-data-row:hover .admin-properties-list-actions-group {

@@ -117,7 +117,14 @@ const MapPage = () => {
                     balloonContentHeader: `<strong>${prop.title || 'Недвижимость'}</strong>`,
                     balloonContentBody: `
                       ${prop.mainImage ? `<img src="${prop.mainImage}" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;" />` : ''}
-                      <p><b>Адрес:</b> ${prop.address || '—'}</p>
+                      <p><b>Адрес:</b> 
+                        <a href="/property/${prop.slug || prop.id}" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style="color:#2e7d32;text-decoration:underline;">
+                          ${prop.address || '—'}
+                        </a>
+                      </p>
                       <p style="color:#2e7d32;font-weight:bold;">
                         ${prop.price ? prop.price.toLocaleString('ru-RU') + ' ₽' : 'Цена по запросу'}
                       </p>

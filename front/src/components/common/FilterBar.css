@@ -108,7 +108,7 @@
   font-size: 1rem;
   color: #333;
   outline: none;
-  appearance: none;               /* убираем стандартную стрелку у select */
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   cursor: pointer;
@@ -187,12 +187,15 @@
 .map-icon {
   stroke: black;
   fill: none;
-  transition: all 0.2s;
+  transition: all 0.4s;
 }
 
 .link-item.map:hover .map-icon {
   transform: scale(1.15);
-  color: var(--accent-filters) !important;
+}
+.link-item.map:hover svg.map-icon  g rect {
+  stroke: var(--accent-filters) !important;
+  stroke-width: 11px !important;
 }
 
 /* Большие экраны (настольные ПК, широкоформатные мониторы) */
