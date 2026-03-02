@@ -21,12 +21,21 @@ const PropertiesSlider = ({
 
   const [imageBlobs, setImageBlobs] = useState({}); // { propId: [blobUrl1, blobUrl2, ...] }
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
-    align: 'start',
-    slidesToScroll: 1,
-    dragFree: false,
-  });
+ const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: false,
+      align: 'start',
+      slidesToScroll: 1,
+      dragFree: false,
+    },
+    [
+      Autoplay({
+        delay: 5000,                    // интервал прокрутки
+        stopOnInteraction: false,       // не останавливать после ручного свайпа
+        stopOnMouseEnter: true,         // ← это уже есть, но мы усилим
+      }),
+    ]
+  );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 

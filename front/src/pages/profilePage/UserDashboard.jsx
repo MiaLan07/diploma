@@ -5,6 +5,8 @@ import axios from 'axios';
 import './UserDashboard.css';
 import PropertiesSlider from '../../components/common/Sliders/Properties/PropertiesSlider';
 
+import { ReactComponent as LogoutIcon } from '../../assets/logout1.svg'
+
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export default function UserDashboard({ user }) {
@@ -71,7 +73,7 @@ export default function UserDashboard({ user }) {
                 navigate('/auth');
               }}
             >
-              ВЫЙТИ
+              <LogoutIcon /> <span className='textinli'>Выйти</span>
             </li>
           </ul>
         </aside>

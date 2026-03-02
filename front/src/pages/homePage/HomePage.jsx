@@ -2,6 +2,7 @@ import React from 'react'
 import HeroPage from './HeroPage'
 import ServicesSlider from '../../components/common/Sliders/Services/ServicesSlider'
 import WhyWithUs from './WhyWithUs'
+import LatestProperty from './LatestProperty'
 import ConsultationBlock from './ConsultationBlock'
 import AboutCompany from './AboutCompany'
 import SpecialistsSlider from '../../components/common/Sliders/Specs/SpecialistSlider'
@@ -14,6 +15,7 @@ const HomePage = () => {
         <HeroPage/>
         <ServicesSlider/>
         <WhyWithUs />
+        <LatestProperty />
         <ConsultationBlock />
         <AboutCompany />
         <SpecialistsSlider />

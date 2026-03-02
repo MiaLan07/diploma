@@ -1,6 +1,8 @@
 // src/components/PropertyDetails.js
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import YandexMap from '../../components/ui/YaMap'
+import Footer from '../../components/ui/Footer'
 import axios from 'axios';
 import { ReactComponent as IconHart } from '../../assets/heart1.svg';
 import { ReactComponent as IconHartLoved } from '../../assets/heart-loved.svg';
@@ -103,6 +105,7 @@ const PropertyDetails = () => {
       window.removeEventListener('keydown', handleEsc);
     };
   }, [isFullscreen]);
+
   const toggleFavorite = async (e) => {
     e.stopPropagation();
     const token = localStorage.getItem('token');
@@ -132,46 +135,54 @@ const PropertyDetails = () => {
     // navigate('/requests/new', { state: { propertyId: id } });
   };
 
-  const handleThumbnailClick = (clickedThumbnailPosition) => {
-    setImageOrder(currentOrder => {
-      // защита
-      if (currentOrder.length < 2) return currentOrder;
+  // const handleThumbnailClick = (clickedThumbnailPosition) => {
+  //   setImageOrder(currentOrder => {
+  //     // защита
+  //     if (currentOrder.length < 2) return currentOrder;
 
-      const newOrder = [...currentOrder];
+  //     const newOrder = [...currentOrder];
 
-      const currentMain = newOrder[0];
+  //     const currentMain = newOrder[0];
 
-      // позиция кликнутой миниатюры в полном массиве = 1 + clickedThumbnailPosition
-      const clickedPosInFullArray = 1 + clickedThumbnailPosition;
+  //     // позиция кликнутой миниатюры в полном массиве = 1 + clickedThumbnailPosition
+  //     const clickedPosInFullArray = 1 + clickedThumbnailPosition;
 
-      // проверяем, что позиция валидна
-      if (clickedPosInFullArray >= newOrder.length) {
-        console.warn("Позиция вышла за пределы массива", clickedThumbnailPosition);
-        return currentOrder;
-      }
+  //     // проверяем, что позиция валидна
+  //     if (clickedPosInFullArray >= newOrder.length) {
+  //       console.warn("Позиция вышла за пределы массива", clickedThumbnailPosition);
+  //       return currentOrder;
+  //     }
 
-      const clickedImageIndex = newOrder[clickedPosInFullArray];
+  //     const clickedImageIndex = newOrder[clickedPosInFullArray];
 
-      // если кликнули по тому же изображению, что уже главное — ничего не делаем
-      if (clickedImageIndex === currentMain) {
-        console.log("Клик по уже выбранному главному — игнорируем");
-        return currentOrder;
-      }
+  //     // если кликнули по тому же изображению, что уже главное — ничего не делаем
+  //     if (clickedImageIndex === currentMain) {
+  //       console.log("Клик по уже выбранному главному — игнорируем");
+  //       return currentOrder;
+  //     }
 
-      console.log(
-        `Меняем местами: главное ${currentMain} (индекс 0) ↔ ` +
-        `миниатюра с индексом ${clickedImageIndex} (позиция ${clickedThumbnailPosition})`
-      );
+  //     console.log(
+  //       `Меняем местами: главное ${currentMain} (индекс 0) ↔ ` +
+  //       `миниатюра с индексом ${clickedImageIndex} (позиция ${clickedThumbnailPosition})`
+  //     );
 
-      // swap
-      newOrder[0] = clickedImageIndex;
-      newOrder[clickedPosInFullArray] = currentMain;
+  //     // swap
+  //     newOrder[0] = clickedImageIndex;
+  //     newOrder[clickedPosInFullArray] = currentMain;
 
-      console.log("Старый порядок:", currentOrder);
-      console.log("Новый порядок:", newOrder);
+  //     console.log("Старый порядок:", currentOrder);
+  //     console.log("Новый порядок:", newOrder);
 
-      return newOrder;
-    });
+  //     return newOrder;
+  //   });
+  // };
+
+  const openFullscreenWithIndex = (index) => {
+    if (index >= 0 && index < imageOrder.length) {
+      setFullscreenIndex(index); // Устанавливаем стартовый индекс для fullscreen
+      setIsFullscreen(true);
+      document.body.style.overflow = 'hidden'; // Блокируем скролл страницы
+    }
   };
 
   if (loading) return <div className="property-details-page loading">Загрузка...</div>;
@@ -179,9 +190,7 @@ const PropertyDetails = () => {
   if (!property) return <div className="property-details-page not-found">Объект не найден</div>;
 
   const openFullscreen = () => {
-    setFullscreenIndex(imageOrder[0]); // текущее главное изображение
-    setIsFullscreen(true);
-    document.body.style.overflow = 'hidden'; // блокируем скролл страницы
+    openFullscreenWithIndex(0);
   };
   // Закрыть полноэкранный режим
   const closeFullscreen = () => {
@@ -213,7 +222,7 @@ const PropertyDetails = () => {
     return `${num}-комнатная`;
   };
 
-  return (
+  return (<>
     <div className="property-details-page" id='main'>
 
       {/* Герой-секция: заголовок, цена, сердце */}
@@ -267,10 +276,7 @@ const PropertyDetails = () => {
                 <div
                   key={`thumb-${globalIndex}-${position}-${imageOrder.join('-')}`}
                   className="property-details-page gallery-section other-img"
-                  onClick={() => {
-                    console.log(`Клик по позиции ${position}, globalIndex = ${globalIndex}`);
-                    handleThumbnailClick(position);
-                  }}
+                  onClick={() => openFullscreenWithIndex(position + 1)}
                   role="button"
                   tabIndex={0}
                   style={{ cursor: 'pointer' }}
@@ -319,13 +325,13 @@ const PropertyDetails = () => {
 
       {/* Короткая информация об объекте */}
       <section className='property-details-page short-details-section'>
-        <div className='property-details-page short-details-section description-item'>
+        {property.shortDescription != null ? <div className='property-details-page short-details-section description-item'>
           <p>{property.shortDescription}</p>
-        </div>
+        </div>: ''}
         <div className='property-details-page short-details-section description-item'>
           <p className='bolder'>Актуальность объекта и другая информация</p>
           <ul className="property-details-page short-details-section flags-list">
-            <li>Готово к заселению: <strong>{property.readyToMove ? 'да' : 'нет'}</strong></li>
+            {property.readyToMove != null ? <li>Готово к заселению: <strong>{property.readyToMove ? 'да' : 'нет'}</strong></li> : ''}
             <li>Торг: <strong>{property.bargaining ? 'уместен' : 'не уместен'}</strong></li>
             <li>Ипотека: <strong>{property.mortgagePossible ? 'возможна' : 'нет'}</strong></li>
             <li>Материнский капитал: <strong>{property.maternalCapital ? 'принимается' : 'нет'}</strong></li>
@@ -333,9 +339,17 @@ const PropertyDetails = () => {
           </ul>
         </div>
       </section>
+
       {/* Подробное описание */}
       <section className="property-details-page details-section">
         <h2 className="property-details-page details-section section-title">Подробно об объекте</h2>
+
+        {property.fullDescription && (
+          <div className="property-details-page details-section full-description">
+            <h3>Описание</h3>
+            <p>{property.fullDescription}</p>
+          </div>
+        )}
 
         <div className="property-details-page details-section features-grid">
           <div>Состояние: <strong>{property.condition || '—'}</strong></div>
@@ -349,13 +363,6 @@ const PropertyDetails = () => {
           <div>Лифт: <strong>{property.hasElevator ? 'есть' : 'нет'}</strong></div>
         </div>
 
-        {property.fullDescription && (
-          <div className="property-details-page details-section full-description">
-            <h3>Описание</h3>
-            <p>{property.fullDescription}</p>
-          </div>
-        )}
-
         <ul className="property-details-page details-section flags-list">
           <li>Готово к заселению: <strong>{property.readyToMove ? 'да' : 'нет'}</strong></li>
           <li>Торг: <strong>{property.bargaining ? 'уместен' : 'не уместен'}</strong></li>
@@ -364,7 +371,7 @@ const PropertyDetails = () => {
           <li>Обременения: <strong>{property.encumbrance ? 'есть' : 'нет'}</strong></li>
         </ul>
       </section>
-
+      
       {/* Дополнительные описания (если заполнены) */}
       {(property.buildingDescription || property.yearBuiltDescription || property.environment ||
         property.infrastructure || property.transportAccessibility || property.communications ||
@@ -440,14 +447,24 @@ const PropertyDetails = () => {
       {/* Карта */}
       <section className="property-details-page map-section">
         <h2 className="property-details-page map-section section-title">Расположение</h2>
+        
         <div className="property-details-page map-section map-container">
           {property.latitude && property.longitude ? (
-            <div className="property-details-page map-section map-container map-placeholder">
-              {/* Здесь будет <YandexMap lat={property.latitude} lng={property.longitude} /> */}
-              Координаты: {property.latitude.toFixed(6)}, {property.longitude.toFixed(6)}
-            </div>
+            <YandexMap 
+              lat={property.latitude} 
+              lng={property.longitude} 
+              address={property.address} 
+            />
           ) : (
-            <p>Координаты не определены</p>
+            <div className="property-details-page map-section no-map">
+              <p>Координаты объекта не указаны</p>
+            </div>
+          )}
+
+          {property.address && (
+            <p className="property-details-page map-section address-line">
+              Адрес: <strong>{property.address}</strong>
+            </p>
           )}
         </div>
       </section>
@@ -455,7 +472,7 @@ const PropertyDetails = () => {
       {/* Кнопка действия */}
       <div className="property-details-page action-bar">
         <button
-          className="property-details-page action-bar big-action-button"
+          className="property-details-page action-bar big-action-button submit-btn"
           onClick={handleBuyClick}
         >
           Оставить заявку
@@ -503,7 +520,10 @@ const PropertyDetails = () => {
           </div>
         </div>
       )}
+
     </div>
+    <Footer backForm={true}/>
+    </>
   );
 };
 

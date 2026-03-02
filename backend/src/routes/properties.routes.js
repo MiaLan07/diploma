@@ -89,6 +89,63 @@ router.get('/map', async (req, res) => {
     });
   }
 });
+
+router.get('/latest', async (req, res) => {
+  try {
+    console.log('Запрос /properties/latest');
+
+    const properties = await prisma.property.findMany({
+      where: { status: 'active' },
+      orderBy: { createdAt: 'desc' },
+      take: 6,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        address: true,
+        price: true,
+        roomsCount: true,
+        shortDescription: true,
+        latitude: true,
+        longitude: true,
+        images: {
+          where: { isMain: true },
+          take: 1,
+          select: { url: true },
+        },
+      },
+    });
+
+    console.log(`Найдено последних объектов: ${properties.length}`);
+
+    const latestData = properties.map(p => ({
+      id: p.id,
+      title: p.title || `Объект №${p.id}`,
+      slug: p.slug || p.id.toString(),
+      address: p.address || 'Адрес не указан',
+      price: p.price,
+      rooms: p.roomsCount,
+      shortDescription: p.shortDescription || '',
+      lat: p.latitude ? Number(p.latitude) : null,
+      lng: p.longitude ? Number(p.longitude) : null,
+      mainImage: p.images[0]?.url || '/images/placeholder.jpg',
+    }));
+
+    res.json({
+      success: true,
+      count: latestData.length,
+      data: latestData,
+    });
+  } catch (err) {
+    console.error('Latest route error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка при загрузке последних объектов',
+      error: err.message,
+    });
+  }
+});
+
 // Доступны всем (или можно ограничить авторизацией, если нужно)
 router.get('/', validate(queryFilterSchema), getAllProperties);
 router.get('/:slug', getPropertyBySlug);

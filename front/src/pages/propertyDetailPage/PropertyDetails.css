@@ -181,6 +181,118 @@ section.property-details-page.short-details-section .flags-list {
   margin: 5px;
 }
 
+section.extra-descriptions-section {
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  row-gap: 16px;
+  margin: 24px 0;
+  padding-top: 5rem;
+}
+h2.extra-descriptions-section.section-title, 
+h2.details-section.section-title {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+}
+div.extra-descriptions-section.description-block {
+  box-sizing: border-box;
+  border: 0.5px solid rgba(0,0,0,0.2);
+  padding: 12px 24px;
+  border-radius: 16px;
+  transition: all 0.25s;
+}
+div.extra-descriptions-section.description-block:hover {
+  border-color: var(--accent-dark);
+  transform: scale(1.01);
+}
+
+section.property-details-page.details-section {
+  padding-top: 5rem;
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(auto, minmax(100px, 1fr));
+  gap: 24px;
+  row-gap: 16px;
+  position: relative;
+}
+div.property-details-page.details-section.full-description {
+  grid-column: 1 / -1;
+}
+div.property-details-page.details-section.full-description p {
+  max-width: 45rem;
+}
+
+
+section.property-details-page .map-section {
+  margin: 40px 0;
+  padding: 0 20px;
+}
+.property-details-page .map-section .map-container {
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.property-details-page .map-section .map-aspect-wrapper {
+  position: relative;
+  width: 90%;
+  padding-bottom: 35%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+.property-details-page .map-section .map-map {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.property-details-page .map-section .no-map {
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9ecef;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+.property-details-page .map-section .address-line,
+.property-details-page .map-section .coords-line {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 1.05rem;
+  color: #333;
+}
+
+div.action-bar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 0;
+}
+div.action-bar button.submit-btn {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  margin-top: 0;
+  font-size: 2rem;
+  transition: all 0.2s ease-in-out;
+}
+div.action-bar button.submit-btn:hover {
+  transform: scale(1.05);
+}
 
 .property-details-page.fullscreen-overlay {
   position: fixed;
@@ -193,14 +305,14 @@ section.property-details-page.short-details-section .flags-list {
 }
 .property-details-page.fullscreen-content {
   position: relative;
-  max-width: 95vw;
-  max-height: 95vh;
+  max-width: 90vw;
+  max-height: 90vh;
   width: auto;
   height: auto;
 }
 .property-details-page.fullscreen-image {
-  max-width: 95vw;
-  max-height: 95vh;
+  max-width: 90vw;
+  max-height: 90vh;
   object-fit: contain;
   display: block;
   border-radius: 12px;

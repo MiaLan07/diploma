@@ -90,9 +90,25 @@
 }
 
 .user-dashboard-sidebar-item.logout-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 8px;
+  align-items: center;
+  height: 28px;
   color: #e74d3c8f;
   margin-top: 20px;
+  transition: all 0.2s;
 }
-.user-dashboard-sidebar-item.logout-item:hover {
+.user-dashboard-sidebar-item.logout-item svg {
+  height: 24px;
+  width: 24px;
+  justify-self: center;
+  margin: auto;
+  transition: all 0.2s;
+}
+.user-dashboard-sidebar-item.logout-item:hover,
+.user-dashboard-sidebar-item.logout-item:hover svg g path {
   color: #e74c3c;
+  stroke: #e74c3c !important;
+  stroke-opacity: 1 !important;
 }
